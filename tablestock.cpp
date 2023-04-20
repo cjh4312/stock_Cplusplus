@@ -1,0 +1,134 @@
+#include "tablestock.h"
+#include "commondelegate.h"
+#include "qheaderview.h"
+#include "globalvar.h"
+
+TableStock::TableStock()
+{
+//    qDebug()<<"ok";
+    stockTableView=new QTableView(this);
+    risingSpeedView=new QTableView(this);
+    myStockView=new QTableView(this);
+    timeShareTickView=new QTableView(this);
+    initTableView();
+    m_tableModel= new ModelTableStock(this);
+    m_risingSpeedModel= new ModelTableStock(this);
+    m_myStockModel= new ModelTableStock(this);
+    m_timeShareTickModel= new ModelTimeShare(this);
+}
+
+void TableStock::setTableView()
+{
+    int curIndex=stockTableView->currentIndex().row();
+    m_tableModel->setModelData(GlobalVar::mTableList);
+    stockTableView->setModel(m_tableModel);
+    stockTableView->setCurrentIndex(m_tableModel->index(curIndex,0));
+    curIndex=risingSpeedView->currentIndex().row();
+    m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
+    risingSpeedView->setModel(m_risingSpeedModel);
+    risingSpeedView->setCurrentIndex(m_risingSpeedModel->index(curIndex,0));
+    curIndex=myStockView->currentIndex().row();
+    m_myStockModel->setModelData(GlobalVar::mMyStockList);
+    myStockView->setModel(m_myStockModel);
+    myStockView->setCurrentIndex(m_myStockModel->index(curIndex,0));
+
+    QTableView *tl[3]={stockTableView,risingSpeedView,myStockView};
+    for (int i=0;i<3;++i)
+    {
+        tl[i]->setColumnWidth(0, 70);
+        if (i==0 && (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5 ||
+                    GlobalVar::preInterface==2 || GlobalVar::preInterface==5))
+            tl[i]->setColumnWidth(1, 200);
+        else
+            tl[i]->setColumnWidth(1, 95);
+        tl[i]->setColumnWidth(2, 70);
+        tl[i]->setColumnWidth(3, 70);
+        tl[i]->setColumnWidth(4, 60);
+        tl[i]->setColumnWidth(5, 85);
+        tl[i]->setColumnWidth(6, 65);
+        tl[i]->setColumnWidth(7, 70);
+        tl[i]->setColumnWidth(8, 90);
+        tl[i]->setColumnWidth(9, 90);
+        tl[i]->setColumnWidth(10, 70);
+        tl[i]->setColumnWidth(11, 70);
+        tl[i]->setColumnWidth(12, 70);
+        tl[i]->setColumnWidth(13, 70);
+        tl[i]->setColumnWidth(14, 70);
+        tl[i]->setColumnWidth(15, 70);
+        tl[i]->setColumnWidth(16, 70);
+    }
+}
+
+void TableStock::setTimeShareTickView()
+{
+    m_timeShareTickModel->setModelData(GlobalVar::mTimeShareTickList);
+    timeShareTickView->setModel(m_timeShareTickModel);
+    timeShareTickView->setColumnWidth(0,65);
+    timeShareTickView->setColumnWidth(1,68);
+    timeShareTickView->setColumnWidth(2,55);
+    timeShareTickView->setColumnWidth(3,20);
+    timeShareTickView->setColumnWidth(4,20);
+//    timeShareTickView->resizeColumnsToContents();
+    timeShareTickView->scrollToBottom();
+    timeShareTickView->setFrameStyle(0);
+}
+
+void TableStock::initTableView()
+{
+    stockTableView->setSortingEnabled(false);
+    // 隐藏排序图标
+    stockTableView->horizontalHeader()->setSortIndicatorShown(false);
+    QFont boldFont;
+    boldFont.setBold(true);
+    boldFont.setPixelSize(18);
+    QHeaderView *header=myStockView->verticalHeader();
+    //拖拽交换行
+    header->setSectionsMovable(true);
+    QTableView *tl[3]={stockTableView,risingSpeedView,myStockView};
+    for (int i=0;i<3;++i)
+    {
+        tl[i]->horizontalHeader()->setSortIndicatorShown(false);
+        tl[i]->horizontalHeader()->setSortIndicatorShown(false);
+        tl[i]->horizontalHeader()->setFont(boldFont);
+        if (i==0)
+        {
+            tl[i]->verticalHeader()->setMinimumSectionSize(21);
+            tl[i]->verticalHeader()->setDefaultSectionSize(21);
+        }
+        else
+        {
+            tl[i]->verticalHeader()->setMinimumSectionSize(23);
+            tl[i]->verticalHeader()->setDefaultSectionSize(23);
+        }
+        tl[i]->setAlternatingRowColors(true);
+        tl[i]->setShowGrid(false);
+        tl[i]->setSelectionBehavior(QAbstractItemView::SelectRows);
+        tl[i]->setStyleSheet("QTableView{selection-background-color:lightgray}");
+        tl[i]->verticalScrollBar()->setStyleSheet("QScrollBar{width:0px;}");
+        tl[i]->horizontalScrollBar()->setStyleSheet("QScrollBar{width:0px;}");
+        tl[i]->setItemDelegate(new CommonDelegate());
+    }
+    timeShareTickView->verticalHeader()->setVisible(false);
+    timeShareTickView->horizontalHeader()->setVisible(false);
+    timeShareTickView->setShowGrid(false);
+    timeShareTickView->verticalHeader()->setMinimumSectionSize(18);
+    timeShareTickView->verticalHeader()->setDefaultSectionSize(18);
+    timeShareTickView->setSelectionMode(QAbstractItemView::NoSelection);
+//    timeShareTickView->verticalScrollBar()->setStyleSheet("QScrollBar{width:15px;}");
+    // 信号发出，进行排序
+    connect(stockTableView->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, [this](int logicalIndex/*, Qt::SortOrder order*/) {
+//        bool is_asc;
+        if (GlobalVar::curSortNum!=logicalIndex)
+        {
+            GlobalVar::is_asc = false;
+            GlobalVar::curSortNum=logicalIndex;
+        }
+        else
+            GlobalVar::is_asc = not preSort;
+        GlobalVar::sortByColumn(&GlobalVar::mTableList,logicalIndex,GlobalVar::is_asc);
+        preSort=GlobalVar::is_asc;
+        m_tableModel->setModelData(GlobalVar::mTableList);
+        stockTableView->setModel(m_tableModel);
+        stockTableView->setCurrentIndex(m_tableModel->index(0,0));
+    });
+}
