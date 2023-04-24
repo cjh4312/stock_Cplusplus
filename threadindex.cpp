@@ -13,7 +13,7 @@ void ThreadIndex::getAllIndex()
     if (isRunning)
         return;
     isRunning=true;
-    GlobalVar::getEastData(naManager,allData,0.8,QUrl("http://push2.eastmoney.com/api/qt/ulist.np/get?fid=f14&pi=0&pz=40&po=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&fields=f14,f12,f2,f3&np=1&secids=1.000001%2C0.399001%2C0.399006%2C100.HSI%2c100.TWII%2C100.N225%2C100.KS11%2C100.SENSEX%2C100.DJIA%2C100.SPX%2C100.NDX%2C100.FTSE%2C100.GDAXI%2C100.FCHI%2C100.RTS%2C100.AS51%2C1.000688&_=1662857186403"));
+    GlobalVar::getEastData(naManager,allData,0.8,QUrl("http://push2.eastmoney.com/api/qt/ulist.np/get?fid=f14&pi=0&pz=40&po=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&fields=f14,f12,f2,f3&np=1&secids=1.000001%2C0.399001%2C0.399006%2C100.HSI%2C100.N225%2C100.KS11%2C1.000688%2c100.TWII%2C100.SENSEX%2C100.DJIA%2C100.SPX%2C100.NDX%2C100.SX5E%2C100.GDAXI%2C100.RTS%2C100.FTSE%2C100.FCHI%2C100.AS51&_=1662857186403"));
     initIndexList();
     GlobalVar::getEastData(naManager,allData,0.8,QUrl("http://futsseapi.eastmoney.com/list/block?orderBy=name&sort=desc&pageSize=20&pageIndex=0&blockName=financial&_=1666243575249"));
     initFuturesList();

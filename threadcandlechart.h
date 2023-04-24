@@ -12,7 +12,7 @@ class ThreadCandleChart : public QObject
     Q_OBJECT
 public:
     explicit ThreadCandleChart(QObject *parent = nullptr);
-    void getAllCandleChart();
+    void getAllCandleChart(QString freq,QString adjustFlag);
 private:
     QNetworkAccessManager *naManager;
     QByteArray allData;

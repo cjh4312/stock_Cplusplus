@@ -24,12 +24,10 @@ void ThreadTable::getTableData()
             isFirstReadMyStock=false;
         }
         reFlaseMyStock();
-        //    QTime endTime=QTime::currentTime();
-        //    qDebug() << startTime.msecsTo(endTime);
     }
     else if (GlobalVar::WhichInterface==2)
     {
-        GlobalVar::getEastData(naManager,allData,3,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f6&fs=m:116+t:3,m:116+t:4,m:116+t:1,m:116+t:2&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667966922156"));
+        GlobalVar::getEastData(naManager,allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f6&fs=m:116+t:3,m:116+t:4,m:116+t:1,m:116+t:2&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667966922156"));
         initTableList();
     }
     else if (GlobalVar::WhichInterface==5)
@@ -113,39 +111,12 @@ void ThreadTable::initTableList()
 
 void ThreadTable::readMyStock()
 {
-    QFile file("e:/cjh/Documents/qt/oneStock/list/my_stock.csv");
-
-    if (file.open(QIODevice::ReadOnly))
+    QStringList code=GlobalVar::settings->value("myStock").toStringList();
+    for(int i=0;i<code.count();++i)
     {
-//        QTextStream read = QTextStream(&file);
-        QTextCodec *codec = QTextCodec::codecForName("GBK");
-
-//        QStringList Data = read.readAll().split("\n",Qt::SkipEmptyParts);
-        QStringList Data=codec->toUnicode(file.readAll()).split("\n",Qt::SkipEmptyParts);
-        for(int i=1;i<Data.count();++i)
-        {
-            QStringList strLine = Data.at(i).split(",");     //一行中的单元格以，区分
-            StockInfo info;
-            info.code=strLine.at(0);
-//            info.name=strLine.at(1);
-//            info.close=strLine.at(2).toFloat();
-//            info.pctChg=strLine.at(3).toFloat();
-//            info.turn=strLine.at(4).toFloat();
-//            info.amount=strLine.at(5).toFloat();
-//            info.velocity=strLine.at(6).toFloat();
-//            info.pe=strLine.at(7).toFloat();
-//            info.totalValue=strLine.at(8).toFloat();
-//            info.CirculatedValue=strLine.at(9).toFloat();
-//            info.pctYear=strLine.at(10).toFloat();
-//            info.pctSixty=strLine.at(11).toFloat();
-//            info.volume=strLine.at(12).toFloat();
-//            info.high=strLine.at(13).toFloat();
-//            info.low=strLine.at(14).toFloat();
-//            info.open=strLine.at(15).toFloat();
-//            info.preClose=strLine.at(16).toFloat();
-            GlobalVar::mMyStockList.append(info);
-        }
-        file.close();
+        StockInfo info;
+        info.code=code[i];
+        GlobalVar::mMyStockList.append(info);
     }
 }
 

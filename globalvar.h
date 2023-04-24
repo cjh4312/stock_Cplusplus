@@ -28,7 +28,10 @@ public:
     static QString getComCode();
     static void sortByColumn(QList<StockInfo> *mList,const int column,const bool is_asc);
     static void getEastData(QNetworkAccessManager *naManager, QByteArray &allData,float timeOut,const QUrl &url);
+    static void postData(QNetworkAccessManager *naManager, QByteArray &postArray, QByteArray &allData,float timeOut, const QUrl &url);
     static QString format_conversion(float data);
+    static QString peelStr(const QString s,const QString begin,const QString end);
+    static QPair<QString, QString> cutStr(const QString s,const QString begin,const QString end);
 
     static QString curCode;
     static QString curName;
@@ -67,6 +70,8 @@ public:
     static bool isFirst;
     static int trendsTotal;
     static bool isSayNews;
+    static int curBlock;
+    static QString currentPath;
 };
 
 #endif // GLOBALVAR_H

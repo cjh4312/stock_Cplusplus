@@ -16,8 +16,8 @@ SOURCES += \
     mainwindow.cpp \
     modeltablestock.cpp \
     modeltimeshare.cpp \
+    requeststocsv.cpp \
     searchstock.cpp \
-    stockinfocsv.cpp \
     tablestock.cpp \
     threadcandlechart.cpp \
     threadindex.cpp \
@@ -33,9 +33,9 @@ HEADERS += \
     mainwindow.h \
     modeltablestock.h \
     modeltimeshare.h \
+    requeststocsv.h \
     searchstock.h \
     stockinfo.h \
-    stockinfocsv.h \
     tablestock.h \
     threadcandlechart.h \
     threadindex.h \

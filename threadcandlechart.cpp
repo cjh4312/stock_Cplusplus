@@ -8,12 +8,20 @@ ThreadCandleChart::ThreadCandleChart(QObject *parent)
     naManager = new QNetworkAccessManager(this);
 }
 
-void ThreadCandleChart::getAllCandleChart()
+void ThreadCandleChart::getAllCandleChart(QString freq, QString adjustFlag)
 {
     if (isRunning)
         return;
     isRunning=true;
-    GlobalVar::getEastData(naManager,allData,2,QUrl("http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=20200101&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid="+GlobalVar::getComCode()+"&klt=101&fqt=0"));
+    QDate curDay=QDateTime::currentDateTime().date();
+//    qDebug()<<curTime.toString("yyyyMMdd");
+    QString startDate=curDay.addDays(-1095).toString("yyyyMMdd");
+    if (freq=="102")
+        startDate=curDay.addDays(-3650).toString("yyyyMMdd");
+    else if(freq=="103")
+        startDate="19900101";
+//    qDebug()<<startDate;
+    GlobalVar::getEastData(naManager,allData,2,QUrl("http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg="+startDate+"&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid="+GlobalVar::getComCode()+"&klt="+freq+"&fqt="+adjustFlag));
     initCandleChartList();
     if (not GlobalVar::mCandleChartList.isEmpty())
         emit getCandleChartFinished();

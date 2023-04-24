@@ -11,6 +11,8 @@
 #include "threadtimesharechart.h"
 #include "threadcandlechart.h"
 #include "drawchart.h"
+#include "searchstock.h"
+#include "requeststocsv.h"
 #include <QTimer>
 #include <QThread>
 #include <QLabel>
@@ -20,6 +22,7 @@
 #include <QButtonGroup>
 #include <QWheelEvent>
 #include <QActionGroup>
+#include <QTextBlock>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -41,6 +44,8 @@ private slots:
     void setMarket();
     void addRightMenu(int num);
     void delRightMenu();
+    void showSearchResult();
+    void downStockIndexPlateInfo();
 
 signals:
     void startThreadTable();
@@ -48,12 +53,14 @@ signals:
     void startThreadTimeShareTick();
     void startThreadTimeShareChart();
     void startThreadGetNews();
-    void startThreadCandleChart();
+    void startThreadCandleChart(QString freq,QString adjustFlag);
 
 private:
     Ui::MainWindow *ui;
     TableStock m_tableStock;
     DrawChart drawChart;
+    SearchStock searchStock;
+    RequestsToCsv requestsToCsv;
     ThreadTable *threadTable;
     ThreadIndex *threadIndex;
     ThreadTimeShareTick *threadTimeShareTick;
@@ -80,8 +87,17 @@ private:
     QLabel *stockName;
 //    QTextEdit *timeShareTick;
     QTextBrowser *newsData;
+    QWidget *searchSmallWindow;
     int timeCount=0;
     bool changeInTurn=true;
+    QString freq="101";
+    QString adjustFlag="0";
+    QRadioButton *daily;
+    QRadioButton *weekly;
+    QRadioButton *monthly;
+    QRadioButton *no_adjust;
+    QRadioButton *split_adjusted;
+    QRadioButton *back_adjusted;
 
     void initThread();
     void initInterface();
@@ -90,6 +106,8 @@ private:
     void initBuySellLayout(QGridLayout *BuySellLayout);
     void initSignals();
     void saveMyStock();
+    void saveCode();
+    void initFlag();
 //    void drawTimeShareChart();
 //    void drawCandleChart();
     void flashOldCandleInfo(QMouseEvent *mouseEvent);

@@ -11,8 +11,8 @@ class ThreadTimeShareTick : public QObject
     Q_OBJECT
 public:
     explicit ThreadTimeShareTick(QObject *parent = nullptr);
-    void getAllBuySell();
-    void getAllTimeShareTick();
+    void getBuySellTimeShareTick();
+
 private:
     QNetworkAccessManager *naManager;
     QByteArray allData;

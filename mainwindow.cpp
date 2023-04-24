@@ -18,13 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    if (GlobalVar::WhichInterface==1 and GlobalVar::curCode.length()!=5 and GlobalVar::curCode.left(1)!="1")
-    {
-        GlobalVar::settings->setValue("curCode",GlobalVar::curCode);
-        GlobalVar::settings->setValue("curName",GlobalVar::curName);
-        GlobalVar::settings->sync();
-    }
-    saveMyStock();
+    saveCode();
     thread1->quit();
     thread1->wait();
     threadTable->deleteLater();
@@ -79,7 +73,7 @@ void MainWindow::initThread()
         m_tableStock.setTimeShareTickView();
     });
     connect(threadTimeShareTick,SIGNAL(getBuySellFinished()),this,SLOT(reFlashBuySellBaseInfo()));
-    connect(this,&MainWindow::startThreadTimeShareTick,threadTimeShareTick,&ThreadTimeShareTick::getAllBuySell);
+    connect(this,&MainWindow::startThreadTimeShareTick,threadTimeShareTick,&ThreadTimeShareTick::getBuySellTimeShareTick);
     thread3->start();
     emit startThreadTimeShareTick();
 
@@ -128,13 +122,19 @@ void MainWindow::initInterface()
 //    market->addAction(ui->ZHMarket);
 //    market->addAction(ui->USzMarket);
     //所有股票界面
-    ui->mainLayout->setSpacing(0);
     ui->mainLayout->setContentsMargins(2,2,2,2);
     ui->mainLayout->addWidget(m_tableStock.stockTableView);
-//    candleChart=new QWidget(this);
 
     ui->mainLayout->addWidget(drawChart.candleChart);
     drawChart.candleChart->hide();
+
+    searchSmallWindow=new QWidget(this);
+    QVBoxLayout *search =new QVBoxLayout();
+    search->setContentsMargins(2, 2, 2, 2);
+    searchSmallWindow->setLayout(search);
+    search->addWidget(searchStock.searchCodeLine);
+    search->addWidget(searchStock.matchCodeText);
+
     //中间界面
     QVBoxLayout *mainLayout2 =new QVBoxLayout();
     mainLayout2->setSpacing(0);
@@ -162,7 +162,7 @@ void MainWindow::initInterface()
     buySellLayout->setSpacing(2);
     buySellLayout->setContentsMargins(10, 5, 0, 0);
     newsData=new QTextBrowser(this);
-    newsData->setMinimumHeight(140);
+//    newsData->setMinimumHeight(140);
 
     QHBoxLayout *freqAdjustLayout =new QHBoxLayout();
     freqAdjustLayout->setSpacing(0);
@@ -172,17 +172,17 @@ void MainWindow::initInterface()
     rightLayout->addWidget(newsData);
     rightLayout->addLayout(freqAdjustLayout);
     QButtonGroup *freq=new QButtonGroup(this);
-    QRadioButton *daily =new QRadioButton("日线");
+    daily =new QRadioButton("日线");
     daily->setChecked(true);
-    QRadioButton *weekly =new QRadioButton("周线");
-    QRadioButton *monthly =new QRadioButton("月线");
+    weekly =new QRadioButton("周线");
+    monthly =new QRadioButton("月线");
     freq->addButton(daily);
     freq->addButton(weekly);
     freq->addButton(monthly);
-    QRadioButton *no_adjust =new QRadioButton("不复权");
+    no_adjust =new QRadioButton("不复权");
     no_adjust->setChecked(true);
-    QRadioButton *split_adjusted =new QRadioButton("前复权");
-    QRadioButton *back_adjusted =new QRadioButton("后复权");
+    split_adjusted =new QRadioButton("前复权");
+    back_adjusted =new QRadioButton("后复权");
     freqAdjustLayout->addWidget(daily);
     freqAdjustLayout->addWidget(weekly);
     freqAdjustLayout->addWidget(monthly);
@@ -190,7 +190,6 @@ void MainWindow::initInterface()
     freqAdjustLayout->addWidget(split_adjusted);
     freqAdjustLayout->addWidget(back_adjusted);
 
-//    timeShareChart=new QWidget(this);
     drawChart.timeShareChart->setMinimumHeight(300);
     rightLayout->addWidget(drawChart.timeShareChart);
 
@@ -200,8 +199,10 @@ void MainWindow::initInterface()
     circle=new QLabel(this);
 
     ui->statusBar->addWidget(circle);
-    for(int i=1;i<=9;++i)
+    for(int i=1;i<=7;++i)
     {
+//        QHBoxLayout *statusBarLayout=new QHBoxLayout(ui->statusBar);
+//        ui->statusBar->setLayout(statusBarLayout);
         QPushButton *indexButton = new QPushButton(QString::asprintf("Button%d", i), this);
         indexButton->setStyleSheet("QPushButton{font:bold;font-size:16px;font-family:微软雅黑;}");
         QLabel *indexLabel=new QLabel(QString::asprintf("Label%d", i), this);
@@ -240,6 +241,11 @@ void MainWindow::initSettings()
     drawChart.timeShareChart->setStyleSheet("color:white;font:bold;font-size:14px");
     timeSharePrice->setAlignment(Qt::AlignCenter);
     timeSharePrice->resize(110,15);
+
+    searchSmallWindow->setWindowFlag(Qt::Popup);
+    searchSmallWindow->setGeometry(1466, 645, 280, 350);
+    searchStock.searchCodeLine->installEventFilter(this);
+
 }
 void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
 {
@@ -360,7 +366,7 @@ void MainWindow::initSignals()
 //        int curRow=index.row();
 //        GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
 //        GlobalVar::curName=GlobalVar::mTableList.at(curRow).name;
-        emit startThreadCandleChart();
+        emit startThreadCandleChart(freq,adjustFlag);
         drawChart.candleChart->show();
         m_tableStock.stockTableView->hide();
         m_tableStock.risingSpeedView->hide();
@@ -371,7 +377,7 @@ void MainWindow::initSignals()
 //        int curRow=index.row();
 //        GlobalVar::curCode=GlobalVar::mRisingSpeedList.at(curRow).code;
 //        GlobalVar::curName=GlobalVar::mRisingSpeedList.at(curRow).name;
-        emit startThreadCandleChart();
+        emit startThreadCandleChart(freq,adjustFlag);
         drawChart.candleChart->show();
         m_tableStock.stockTableView->hide();
         m_tableStock.risingSpeedView->hide();
@@ -382,7 +388,7 @@ void MainWindow::initSignals()
 //        int curRow=index.row();
 //        GlobalVar::curCode=GlobalVar::mMyStockList.at(curRow).code;
 //        GlobalVar::curName=GlobalVar::mMyStockList.at(curRow).name;
-        emit startThreadCandleChart();
+        emit startThreadCandleChart(freq,adjustFlag);
         drawChart.candleChart->show();
         m_tableStock.stockTableView->hide();
         m_tableStock.risingSpeedView->hide();
@@ -397,34 +403,39 @@ void MainWindow::initSignals()
     connect(m_tableStock.myStockView,&QTableView::customContextMenuRequested,this,[=](QPoint){
         delRightMenu();
     });
-    for (int i = 2; i<=18; i=i+2)
+    for (int i = 2; i<=14; i=i+2)
     {
         QPushButton *bb = (QPushButton *)(ui->statusBar->children().at(i));
         connect(bb,&QPushButton::clicked,this,[=](){
             GlobalVar::WhichInterface=3;
-            QString IndexCode[]={"1.000001","399001","399006","100.HSI","100.TWII","100.N225","100.KS11","100.SENSEX","100.DJIA",
-                                "100.SPX","100.NDX","100.FTSE","100.GDAXI","100.FCHI","100.RTS","100.AS51","1.000688","104.CN00Y","103.YM00Y"};
+            QString IndexCode[]={"1.000001","399001","399006","100.HSI","100.N225","100.KS11","1.000688","100.TWII","100.SENSEX","100.DJIA",
+                                "100.SPX","100.NDX","100.SX5E","100.GDAXI","100.RTS","100.FTSE","100.FCHI","100.AS51","104.CN00Y","103.YM00Y"};
             int n;
             if (GlobalVar::preInterface==1 or GlobalVar::preInterface==2)
             {
-                if (i==6 and not changeInTurn)
-                    n=16;
+                if ((i==8 or i==10 or i==12) and not changeInTurn)
+                    n=i/2+2;
                 else
                     n=i/2-1;
             }
             else
-                n=i/2+7;
-            if (i==18)
+            {
+                if ((i==8 or i==10 or i==12) and not changeInTurn)
+                    n=i/2+11;
+                else
+                    n=i/2+8;
+            }
+            if (i==14)
             {
                 if (changeInTurn)
-                    n=17;
-                else
                     n=18;
+                else
+                    n=19;
             }
 //            qDebug()<<i<<n;
             GlobalVar::curCode=IndexCode[n];
             GlobalVar::curName=bb->text();
-            emit startThreadCandleChart();
+            emit startThreadCandleChart(freq,adjustFlag);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
             drawChart.candleChart->show();
@@ -433,33 +444,60 @@ void MainWindow::initSignals()
             m_tableStock.myStockView->hide();
         });
     }
-    connect(ui->newsReport,&QAction::triggered,this,[](){
+    connect(ui->newsReport,&QAction::triggered,this,[=](){
+        if (threadNewsReport->tts->state() == QTextToSpeech::Speaking)
+        {
+            threadNewsReport->tts->stop();
+            threadNewsReport->tts->resume();
+        }
         GlobalVar::isSayNews=not GlobalVar::isSayNews;
     });
-
+    connect(&searchStock,SIGNAL(showSearch()),this,SLOT(showSearchResult()));
+    connect(ui->DLStockInfo,&QAction::triggered,this,&MainWindow::downStockIndexPlateInfo);
+    connect(daily,&QRadioButton::clicked,this,&MainWindow::initFlag);
+    connect(weekly,&QRadioButton::clicked,this,&MainWindow::initFlag);
+    connect(monthly,&QRadioButton::clicked,this,&MainWindow::initFlag);
+    connect(no_adjust,&QRadioButton::clicked,this,&MainWindow::initFlag);
+    connect(split_adjusted,&QRadioButton::clicked,this,&MainWindow::initFlag);
+    connect(back_adjusted,&QRadioButton::clicked,this,&MainWindow::initFlag);
 }
 
 void MainWindow::saveMyStock()
 {
-    QFile file("e:/cjh/Documents/qt/oneStock/list/my_stock.csv");
-    if (file.open(QFile::WriteOnly))
+    QStringList s;
+    for(int i=0;i<GlobalVar::mMyStockList.count();++i)
     {
-        file.write(GlobalVar::TableList.join(",").toLocal8Bit()+"\n");
-        for(int i=0;i<m_tableStock.m_myStockModel->rowCount();++i)
-        {
-            QStringList dataList;
-            for (int j=0;j<m_tableStock.m_myStockModel->columnCount();++j)
-            {
-                QString s=m_tableStock.m_myStockModel->data(m_tableStock.m_myStockModel->index(i,j)).toString();
-                if (s.length()>0)
-                    dataList.append(s);
-                else
-                    dataList.append("");
-            }
-            file.write(dataList.join(",").toLocal8Bit() + "\n");
-        }
-        file.close();
+        s<<GlobalVar::mMyStockList.at(i).code;
     }
+    GlobalVar::settings->setValue("myStock",s);
+}
+
+void MainWindow::saveCode()
+{
+    if (GlobalVar::curCode.length()!=5 and GlobalVar::curCode.left(1)!="1")
+    {
+        GlobalVar::settings->setValue("curCode",GlobalVar::curCode);
+        GlobalVar::settings->setValue("curName",GlobalVar::curName);
+        GlobalVar::settings->sync();
+    }
+}
+
+void MainWindow::initFlag()
+{
+    if (sender()==daily)
+        freq="101";
+    else if (sender()==weekly)
+        freq="102";
+    else if (sender()==monthly)
+        freq="103";
+    else if (sender()==no_adjust)
+        adjustFlag="0";
+    else if (sender()==split_adjusted)
+        adjustFlag="1";
+    else if (sender()==back_adjusted)
+        adjustFlag="2";
+    if (GlobalVar::WhichInterface==3)
+        emit startThreadCandleChart(freq,adjustFlag);
 }
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
@@ -469,24 +507,26 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         int para=event1->angleDelta().y();//获得鼠标滚轮的滚动距离para，para<0向下滚动，>0向上滚动
         int tempStep=m_tableStock.stockTableView->verticalScrollBar()->value();
         int curIndex=m_tableStock.stockTableView->currentIndex().row();
+        int row=int(m_tableStock.stockTableView->height()/22.0+0.5);
         if (para<0)
         {
             //向下滚动，设定鼠标滚轮每滚动一个单位，滑块就移动20个单位
-            m_tableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep+43);
-            if (curIndex>GlobalVar::mTableList.count()-43)
+            m_tableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep+row);
+            if (curIndex>GlobalVar::mTableList.count()-row)
                 m_tableStock.stockTableView->setCurrentIndex(m_tableStock.m_tableModel->index(0,0));
             else
-                m_tableStock.stockTableView->setCurrentIndex(m_tableStock.m_tableModel->index(curIndex+43,0));
+                m_tableStock.stockTableView->setCurrentIndex(m_tableStock.m_tableModel->index(curIndex+row,0));
         }
         else
         {
             //向上滚动
-            m_tableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep-43);
-            if (curIndex>=43)
-                m_tableStock.stockTableView->setCurrentIndex(m_tableStock.m_tableModel->index(curIndex-43,0));
+            m_tableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep-row);
+            if (curIndex>=row)
+                m_tableStock.stockTableView->setCurrentIndex(m_tableStock.m_tableModel->index(curIndex-row,0));
             else
                 m_tableStock.stockTableView->setCurrentIndex(m_tableStock.m_tableModel->index(GlobalVar::mTableList.count()-1,0));
         }
+//        qDebug()<<m_tableStock.stockTableView->height();
         return true;
     }
     else if (obj==drawChart.timeShareChart and event->type() == QEvent::Paint)
@@ -552,6 +592,40 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             m_tableStock.timeShareTickView->verticalScrollBar()->setSliderPosition(tempStep-13);
         return true;
     }
+    else if (obj==searchStock.searchCodeLine and event->type() ==QKeyEvent::KeyPress)
+    {
+        QKeyEvent *event1 = static_cast<QKeyEvent *>(event);
+        if (event1->key()==Qt::Key_Down)
+        {
+            GlobalVar::curBlock+=1;
+            if (GlobalVar::curBlock>searchStock.matchCodeText->document()->blockCount()-1)
+                GlobalVar::curBlock=0;
+        }
+        else if (event1->key()==Qt::Key_Up)
+        {
+            GlobalVar::curBlock-=1;
+            if (GlobalVar::curBlock<0)
+                GlobalVar::curBlock=searchStock.matchCodeText->document()->blockCount()-1;
+        }
+        QTextBlockFormat fmt=QTextBlockFormat();
+        QTextCharFormat charFmt=QTextCharFormat();
+        fmt.setBackground(QColor("white"));
+        searchStock.matchCodeText->textCursor().setBlockFormat(fmt);
+        searchStock.matchCodeText->textCursor().deletePreviousChar();
+        searchStock.matchCodeText->textCursor().deletePreviousChar();
+        searchStock.matchCodeText->textCursor().deletePreviousChar();
+        searchStock.matchCodeText->textCursor().deletePreviousChar();
+//        qDebug()<<GlobalVar::curBlock;
+        QTextBlock block=searchStock.matchCodeText->document()->findBlockByNumber(GlobalVar::curBlock);
+        searchStock.matchCodeText->setTextCursor(QTextCursor(block));
+        fmt=searchStock.matchCodeText->textCursor().blockFormat();
+
+        fmt.setBackground(QColor(0, 199, 255));
+        searchStock.matchCodeText->textCursor().setBlockFormat(fmt);
+        charFmt.setForeground(QColor("red"));
+        searchStock.matchCodeText->mergeCurrentCharFormat(charFmt);
+        searchStock.matchCodeText->textCursor().insertText(">>> ");
+    }
     //其它事件交基类处理
     return QMainWindow::eventFilter(obj, event);
 }
@@ -590,7 +664,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             GlobalVar::curName=GlobalVar::mTableList.at(curRow).name;
             m_tableStock.stockTableView->setCurrentIndex(m_tableStock.m_tableModel->index(curRow,0));
             //            qDebug()<<GlobalVar::curCode;
-            emit startThreadCandleChart();
+            emit startThreadCandleChart(freq,adjustFlag);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
         }
@@ -606,7 +680,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             GlobalVar::curName=GlobalVar::mTableList.at(curRow).name;
             m_tableStock.stockTableView->setCurrentIndex(m_tableStock.m_tableModel->index(curRow,0));
             //            qDebug()<<GlobalVar::curCode;
-            emit startThreadCandleChart();
+            emit startThreadCandleChart(freq,adjustFlag);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
         }
@@ -615,12 +689,21 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
 
         GlobalVar::WhichInterface=3;
-        emit startThreadCandleChart();
+        emit startThreadCandleChart(freq,adjustFlag);
         drawChart.candleChart->show();
-        setFocus();
+//        setFocus();
         m_tableStock.stockTableView->hide();
         m_tableStock.risingSpeedView->hide();
         m_tableStock.myStockView->hide();
+    }
+    else if ((key >= 48 and key <= 57) or (key >= 65 and key <= 90))
+    {
+//        qDebug()<<event->text();
+//        searchCode+=event->text();
+        searchSmallWindow->show();
+        searchStock.searchCodeLine->setText(event->text());
+        searchStock.searchCodeLine->setFocus();
+        searchStock.matchCodeText->moveCursor(QTextCursor::Start);
     }
 }
 void MainWindow::wheelEvent(QWheelEvent *event)
@@ -644,7 +727,7 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         GlobalVar::curName=GlobalVar::mTableList.at(curRow).name;
         m_tableStock.stockTableView->setCurrentIndex(m_tableStock.m_tableModel->index(curRow,0));
         //            qDebug()<<GlobalVar::curCode;
-        emit startThreadCandleChart();
+        emit startThreadCandleChart(freq,adjustFlag);
         emit startThreadTimeShareChart();
         emit startThreadTimeShareTick();
     }
@@ -669,6 +752,7 @@ void MainWindow::setMarket()
     }
     else if (obj->objectName()=="HKMarket")
     {
+        saveCode();
         GlobalVar::WhichInterface=2;
         GlobalVar::preInterface=2;
         m_tableStock.stockTableView->show();
@@ -684,6 +768,7 @@ void MainWindow::setMarket()
     }
     else if (obj->objectName()=="USMarket")
     {
+        saveCode();
         GlobalVar::WhichInterface=5;
         GlobalVar::preInterface=5;
         GlobalVar::isUsZhStock=false;
@@ -700,6 +785,7 @@ void MainWindow::setMarket()
     }
     else if (obj->objectName()=="USzMarket")
     {
+        saveCode();
         GlobalVar::WhichInterface=5;
         GlobalVar::preInterface=5;
         GlobalVar::isUsZhStock=true;
@@ -778,23 +864,59 @@ void MainWindow::delRightMenu()
         saveMyStock();
     });
 }
+
+void MainWindow::showSearchResult()
+{
+    searchSmallWindow->hide();
+    GlobalVar::WhichInterface=3;
+    emit startThreadCandleChart(freq,adjustFlag);
+    emit startThreadTimeShareChart();
+    emit startThreadTimeShareTick();
+    drawChart.candleChart->show();
+    m_tableStock.stockTableView->hide();
+    m_tableStock.risingSpeedView->hide();
+    m_tableStock.myStockView->hide();
+}
+
+void MainWindow::downStockIndexPlateInfo()
+{
+    QWidget *promptWindow=new QWidget(this);
+    QTextEdit *promptText=new QTextEdit(promptWindow);
+    promptText->setStyleSheet("background-color: rgb(211, 211, 211);");
+    promptWindow->setWindowFlag(Qt::Popup);
+    promptWindow->setGeometry(850, 400, 300, 100);
+    QVBoxLayout *Vlay=new QVBoxLayout(promptWindow);
+    promptWindow->setLayout(Vlay);
+    Vlay->addWidget(promptText);
+    promptWindow->show();
+    promptText->append("开始下载指数、板块、个股信息...请稍等");
+    requestsToCsv.dealWithAllList();
+    promptText->append("指数、板块、个股信息处理完毕");
+    ui->DLStockInfo->setDisabled(true);
+}
 //交易日每5秒刷新一次数据
 void MainWindow::tradingTimeRunThread()
 {
 //    int a = timeCount % 10;
+    //每1秒，A股交易时段刷新个股买卖及每笔成交
     if (timeCount%2==1)
     {
         if ((GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==3) and GlobalVar::isZhMarketDay())
-            emit startThreadTimeShareTick();
+            if (GlobalVar::curCode.left(1)!="1")
+                emit startThreadTimeShareTick();
     }
+    //每5秒
     else if (timeCount==8 or timeCount==18)
     {
+        //A股交易时段实时刷新所有股票，及分时图
         if (GlobalVar::WhichInterface==1 and GlobalVar::isZhMarketDay())
         {
             circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
             emit startThreadTable();
             emit startThreadTimeShareChart();
+
         }
+        //美股港股交易时段实时刷新所有股票，及分时图、分时成交
         else if ((GlobalVar::WhichInterface==5 and GlobalVar::isUSMarketDay()) or
                  (GlobalVar::WhichInterface==2 and GlobalVar::isHKMarketDay()))
         {
@@ -803,20 +925,36 @@ void MainWindow::tradingTimeRunThread()
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
         }
+        //A股交易时段实时刷新k线图
         else if (GlobalVar::WhichInterface==3 and GlobalVar::isZhMarketDay())
         {
             circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
-            emit startThreadCandleChart();
+            emit startThreadCandleChart(freq,adjustFlag);
         }
+        //标注非交易时段
         else
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
+
+        //工作日
         if (GlobalVar::isWorkDay())
+        {
+            //更新全球指数
             emit startThreadIndex();
+            //每天9点,更新A股指数板块股票信息
+            QDateTime curTime=QDateTime::currentDateTime();
+            QString d=curTime.date().toString("yyyy-MM-dd");
+            if (curTime.time().toString("hh:mm")>="09:00" and d>GlobalVar::settings->value("curTime").toString())
+            {
+                downStockIndexPlateInfo();
+                GlobalVar::settings->setValue("curTime",d);
+            }
+        }
         else
             reFlashIndex();
+        //交换显示指数
         changeInTurn=not changeInTurn;
     }
-
+    //每10秒获取最新新闻信息
     else if (timeCount==20)
     {
         if (not GlobalVar::isNewsReport)
@@ -839,19 +977,24 @@ void MainWindow::reFlashIndex()
 {
 //    qDebug()<<ui->statusBar->children();
     int n;
-    for (int i = 2; i<=16; i=i+2)
+    for (int i = 2; i<=12; i=i+2)
     {
         QPushButton *bb = (QPushButton *)(ui->statusBar->children().at(i));
         QLabel *bl = (QLabel *)(ui->statusBar->children().at(i+1));
         if (GlobalVar::preInterface==1 or GlobalVar::preInterface==2)
         {
-            if (i==6 and not changeInTurn)
-                n=16;
+            if ((i==8 or i==10 or i==12) and not changeInTurn)
+                n=i/2+2;
             else
                 n=i/2-1;
         }
         else
-            n=i/2+7;
+        {
+            if ((i==8 or i==10 or i==12) and not changeInTurn)
+                n=i/2+11;
+            else
+                n=i/2+8;
+        }
         bb->setText(GlobalVar::mIndexList.at(n).name);
         if (GlobalVar::mIndexList.at(n).pctChg.toFloat()>0)
             bl->setPalette(GlobalVar().pRed);
@@ -862,12 +1005,12 @@ void MainWindow::reFlashIndex()
         bl->setText(GlobalVar::mIndexList.at(n).close+" "+GlobalVar::mIndexList.at(n).pctChg+"%");
     }
     if (changeInTurn)
-        n=18;
+        n=19;
     else
-        n=17;
-    QPushButton *bb = (QPushButton *)(ui->statusBar->children().at(18));
+        n=18;
+    QPushButton *bb = (QPushButton *)(ui->statusBar->children().at(14));
     bb->setText(GlobalVar::mIndexList.at(n).name);
-    QLabel *bl = (QLabel *)(ui->statusBar->children().at(20));
+    QLabel *bl = (QLabel *)(ui->statusBar->children().at(16));
     if (GlobalVar::mIndexList.at(n).pctChg.toFloat()>0)
         bl->setPalette(GlobalVar().pRed);
     else if (GlobalVar::mIndexList.at(n).pctChg.toFloat()<0)
@@ -920,14 +1063,16 @@ void MainWindow::reFlashBuySellBaseInfo()
             baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i],'f',2)+"%");
         else
             baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i]));
+    float pct=0;
     for (int i=8;i<15;++i)
         if (i==8 or i==9 or i==10)
         {
             float p=GlobalVar::baseInfoData[i-2];
-            float temp=(p-GlobalVar::preClose)*100/GlobalVar::preClose;
-            if (p==0)
-                temp=0;
-            baseInfoData[i]->setText(QString::number(p)+"("+GlobalVar::format_conversion(temp)+"%)");
+            if (GlobalVar::preClose==0 or p==0)
+                pct=0;
+            else
+                pct=(p-GlobalVar::preClose)*100/GlobalVar::preClose;
+            baseInfoData[i]->setText(QString::number(p)+"("+GlobalVar::format_conversion(pct)+"%)");
 
             if (p>GlobalVar::preClose)
                 baseInfoData[i]->setPalette(GlobalVar::pRed);

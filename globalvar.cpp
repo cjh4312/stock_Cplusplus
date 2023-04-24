@@ -8,8 +8,8 @@ GlobalVar::GlobalVar()
     {
         isFirst=false;
         TableList<<"代码"<<"名称"<<"最新价"<<"涨跌幅"<<"换手率"<<"成交额"<<"涨速"<<"市盈率"<<"总市值"<<"流通市值"<<"今年"<<"60日"<<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收";
-        QString currentPath=QCoreApplication::applicationDirPath()+"/config.ini";
-        settings=new QSettings(currentPath,QSettings::IniFormat);
+        currentPath=QCoreApplication::applicationDirPath();
+        settings=new QSettings(currentPath+"/config.ini",QSettings::IniFormat);
 //        qDebug()<<currentPath;
         pRed.setColor(QPalette::WindowText, Qt::red);
         pGreen.setColor(QPalette::WindowText, QColor(0,191,0));
@@ -188,7 +188,8 @@ void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allDat
                         "http://push2.eastmoney.com/api/qt/clist",
                         "https://push2his.eastmoney.com/api/qt/stock/trends2",
                         "http://push2.eastmoney.com/api/qt/stock/details",
-                        "http://push2.eastmoney.com/api/qt/stock"};
+                        "http://push2.eastmoney.com/api/qt/stock",
+                        "http://api.waditu.com"};
         QStringList n={"candle chart of thread",
                         "index of thread",
                         "future index of thread",
@@ -196,7 +197,8 @@ void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allDat
                         "table stock of thread",
                         "time share chart of thread",
                         "time share tick of thread",
-                        "buy sell of thread"};
+                        "buy sell of thread",
+                        "post"};
         for (int i=0;i<s.count();++i)
         {
             if (url.toString().contains(s[i]))
@@ -216,6 +218,77 @@ void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allDat
     }
 }
 
+void GlobalVar::postData(QNetworkAccessManager *naManager, QByteArray &postArray, QByteArray &allData,float timeOut, const QUrl &url)
+{
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QEventLoop loop;
+    QNetworkReply *reply = naManager->post(request,postArray);
+    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    QTimer timer;
+    timer.singleShot(timeOut*1000, &loop, SLOT(quit()));
+    timer.start();
+    loop.exec();
+
+    if (reply->isFinished())
+    {
+        timer.stop();
+        // 检测网页返回状态码，常见是200，404等，200为成功
+        int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        //            qDebug() << "statusCode:" << statusCode;
+        // 判断有没有错误
+        if (reply->error())
+            qDebug()<<reply->errorString();
+
+        // 判断是否需要重定向
+        else if (statusCode >= 200 && statusCode <300){
+            // 准备读数据
+            //        QTextCodec *codec = QTextCodec::codecForName("utf8");
+            //        QString all = codec->toUnicode(reply->readAll());
+            allData=reply->readAll();
+//            qDebug()<<QString(allData);
+        }
+    }
+    else
+    {
+        //超时，未知状态
+        QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+        QStringList s={"http://push2his.eastmoney.com/api/qt/stock/kline",
+                         "http://push2.eastmoney.com/api/qt/ulist",
+                         "http://futsseapi.eastmoney.com/list/block",
+                         "https://www.jin10.com",
+                         "http://push2.eastmoney.com/api/qt/clist",
+                         "https://push2his.eastmoney.com/api/qt/stock/trends2",
+                         "http://push2.eastmoney.com/api/qt/stock/details",
+                         "http://push2.eastmoney.com/api/qt/stock"};
+        QStringList n={"candle chart of thread",
+                         "index of thread",
+                         "future index of thread",
+                         "newsreport of thread",
+                         "table stock of thread",
+                         "time share chart of thread",
+                         "time share tick of thread",
+                         "buy sell of thread"};
+        for (int i=0;i<s.count();++i)
+        {
+            if (url.toString().contains(s[i]))
+            {
+                qDebug()<< "timeOut" <<QDateTime::currentDateTime().toString()<< n[i]<<timeOut;
+                break;
+            }
+            if (i==7)
+                qDebug()<< "timeOut" <<QDateTime::currentDateTime()<<url<<timeOut;
+        }
+        //
+    }
+    if (reply!=nullptr)
+    {
+        reply->deleteLater();
+        reply = nullptr;
+    }
+}
+
 QString GlobalVar::format_conversion(float data)
 {
     if (data>=100000000)
@@ -226,6 +299,22 @@ QString GlobalVar::format_conversion(float data)
         return QString::number(data,'f',2);
 }
 
+QString GlobalVar::peelStr(const QString s,const QString begin,const QString end)
+{
+    int bPos=s.indexOf(begin)+begin.length();
+    int ePos=s.lastIndexOf(end);
+    return s.mid(bPos,ePos-bPos);
+}
+
+QPair<QString, QString> GlobalVar::cutStr(const QString s,const QString begin,const QString end)
+{
+    int bPos=s.indexOf(begin)+begin.length();
+    int ePos=s.indexOf(end);
+    QPair<QString, QString> pair;
+    pair.first=s.mid(bPos,ePos-bPos);
+    pair.second=s.mid(ePos+end.length(),-1);
+    return pair;
+}
 
 QString GlobalVar::curCode="600519";
 QString GlobalVar::curName="贵州茅台";
@@ -247,11 +336,11 @@ QList<timeShartChartInfo> GlobalVar::mTimeShareChartList;
 QList<candleChartInfo> GlobalVar::mCandleChartList;
 int GlobalVar::KRange=120;
 int GlobalVar::KBegin=60;
-float GlobalVar::timeShareHighLowPoint[5];
-float GlobalVar::candleHighLowPoint[5];
-float GlobalVar::buySellPrice[10];
-float GlobalVar::buySellNum[10];
-float GlobalVar::baseInfoData[13];
+float GlobalVar::timeShareHighLowPoint[5]={0};
+float GlobalVar::candleHighLowPoint[5]={0};
+float GlobalVar::buySellPrice[10]={0};
+float GlobalVar::buySellNum[10]={0};
+float GlobalVar::baseInfoData[13]={0};
 int GlobalVar::curSortNum=3;
 bool GlobalVar::is_asc=false;
 QPalette GlobalVar::pRed;
@@ -264,3 +353,5 @@ bool GlobalVar::isNewsReport=false;
 bool GlobalVar::isSayNews=true;
 bool GlobalVar::isFirst=true;
 int GlobalVar::trendsTotal;
+int GlobalVar::curBlock=0;
+QString GlobalVar::currentPath;

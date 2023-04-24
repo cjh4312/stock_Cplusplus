@@ -55,6 +55,7 @@
     <property name="title">
      <string>开始</string>
     </property>
+    <addaction name="DLStockInfo"/>
     <addaction name="newsReport"/>
     <addaction name="exit"/>
    </widget>
@@ -103,7 +104,11 @@
    <addaction name="menu_3"/>
    <addaction name="menu_4"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="sizeGripEnabled">
+    <bool>true</bool>
+   </property>
+  </widget>
   <action name="ZHMarket">
    <property name="checkable">
     <bool>true</bool>
@@ -188,6 +193,11 @@
   <action name="actionF3">
    <property name="text">
     <string>F3--热度关键词</string>
+   </property>
+  </action>
+  <action name="DLStockInfo">
+   <property name="text">
+    <string>下载股票基本信息</string>
    </property>
   </action>
  </widget>
