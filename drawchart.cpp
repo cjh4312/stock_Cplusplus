@@ -10,8 +10,9 @@ DrawChart::DrawChart(QWidget *parent)
 
 void DrawChart::drawTimeShareChart()
 {
-    int trendsTotal=GlobalVar::trendsTotal;
-    //    qDebug()<<trendsTotal;
+    int trendsTotal=0;
+    if (GlobalVar::mTimeShareChartList.count()!=0)
+        trendsTotal=GlobalVar::trendsTotal;
     QPainter painter(timeShareChart);
     painter.setPen(Qt::gray);
     painter.setBrush(Qt::black);
@@ -26,13 +27,17 @@ void DrawChart::drawTimeShareChart()
     float low=GlobalVar::timeShareHighLowPoint[1];
     float stopH=GlobalVar::timeShareHighLowPoint[3];
     float stopL=GlobalVar::timeShareHighLowPoint[4];
-
-    float aveWidth=(timeShareChartWidth-2*WIDTHEDGE)/trendsTotal;
+    float aveWidth=0;
     float aveHeight=0;
     if (high!=low)
         aveHeight=(priceH-2*TOPHEIGHTEDGE)/(high-low);
-    //    qDebug()<<aveWidth<<aveHeight;
-    float volAveHeight=(3*timeShareChartHeight/15-TOPHEIGHTEDGE-BOTTOMHEIGHTEDGE)/GlobalVar::timeShareHighLowPoint[2];
+    if (trendsTotal!=0)
+        aveWidth=(timeShareChartWidth-2*WIDTHEDGE)/trendsTotal;
+
+    float volAveHeight=0;
+    if (GlobalVar::timeShareHighLowPoint[2]!=0)
+        volAveHeight=(3*timeShareChartHeight/15-TOPHEIGHTEDGE-BOTTOMHEIGHTEDGE)/GlobalVar::timeShareHighLowPoint[2];
+//    qDebug()<<volAveHeight;
     int d=60;
     if (trendsTotal>391)
         d=180;
@@ -115,19 +120,33 @@ void DrawChart::drawTimeShareChart()
             if (high!=low)
                 painter.drawLine(QPointF(WIDTHEDGE+aveWidth*(i-1), (high-avePrice1)*aveHeight+TOPHEIGHTEDGE), QPointF(WIDTHEDGE+aveWidth*i, (high-avePrice2)*aveHeight+TOPHEIGHTEDGE));
         }
+
         float vol=GlobalVar::mTimeShareChartList.at(i).vol;
-        if (GlobalVar::mTimeShareChartList.at(i-1).direct==1)
+//        qDebug()<<vol;
+        if (GlobalVar::mTimeShareChartList.at(i).direct==1)
             painter.setPen(QColor(0, 255, 0));
-        else if (GlobalVar::mTimeShareChartList.at(i-1).direct==2)
+        else if (GlobalVar::mTimeShareChartList.at(i).direct==2)
             painter.setPen(Qt::red);
         else
             painter.setPen(Qt::white);
         painter.drawLine(QPointF(WIDTHEDGE+aveWidth*i, timeShareChartHeight-BOTTOMHEIGHTEDGE-vol*volAveHeight), QPointF(WIDTHEDGE+aveWidth*i, timeShareChartHeight-BOTTOMHEIGHTEDGE));
+//        qDebug()<<vol<<timeShareChartHeight-BOTTOMHEIGHTEDGE-vol*volAveHeight;
     }
 }
 
 void DrawChart::drawCandleChart()
 {
+    int total=GlobalVar::mCandleChartList.count();
+    if (total==0)
+        return;
+    int begin=total-GlobalVar::offsetLocal;
+    if (begin<0)
+        begin=0;
+    int end=total-GlobalVar::offsetLocal+GlobalVar::KRange-GlobalVar::offsetEnd;
+    if (end<50)
+        end=total;
+//    qDebug()<<total<<GlobalVar::KRange<<GlobalVar::offsetLocal<<begin<<end;
+//    qDebug()<<total<<GlobalVar::KBegin<<end;
     QPainter painter(candleChart);
     painter.setPen(Qt::gray);
     painter.setBrush(Qt::black);
@@ -136,20 +155,20 @@ void DrawChart::drawCandleChart()
     int priceH=canldeChartHeight*12/15;
     painter.drawRect(0,0,candleChartWidth,canldeChartHeight);
     painter.drawLine(0,priceH,candleChartWidth,priceH);
-    float highPoint=GlobalVar::candleHighLowPoint[0];
-    float lowPoint=GlobalVar::candleHighLowPoint[1];
+    calcHighLowPoint(begin,end);
+    float highPoint=candleHighLowPoint[0];
+    float lowPoint=candleHighLowPoint[1];
     float aveWidth=(candleChartWidth-2*KWIDTHEDGE)/GlobalVar::KRange;
 //        qDebug()<<aveWidth;
     float w=aveWidth/4;
     float aveHeight=0;
     if (highPoint!=lowPoint)
         aveHeight=(priceH-2*KTOPHEIGHTEDGE)/(highPoint-lowPoint);
-    float aveHeightVol=(canldeChartHeight*3/15-2*KBOTTOMHEIGHTEDGE)/GlobalVar::candleHighLowPoint[2];
-    int begin=GlobalVar::mCandleChartList.count()-GlobalVar::KRange;
-    if (begin<0)
-        begin=0;
+    float aveHeightVol=0;
+    if (candleHighLowPoint[2]!=0)
+        aveHeightVol=(canldeChartHeight*3/15-2*KBOTTOMHEIGHTEDGE)/candleHighLowPoint[2];
     int j=0;
-    for (int n=begin;n<GlobalVar::mCandleChartList.count();++n)
+    for (int n=begin;n<end;++n)
     {
 //        int n=GlobalVar::mCandleChartList.count()-KRange+i;
         float open=GlobalVar::mCandleChartList.at(n).open;
@@ -173,7 +192,7 @@ void DrawChart::drawCandleChart()
         painter.drawLine(QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,(highPoint-high)*aveHeight+KTOPHEIGHTEDGE),
                 QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,(highPoint-low)*aveHeight+KTOPHEIGHTEDGE));
         painter.drawRect(KWIDTHEDGE+aveWidth/2+aveWidth*j-w,Y+KTOPHEIGHTEDGE,2*w,height);
-//        qDebug()<<aveHeightVol<<GlobalVar::candleHighLowPoint[2];
+//        qDebug()<<aveHeightVol<<candleHighLowPoint[2];
         painter.drawRect(KWIDTHEDGE+aveWidth/2+aveWidth*j-w,canldeChartHeight-vol*aveHeightVol-KBOTTOMHEIGHTEDGE,
                          2*w,vol*aveHeightVol);
 
@@ -216,37 +235,66 @@ void DrawChart::drawCandleChart()
                              QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,canldeChartHeight-MA*aveHeightVol-KBOTTOMHEIGHTEDGE));
         j+=1;
     }
-//    qDebug()<<GlobalVar::candleHighLowPoint[3]<<GlobalVar::candleHighLowPoint[4];
+//    qDebug()<<candleHighLowPoint[3]<<candleHighLowPoint[4];
     painter.setPen(Qt::red);
     painter.setFont(QFont("微软雅黑",15,700));
-//    qDebug()<<KWIDTHEDGE+aveWidth/2+aveWidth*GlobalVar::candleHighLowPoint[3]<<GlobalVar::format_conversion(highPoint);
+//    qDebug()<<KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]<<GlobalVar::format_conversion(highPoint);
     QRect rect;
-    if (highPoint!=0)
+    if (not GlobalVar::offsetEnd)
     {
-        if (GlobalVar::candleHighLowPoint[3]>=GlobalVar::KRange/2)
+        if (highPoint!=0)
         {
-            rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*GlobalVar::candleHighLowPoint[3]-95,10,100,30);
-            painter.drawText(rect,Qt::AlignRight,QString::number(highPoint));
+            if (candleHighLowPoint[3]>=GlobalVar::KRange/2)
+            {
+                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]-95,10,100,30);
+                painter.drawText(rect,Qt::AlignRight,QString::number(highPoint));
+            }
+            else
+            {
+                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]-5,10,100,30);
+                painter.drawText(rect,Qt::AlignLeft,QString::number(highPoint));
+            }
         }
-        else
+        painter.setPen(QColor(0, 255, 0));
+        if (lowPoint!=0)
         {
-            rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*GlobalVar::candleHighLowPoint[3]-5,10,100,30);
-            painter.drawText(rect,Qt::AlignLeft,QString::number(highPoint));
+            if (candleHighLowPoint[4]>=GlobalVar::KRange/2)
+            {
+                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[4]-95,canldeChartHeight*12/15-35,100,30);
+                painter.drawText(rect,Qt::AlignRight,QString::number(lowPoint));
+            }
+            else
+            {
+                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[4]-5,canldeChartHeight*12/15-35,100,30);
+                painter.drawText(rect,Qt::AlignLeft,QString::number(lowPoint));
+            }
         }
     }
-    painter.setPen(QColor(0, 255, 0));
-    if (lowPoint!=0)
+}
+
+void DrawChart::calcHighLowPoint(int begin,int end)
+{
+    candleHighLowPoint[0]={0.0};
+    candleHighLowPoint[1]={100000.0};
+    candleHighLowPoint[2]={0.0};
+    float temp;
+    for (int i=begin;i<end;++i)
     {
-        if (GlobalVar::candleHighLowPoint[4]>=GlobalVar::KRange/2)
+        temp=GlobalVar::mCandleChartList.at(i).high;
+        if (temp>candleHighLowPoint[0])
         {
-            rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*GlobalVar::candleHighLowPoint[4]-95,canldeChartHeight*12/15-35,100,30);
-            painter.drawText(rect,Qt::AlignRight,QString::number(lowPoint));
+            candleHighLowPoint[0]=temp;
+            candleHighLowPoint[3]=i-begin;
         }
-        else
+        temp=GlobalVar::mCandleChartList.at(i).low;
+        if (temp<candleHighLowPoint[1])
         {
-            rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*GlobalVar::candleHighLowPoint[4]-5,canldeChartHeight*12/15-35,100,30);
-            painter.drawText(rect,Qt::AlignLeft,QString::number(lowPoint));
+            candleHighLowPoint[1]=temp;
+            candleHighLowPoint[4]=i-begin;
         }
+        temp=GlobalVar::mCandleChartList.at(i).vol;
+        if (temp>candleHighLowPoint[2])
+            candleHighLowPoint[2]=temp;
     }
 }
 

@@ -11,6 +11,34 @@ SearchStock::SearchStock()
     connect(searchCodeLine,&QLineEdit::returnPressed,this,&SearchStock::searchFinished);
 }
 
+void SearchStock::findStockArea()
+{
+    QFile file(GlobalVar::currentPath+"/list/stock_list.csv");
+    if (file.open(QIODevice::ReadOnly))
+    {
+        QTextCodec *codec = QTextCodec::codecForName("GBK");
+        QStringList Data=codec->toUnicode(file.readAll()).split("\n",Qt::SkipEmptyParts);
+
+        int l = 0;
+        int r = Data.count() - 1;
+
+        while (l <= r)
+        {
+            int mid = (l + r) / 2;
+            QStringList strLine = Data.at(mid).split(",");
+            if(strLine[1]==GlobalVar::curCode)
+            {
+                GlobalVar::curName=strLine[2]+"("+strLine[3]+")"+"--"+strLine[4];
+                break;
+            }
+            else if (strLine[1]>GlobalVar::curCode)
+                r = mid - 1;
+            else
+                l = mid + 1;
+        }
+    }
+}
+
 void SearchStock::matchInput()
 {
     matchCodeText->clear();

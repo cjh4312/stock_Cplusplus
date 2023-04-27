@@ -16,6 +16,7 @@ public:
     SearchStock();
     QLineEdit *searchCodeLine;
     QTextEdit *matchCodeText;
+    void findStockArea();
 
 signals:
     void showSearch();

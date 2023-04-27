@@ -46,6 +46,7 @@ private slots:
     void delRightMenu();
     void showSearchResult();
     void downStockIndexPlateInfo();
+    void initKParameter();
 
 signals:
     void startThreadTable();

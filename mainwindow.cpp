@@ -102,10 +102,14 @@ void MainWindow::initThread()
     threadCandleChart->moveToThread(thread6);
     connect(threadCandleChart,&ThreadCandleChart::getCandleChartFinished,this,[=](){
         drawChart.candleChart->update();
+//        drawChart.candleChart->show();
+//        m_tableStock.stockTableView->hide();
+//        m_tableStock.risingSpeedView->hide();
+//        m_tableStock.myStockView->hide();
     });
     connect(this,&MainWindow::startThreadCandleChart,threadCandleChart,&ThreadCandleChart::getAllCandleChart);
     thread6->start();
-//    emit startThreadCandleChart();
+//    emit startThreadCandleChart(freq,adjustFlag);
 
 }
 void MainWindow::initInterface()
@@ -641,6 +645,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     QKeySequence key=event->key();
     if (key==Qt::Key_Escape)
     {
+        initKParameter();
         if (GlobalVar::WhichInterface==3)
         {
             GlobalVar::WhichInterface=GlobalVar::preInterface;
@@ -657,6 +662,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
         if (GlobalVar::WhichInterface==3)
         {
+            initKParameter();
             int curRow=m_tableStock.stockTableView->currentIndex().row()+1;
             if (curRow>GlobalVar::mTableList.count()-1)
                 curRow=0;
@@ -673,6 +679,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
         if (GlobalVar::WhichInterface==3)
         {
+            initKParameter();
             int curRow=m_tableStock.stockTableView->currentIndex().row()-1;
             if (curRow<0)
                 curRow=GlobalVar::mTableList.count()-1;
@@ -691,7 +698,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         GlobalVar::WhichInterface=3;
         emit startThreadCandleChart(freq,adjustFlag);
         drawChart.candleChart->show();
-//        setFocus();
         m_tableStock.stockTableView->hide();
         m_tableStock.risingSpeedView->hide();
         m_tableStock.myStockView->hide();
@@ -705,11 +711,61 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         searchStock.searchCodeLine->setFocus();
         searchStock.matchCodeText->moveCursor(QTextCursor::Start);
     }
+    else if (key==Qt::Key_Up)
+    {
+        if (GlobalVar::WhichInterface==3)
+        {
+            GlobalVar::KRange=GlobalVar::KRange*0.8;
+            if (GlobalVar::KRange<50)
+            {
+                GlobalVar::KRange=50;
+                return;
+            }
+            drawChart.candleChart->update();
+        }
+    }
+    else if (key==Qt::Key_Down)
+    {
+        if (GlobalVar::WhichInterface==3)
+        {
+            GlobalVar::KRange=GlobalVar::KRange*1.2;
+            if (GlobalVar::KRange>GlobalVar::offsetLocal)
+                GlobalVar::KRange=GlobalVar::offsetLocal;
+            drawChart.candleChart->update();
+        }
+    }
+    else if (key==Qt::Key_Left)
+    {
+        if (GlobalVar::WhichInterface==3)
+        {
+
+            GlobalVar::offsetLocal=GlobalVar::offsetLocal+GlobalVar::KRange*0.2;
+            if (GlobalVar::mCandleChartList.count()<GlobalVar::offsetLocal)
+                GlobalVar::offsetLocal=GlobalVar::mCandleChartList.count();
+//            qDebug()<<GlobalVar::offsetLocal;
+            GlobalVar::offsetEnd=0;
+            drawChart.candleChart->update();
+//            GlobalVar::offsetEnd=OFFSET;
+        }
+    }
+    else if (key==Qt::Key_Right)
+    {
+        if (GlobalVar::WhichInterface==3)
+        {
+            GlobalVar::offsetLocal=GlobalVar::offsetLocal-GlobalVar::KRange*0.2;
+            if (GlobalVar::offsetLocal<GlobalVar::KRange)
+                GlobalVar::offsetLocal=GlobalVar::KRange;
+            GlobalVar::offsetEnd=0;
+            drawChart.candleChart->update();
+//            GlobalVar::offsetEnd=OFFSET;
+        }
+    }
 }
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
     if (GlobalVar::WhichInterface==3)
     {
+        initKParameter();
         int curRow;
         if (event->angleDelta().y()<0)
         {
@@ -893,6 +949,13 @@ void MainWindow::downStockIndexPlateInfo()
     requestsToCsv.dealWithAllList();
     promptText->append("指数、板块、个股信息处理完毕");
     ui->DLStockInfo->setDisabled(true);
+}
+
+void MainWindow::initKParameter()
+{
+    GlobalVar::offsetEnd=OFFSETEND;
+    GlobalVar::KRange=KRANGE;
+    GlobalVar::offsetLocal=GlobalVar::KRange;
 }
 //交易日每5秒刷新一次数据
 void MainWindow::tradingTimeRunThread()
@@ -1083,19 +1146,22 @@ void MainWindow::reFlashBuySellBaseInfo()
         }
         else
             baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i-2]));
-    stockName->setText(GlobalVar::curName);
     stockCode->setText(GlobalVar::curCode);
+    if (GlobalVar::curCode.left(1)=="3" or GlobalVar::curCode.left(1)=="6" or GlobalVar::curCode.left(1)=="0")
+        searchStock.findStockArea();
+    stockName->setText(GlobalVar::curName);
 }
 
 void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
 {
     int m=(mouseEvent->pos().x()-KWIDTHEDGE)*GlobalVar::KRange/(drawChart.candleChart->width()-2*KWIDTHEDGE);
+//    qDebug()<<m<<GlobalVar::KRange;
     int n;
     if (GlobalVar::mCandleChartList.count()<GlobalVar::KRange)
         n=m;
     else
-        n=GlobalVar::mCandleChartList.count()-GlobalVar::KRange+m;
-    if (n>GlobalVar::mCandleChartList.count()-1)
+        n=GlobalVar::mCandleChartList.count()-GlobalVar::offsetLocal+m;
+    if (n>GlobalVar::mCandleChartList.count()-1 or n<0)
         return;
     float temp=GlobalVar::mCandleChartList.at(n).pctChg;
     if (temp>0)
@@ -1142,7 +1208,7 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
     colPrice->show();
     if (mouseEvent->pos().ry()>drawChart.candleChart->height()*12/15)
         colPrice->hide();
-    float price=GlobalVar::candleHighLowPoint[0]-(GlobalVar::candleHighLowPoint[0]-GlobalVar::candleHighLowPoint[1])*(mouseEvent->pos().ry()-KTOPHEIGHTEDGE)/(drawChart.candleChart->height()*12/15-2*KTOPHEIGHTEDGE);
+    float price=drawChart.candleHighLowPoint[0]-(drawChart.candleHighLowPoint[0]-drawChart.candleHighLowPoint[1])*(mouseEvent->pos().ry()-KTOPHEIGHTEDGE)/(drawChart.candleChart->height()*12/15-2*KTOPHEIGHTEDGE);
     colPrice->setText(QString::number(price,'f',2));
     rowTime->setText(GlobalVar::mCandleChartList.at(n).time);
     colPrice->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-KWIDTHEDGE)*colPrice->width()/(drawChart.candleChart->width()-2*KWIDTHEDGE),mouseEvent->pos().ry()-25);

@@ -35,6 +35,8 @@ void ThreadTimeShareTick::initBuySellList()
     {
         QJsonObject jsonObject = doc.object();
         GlobalVar::preClose=jsonObject.value("data").toObject().value("f60").toDouble();
+        if (GlobalVar::preClose==0)
+            return;
         GlobalVar::curName=jsonObject.value("data").toObject().value("f58").toString();
         for (int i=0;i<10;++i)
         {

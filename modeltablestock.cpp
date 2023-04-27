@@ -29,7 +29,7 @@ int ModelTableStock::columnCount(const QModelIndex &parent) const
     if (parent.isValid())
         return 0;
 
-    return colNums;
+    return COLNUMS;
 }
 
 QVariant ModelTableStock::headerData(int section, Qt::Orientation orientation, int role) const

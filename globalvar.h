@@ -52,9 +52,8 @@ public:
     static QList<timeShartChartInfo> mTimeShareChartList;
     static QList<candleChartInfo> mCandleChartList;
     static int KRange;
-    static int KBegin;
     static float timeShareHighLowPoint[5];
-    static float candleHighLowPoint[5];
+//    static float candleHighLowPoint[5];
     static float buySellPrice[10];
     static float buySellNum[10];
     static float baseInfoData[13];
@@ -72,6 +71,8 @@ public:
     static bool isSayNews;
     static int curBlock;
     static QString currentPath;
+    static int offsetEnd;
+    static int offsetLocal;
 };
 
 #endif // GLOBALVAR_H
