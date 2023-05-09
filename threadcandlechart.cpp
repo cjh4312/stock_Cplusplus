@@ -8,31 +8,30 @@ ThreadCandleChart::ThreadCandleChart(QObject *parent)
     naManager = new QNetworkAccessManager(this);
 }
 
-void ThreadCandleChart::getAllCandleChart(QString freq, QString adjustFlag)
+void ThreadCandleChart::getAllCandleChart(QString freq, QString adjustFlag,bool isFirst)
 {
     if (isRunning)
         return;
     isRunning=true;
-    QDate curDay=QDateTime::currentDateTime().date();
-//    qDebug()<<curTime.toString("yyyyMMdd");
-    QString startDate=curDay.addDays(-1800).toString("yyyyMMdd");
-    if (freq=="102")
-        startDate=curDay.addDays(-3650).toString("yyyyMMdd");
-    else if(freq=="103")
-        startDate="19900101";
+    QString startDate;
+    if (isFirst and freq=="101")
+        startDate="20200101";
+    else
+        startDate="19901201";
 //    qDebug()<<startDate;
-    GlobalVar::getEastData(naManager,allData,2,QUrl("http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg="+startDate+"&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid="+GlobalVar::getComCode()+"&klt="+freq+"&fqt="+adjustFlag));
-    initCandleChartList();
-    if (not GlobalVar::mCandleChartList.isEmpty())
+    GlobalVar::getEastData(naManager,allData,2,QUrl("http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg="+startDate+"&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid="+GlobalVar::getComCode()+"&klt="+freq+"&fqt="+adjustFlag),"");
+    if(not GlobalVar::timeOutFlag[0])
+    {
+        initCandleChartList();
+//    if (not GlobalVar::mCandleChartList.isEmpty())
         emit getCandleChartFinished();
+    }
+    GlobalVar::timeOutFlag[0]=false;
     isRunning=false;
 }
 
 void ThreadCandleChart::initCandleChartList()
 {
-//    GlobalVar::candleHighLowPoint[0]={0.0};
-//    GlobalVar::candleHighLowPoint[1]={100000.0};
-//    GlobalVar::candleHighLowPoint[2]={0.0};
     GlobalVar::mCandleChartList.clear();
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
@@ -42,12 +41,10 @@ void ThreadCandleChart::initCandleChartList()
         QJsonObject jsonObject = doc.object();
 
         QJsonArray data=jsonObject.value("data").toObject().value("klines").toArray();
-//        qDebug()<<data.size();
         float MA;
         for (int i = 0; i < data.size(); ++i)
         {
             QStringList list=data.at(i).toString().split(",");
-//            qDebug()<<list;
             candleChartInfo info;
             info.time=list[0];
             info.open=list[1].toFloat();
@@ -64,18 +61,6 @@ void ThreadCandleChart::initCandleChartList()
             info.MA60=0;
             info.VMA5=0;
             info.VMA10=0;
-//            if (info.high>GlobalVar::candleHighLowPoint[0])
-//            {
-//                GlobalVar::candleHighLowPoint[0]=info.high;
-//                GlobalVar::candleHighLowPoint[3]=j;
-//            }
-//            if (info.low<GlobalVar::candleHighLowPoint[1])
-//            {
-//                GlobalVar::candleHighLowPoint[1]=info.low;
-//                GlobalVar::candleHighLowPoint[4]=j;
-//            }
-//            if (info.vol>GlobalVar::candleHighLowPoint[2])
-//                GlobalVar::candleHighLowPoint[2]=info.vol;
 
             MA=0;
             if (i>=4)
@@ -115,30 +100,6 @@ void ThreadCandleChart::initCandleChartList()
             }
             GlobalVar::mCandleChartList.append(info);
         }
-//        qDebug()<<GlobalVar::mCandleChartList.count();
-//        qDebug()<<GlobalVar::candleHighLowPoint[2];
-//        float temp;
-//        int begin=GlobalVar::mCandleChartList.size()-GlobalVar::KRange;
-//        if (begin<0)
-//            begin=0;
-//        for (int i=begin;i<GlobalVar::mCandleChartList.size();++i)
-//        {
-//            temp=GlobalVar::mCandleChartList.at(i).high;
-//            if (temp>GlobalVar::candleHighLowPoint[0])
-//            {
-//                GlobalVar::candleHighLowPoint[0]=temp;
-//                GlobalVar::candleHighLowPoint[3]=i-begin;
-//            }
-//            temp=GlobalVar::mCandleChartList.at(i).low;
-//            if (temp<GlobalVar::candleHighLowPoint[1])
-//            {
-//                GlobalVar::candleHighLowPoint[1]=temp;
-//                GlobalVar::candleHighLowPoint[4]=i-begin;
-//            }
-//            temp=GlobalVar::mCandleChartList.at(i).vol;
-//            if (temp>GlobalVar::candleHighLowPoint[2])
-//                GlobalVar::candleHighLowPoint[2]=temp;
-//        }
     }
 }
 

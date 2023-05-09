@@ -4,23 +4,12 @@
 
 GlobalVar::GlobalVar()
 {
-    if (isFirst)
-    {
-        isFirst=false;
-        TableList<<"代码"<<"名称"<<"最新价"<<"涨跌幅"<<"换手率"<<"成交额"<<"涨速"<<"市盈率"<<"总市值"<<"流通市值"<<"今年"<<"60日"<<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收";
-        currentPath=QCoreApplication::applicationDirPath();
-        settings=new QSettings(currentPath+"/config.ini",QSettings::IniFormat);
-//        qDebug()<<currentPath;
-        pRed.setColor(QPalette::WindowText, Qt::red);
-        pGreen.setColor(QPalette::WindowText, QColor(0,191,0));
-        pBlack.setColor(QPalette::WindowText, Qt::black);
-        pBlue.setColor(QPalette::WindowText, Qt::blue);
-    }
+
 }
 
-bool GlobalVar::isWorkDay()
+bool GlobalVar::isWorkDay(QDateTime curTime)
 {
-    QString current_week = QDateTime::currentDateTime().toString("ddd");
+    QString current_week = curTime.toString("ddd");
 //    qDebug()<<current_week;
     if (current_week!="Sat" and current_week!="Sun")
         return true;
@@ -28,37 +17,68 @@ bool GlobalVar::isWorkDay()
         return false;
 }
 
-bool GlobalVar::isZhMarketDay()
+bool GlobalVar::isZhWorkDay(QDateTime curTime,bool select)
 {
     QStringList vacation=GlobalVar::settings->value("Vacation_ZH").toStringList();
-    QString cur_date=QDateTime::currentDateTime().toString("MMdd");
-    int cur_time= QDateTime::currentDateTime().toString("hhmmss").toInt();
+    QDateTime local=QDateTime::currentDateTime();
+    QString cur_date=curTime.toString("MMdd");
+    int cur_time= curTime.toString("hhmmss").toInt();
+    int time=170000;
+    if (select)
+        time=230000;
+    if (not vacation.contains(cur_date) && isWorkDay(curTime))
+    {
+        if (local==curTime && cur_time<time)
+            return false;
+        return true;
+    }
+    else
+        return false;
+}
+
+QDateTime GlobalVar::curRecentWorkDay(bool select)
+{
+    QDateTime curTime=QDateTime::currentDateTime();
+    for (int i=0;i<15;++i)
+        if (isZhWorkDay(curTime.addDays(-i),select))
+            return curTime.addDays(-i);
+    return curTime;
+}
+
+bool GlobalVar::isZhMarketDay(QDateTime curTime)
+{
+    QStringList vacation=GlobalVar::settings->value("Vacation_ZH").toStringList();
+//    QDateTime curTime=QDateTime::currentDateTime();
+    QString cur_date=curTime.toString("MMdd");
+    int cur_time= curTime.toString("hhmmss").toInt();
 //    qDebug()<<cur_date<<vacation;
-    if (not vacation.contains(cur_date) && isWorkDay() && ((cur_time>=91500&&cur_time<=113010) || (cur_time>=130000&&cur_time<=150010)))
+    if (not vacation.contains(cur_date) && isWorkDay(curTime) && ((cur_time>=91500&&cur_time<=113010) || (cur_time>=130000&&cur_time<=150010)))
         return true;
     else
         return false;
 }
 
-bool GlobalVar::isUSMarketDay()
+bool GlobalVar::isUSMarketDay(QDateTime curTime)
 {
     QStringList vacation=GlobalVar::settings->value("Vacation_US").toStringList();
-    QString cur_date=QDateTime::currentDateTime().addSecs(-46800).toString("MMdd");
-    int cur_time= QDateTime::currentDateTime().addSecs(-46800).toString("hhmmss").toInt();
+//    QDateTime curTime=QDateTime::currentDateTime();
+    QString cur_date=curTime.addSecs(-46800).toString("MMdd");
+    int cur_time= curTime.addSecs(-46800).toString("hhmmss").toInt();
     //    qDebug()<<cur_time;
-    if (not vacation.contains(cur_date) && isWorkDay() && (cur_time>=83010 and cur_time<=150010))
+    if (not vacation.contains(cur_date) && isWorkDay(curTime) && (cur_time>=83010 and cur_time<=150010))
         return true;
     else
         return false;
 }
 
-bool GlobalVar::isHKMarketDay()
+bool GlobalVar::isHKMarketDay(QDateTime curTime)
 {
     QStringList vacation=GlobalVar::settings->value("Vacation_HK").toStringList();
-    QString cur_date=QDateTime::currentDateTime().toString("MMdd");
-    int cur_time= QDateTime::currentDateTime().toString("hhmmss").toInt();
+//    QDateTime curTime=QDateTime::currentDateTime();
+    QString cur_date=curTime.toString("MMdd");
+    int cur_time= curTime.toString("hhmmss").toInt();
     //    qDebug()<<cur_date<<vacation;
-    if (not vacation.contains(cur_date) && isWorkDay() && ((cur_time>=90000&&cur_time<=121510) || (cur_time>=130000&&cur_time<=161510)))
+    if (not vacation.contains(cur_date) && isWorkDay(curTime) && ((cur_time>=90000&&cur_time<=121510) || (cur_time>=130000&&cur_time<=161510)))
         return true;
     else
         return false;
@@ -85,6 +105,18 @@ QString GlobalVar::getComCode()
         else
             return "0."+curCode;
     }
+}
+
+QString GlobalVar::getStockSymbol()
+{
+    QString symbol;
+    if (GlobalVar::curCode.left(1)=="6")
+        symbol="SH"+GlobalVar::curCode;
+    else if (GlobalVar::curCode.left(1)=="8" or GlobalVar::curCode.left(1)=="4")
+        symbol="BJ"+GlobalVar::curCode;
+    else if (GlobalVar::curCode.left(1)=="3" or GlobalVar::curCode.left(1)=="0")
+        symbol="SZ"+GlobalVar::curCode;
+    return symbol;
 }
 
 
@@ -134,9 +166,12 @@ void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bo
               });
 }
 
-void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allData,float timeOut, const QUrl &url)
+void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allData,float timeOut, const QUrl url,const QString referer)
 {
     QNetworkRequest request;
+//    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36");
+    if (referer!="")
+        request.setRawHeader("referer", referer.toLocal8Bit());
     request.setUrl(url);
     //    QNetworkAccessManager *naManager = new QNetworkAccessManager(this);
     //    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::SameOriginRedirectPolicy);
@@ -148,34 +183,11 @@ void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allDat
     timer.start();
     loop.exec();
 
-    if (reply->isFinished())
+    int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if (statusCode == 200)
     {
         timer.stop();
-        // 检测网页返回状态码，常见是200，404等，200为成功
-        int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        //            qDebug() << "statusCode:" << statusCode;
-        // 判断有没有错误
-        if (reply->error())
-            qDebug()<<reply->errorString();
-
-        // 判断是否需要重定向
-        else if (statusCode >= 200 && statusCode <300){
-            // 准备读数据
-            //        QTextCodec *codec = QTextCodec::codecForName("utf8");
-            //        QString all = codec->toUnicode(reply->readAll());
-            allData=reply->readAll();
-            //          qDebug()<<allData;
-        }
-        else if (statusCode >=300 && statusCode <400){
-            // 获取重定向信息
-            const QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
-            // 检测是否需要重定向，如果不需要则读数据
-            if (!redirectionTarget.isNull()) {
-                const QUrl redirectedUrl = url.resolved(redirectionTarget.toUrl());
-                getEastData(naManager,allData,timeOut*1000,redirectedUrl);
-                qDebug()<< "http redirect to " << redirectedUrl.toString();
-            }
-        }
+        allData=reply->readAll();
     }
     else
     {
@@ -189,7 +201,7 @@ void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allDat
                         "https://push2his.eastmoney.com/api/qt/stock/trends2",
                         "http://push2.eastmoney.com/api/qt/stock/details",
                         "http://push2.eastmoney.com/api/qt/stock",
-                        "http://api.waditu.com"};
+                        "https://datacenter-web.eastmoney.com"};
         QStringList n={"candle chart of thread",
                         "index of thread",
                         "future index of thread",
@@ -198,16 +210,17 @@ void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allDat
                         "time share chart of thread",
                         "time share tick of thread",
                         "buy sell of thread",
-                        "post"};
+                        "EPS of stock"};
         for (int i=0;i<s.count();++i)
         {
             if (url.toString().contains(s[i]))
             {
-                qDebug()<< "timeOut" <<QDateTime::currentDateTime().toString()<< n[i]<<timeOut;
+                timeOutFlag[i]=true;
+                qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime().toString()<< n[i]<<timeOut;
                 break;
             }
             if (i==7)
-                qDebug()<< "timeOut" <<QDateTime::currentDateTime()<<url<<timeOut;
+                qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
         }
 //
     }
@@ -221,6 +234,7 @@ void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allDat
 void GlobalVar::postData(QNetworkAccessManager *naManager, QByteArray &postArray, QByteArray &allData,float timeOut, const QUrl &url)
 {
     QNetworkRequest request;
+//    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36");
     request.setUrl(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QEventLoop loop;
@@ -231,56 +245,28 @@ void GlobalVar::postData(QNetworkAccessManager *naManager, QByteArray &postArray
     timer.start();
     loop.exec();
 
-    if (reply->isFinished())
+    int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if (statusCode == 200)
     {
         timer.stop();
-        // 检测网页返回状态码，常见是200，404等，200为成功
-        int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        //            qDebug() << "statusCode:" << statusCode;
-        // 判断有没有错误
-        if (reply->error())
-            qDebug()<<reply->errorString();
-
-        // 判断是否需要重定向
-        else if (statusCode >= 200 && statusCode <300){
-            // 准备读数据
-            //        QTextCodec *codec = QTextCodec::codecForName("utf8");
-            //        QString all = codec->toUnicode(reply->readAll());
-            allData=reply->readAll();
-//            qDebug()<<QString(allData);
-        }
+        allData=reply->readAll();
     }
     else
     {
         //超时，未知状态
         QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-        QStringList s={"http://push2his.eastmoney.com/api/qt/stock/kline",
-                         "http://push2.eastmoney.com/api/qt/ulist",
-                         "http://futsseapi.eastmoney.com/list/block",
-                         "https://www.jin10.com",
-                         "http://push2.eastmoney.com/api/qt/clist",
-                         "https://push2his.eastmoney.com/api/qt/stock/trends2",
-                         "http://push2.eastmoney.com/api/qt/stock/details",
-                         "http://push2.eastmoney.com/api/qt/stock"};
-        QStringList n={"candle chart of thread",
-                         "index of thread",
-                         "future index of thread",
-                         "newsreport of thread",
-                         "table stock of thread",
-                         "time share chart of thread",
-                         "time share tick of thread",
-                         "buy sell of thread"};
+        QStringList s={"http://api.waditu.com"};
+        QStringList n={"post"};
         for (int i=0;i<s.count();++i)
         {
             if (url.toString().contains(s[i]))
             {
-                qDebug()<< "timeOut" <<QDateTime::currentDateTime().toString()<< n[i]<<timeOut;
+                qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime().toString()<< n[i];
                 break;
             }
-            if (i==7)
-                qDebug()<< "timeOut" <<QDateTime::currentDateTime()<<url<<timeOut;
+            if (i==1)
+                qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
         }
-        //
     }
     if (reply!=nullptr)
     {
@@ -291,37 +277,64 @@ void GlobalVar::postData(QNetworkAccessManager *naManager, QByteArray &postArray
 
 QString GlobalVar::format_conversion(float data)
 {
-    if (data>=100000000)
+    if (data>=100000000 or data<=-100000000)
         return QString::number(data/100000000, 'f', 2)+"亿";
-    else if (data>=10000)
+    else if (data>=10000 or data<=-10000)
         return QString::number(data/10000, 'f', 2)+"万";
     else
         return QString::number(data,'f',2);
 }
 
-QString GlobalVar::peelStr(const QString s,const QString begin,const QString end)
+QString GlobalVar::peelStr(const QString s,const QString begin,QString end)
 {
     int bPos=s.indexOf(begin)+begin.length();
-    int ePos=s.lastIndexOf(end);
+    int ePos;
+    if (end=="-1")
+        ePos=end.toInt();
+    else
+        ePos=s.indexOf(end)+end.length();
+    return s.mid(bPos,ePos);
+}
+
+QString GlobalVar::getContent(const QString s)
+{
+    int bPos=s.indexOf(">")+1;
+    int ePos=s.indexOf("<");
     return s.mid(bPos,ePos-bPos);
+}
+
+void GlobalVar::getAllContent(QString &content, QStringList &strList, QString begin)
+{
+    while(1)
+    {
+        if (content.indexOf(begin)==-1)
+            break;
+        content=GlobalVar::peelStr(content,begin,"-1");
+        int bPos=content.indexOf(">")+1;
+        int ePos=content.indexOf("<");
+        strList.append(content.mid(bPos,ePos-bPos));
+    }
 }
 
 QPair<QString, QString> GlobalVar::cutStr(const QString s,const QString begin,const QString end)
 {
     int bPos=s.indexOf(begin)+begin.length();
-    int ePos=s.indexOf(end);
+    int ePos=s.indexOf(end)+end.length();
     QPair<QString, QString> pair;
     pair.first=s.mid(bPos,ePos-bPos);
-    pair.second=s.mid(ePos+end.length(),-1);
+    pair.second=s.mid(ePos,-1);
     return pair;
 }
 
 QString GlobalVar::curCode="600519";
 QString GlobalVar::curName="贵州茅台";
+bool GlobalVar::isBoard=false;
+QString GlobalVar::curBoard;
+QString GlobalVar::EPSReportDate="报告期";
 QStringList GlobalVar::TableList;
 float GlobalVar::preClose=0.00;
 int GlobalVar::WhichInterface = 1;
-int GlobalVar::preInterface=1;
+bool GlobalVar::isKState=false;
 bool GlobalVar::isUsZhStock=false;
 QString GlobalVar::circle_green_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:green";
 QString GlobalVar::circle_red_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:red";
@@ -334,8 +347,10 @@ QList<StockInfo> GlobalVar::mMyStockList;
 QList<timeShareTickInfo> GlobalVar::mTimeShareTickList;
 QList<timeShartChartInfo> GlobalVar::mTimeShareChartList;
 QList<candleChartInfo> GlobalVar::mCandleChartList;
+QList<QStringList> GlobalVar::mFundFlowList;
+bool GlobalVar::timeOutFlag[10]={false};
 int GlobalVar::KRange=KRANGE;
-int GlobalVar::offsetEnd=OFFSETEND;
+int GlobalVar::offsetEnd;
 int GlobalVar::offsetLocal=GlobalVar::KRange;
 float GlobalVar::timeShareHighLowPoint[5]={0.0};
 //float GlobalVar::candleHighLowPoint[5]={0.0};
@@ -350,9 +365,7 @@ QPalette GlobalVar::pBlack;
 QPalette GlobalVar::pBlue;
 int GlobalVar::upNums=0;
 int GlobalVar::downNums=0;
-bool GlobalVar::isNewsReport=false;
 bool GlobalVar::isSayNews=true;
-bool GlobalVar::isFirst=true;
 int GlobalVar::trendsTotal=0;
 int GlobalVar::curBlock=0;
 QString GlobalVar::currentPath;

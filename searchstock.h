@@ -8,6 +8,7 @@
 #include <QTextCodec>
 #include <QKeyEvent>
 #include <QTextBlock>
+#include <QNetworkAccessManager>
 
 class SearchStock : public QLineEdit
 {
@@ -16,14 +17,16 @@ public:
     SearchStock();
     QLineEdit *searchCodeLine;
     QTextEdit *matchCodeText;
-    void findStockArea();
+    void getBoardData();
 
 signals:
     void showSearch();
 private:
+    QNetworkAccessManager *naManager;
     void matchInput();
     void searchFinished();
     void compare(QStringList Data,QString s,int col);
+
 
 };
 

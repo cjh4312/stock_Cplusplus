@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QJsonArray>
+#include <QFile>
+#include <QTextCodec>
 
 class ThreadTimeShareTick : public QObject
 {
@@ -19,6 +21,7 @@ private:
     bool isRunning=false;
     void initBuySellList();
     void initTimeShareTickList();
+    void findStockArea();
 signals:
     void getTimeShareTickFinished();
     void getBuySellFinished();

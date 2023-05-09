@@ -36,8 +36,7 @@ void TableStock::setTableView()
     for (int i=0;i<3;++i)
     {
         tl[i]->setColumnWidth(0, 70);
-        if (i==0 && (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5 ||
-                    GlobalVar::preInterface==2 || GlobalVar::preInterface==5))
+        if (i==0 && (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5))
             tl[i]->setColumnWidth(1, 200);
         else
             tl[i]->setColumnWidth(1, 95);
@@ -47,10 +46,10 @@ void TableStock::setTableView()
         tl[i]->setColumnWidth(5, 85);
         tl[i]->setColumnWidth(6, 65);
         tl[i]->setColumnWidth(7, 70);
-        tl[i]->setColumnWidth(8, 90);
+        tl[i]->setColumnWidth(8, 80);
         tl[i]->setColumnWidth(9, 90);
-        tl[i]->setColumnWidth(10, 70);
-        tl[i]->setColumnWidth(11, 70);
+        tl[i]->setColumnWidth(10, 65);
+        tl[i]->setColumnWidth(11, 65);
         tl[i]->setColumnWidth(12, 70);
         tl[i]->setColumnWidth(13, 70);
         tl[i]->setColumnWidth(14, 70);
@@ -90,21 +89,17 @@ void TableStock::initTableView()
         tl[i]->horizontalHeader()->setSortIndicatorShown(false);
         tl[i]->horizontalHeader()->setSortIndicatorShown(false);
         tl[i]->horizontalHeader()->setFont(boldFont);
-        if (i==0)
-        {
-            tl[i]->verticalHeader()->setMinimumSectionSize(21);
-            tl[i]->verticalHeader()->setDefaultSectionSize(21);
-        }
-        else
-        {
-            tl[i]->verticalHeader()->setMinimumSectionSize(23);
-            tl[i]->verticalHeader()->setDefaultSectionSize(23);
-        }
+        tl[i]->verticalHeader()->setMinimumSectionSize(21);
+        tl[i]->verticalHeader()->setDefaultSectionSize(21);
         tl[i]->setAlternatingRowColors(true);
         tl[i]->setShowGrid(false);
         tl[i]->setSelectionBehavior(QAbstractItemView::SelectRows);
+        tl[i]->setEditTriggers(QAbstractItemView::NoEditTriggers);
         tl[i]->setStyleSheet("QTableView{selection-background-color:lightgray}");
-        tl[i]->verticalScrollBar()->setStyleSheet("QScrollBar{width:0px;}");
+        if (i==0)
+            tl[0]->verticalScrollBar()->setStyleSheet("QScrollBar{width:10px;}");
+        else
+            tl[i]->verticalScrollBar()->setStyleSheet("QScrollBar{width:0px;}");
         tl[i]->horizontalScrollBar()->setStyleSheet("QScrollBar{width:0px;}");
         tl[i]->setItemDelegate(new CommonDelegate());
     }
@@ -115,20 +110,4 @@ void TableStock::initTableView()
     timeShareTickView->verticalHeader()->setDefaultSectionSize(18);
     timeShareTickView->setSelectionMode(QAbstractItemView::NoSelection);
 //    timeShareTickView->verticalScrollBar()->setStyleSheet("QScrollBar{width:15px;}");
-    // 信号发出，进行排序
-    connect(stockTableView->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, [this](int logicalIndex/*, Qt::SortOrder order*/) {
-//        bool is_asc;
-        if (GlobalVar::curSortNum!=logicalIndex)
-        {
-            GlobalVar::is_asc = false;
-            GlobalVar::curSortNum=logicalIndex;
-        }
-        else
-            GlobalVar::is_asc = not preSort;
-        GlobalVar::sortByColumn(&GlobalVar::mTableList,logicalIndex,GlobalVar::is_asc);
-        preSort=GlobalVar::is_asc;
-        m_tableModel->setModelData(GlobalVar::mTableList);
-        stockTableView->setModel(m_tableModel);
-        stockTableView->setCurrentIndex(m_tableModel->index(0,0));
-    });
 }

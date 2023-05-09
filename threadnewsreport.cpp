@@ -13,10 +13,40 @@ void ThreadNewsReport::getNewsData()
     if (isRunning)
         return;
     isRunning=true;
-    GlobalVar::getEastData(naManager,allData,1.3,QUrl("https://www.jin10.com/flash_newest.js?t=1667528593473"));
-    initNewsReport();
-    GlobalVar::isNewsReport=false;
+    GlobalVar::getEastData(naManager,allData,1.3,QUrl("https://www.jin10.com/flash_newest.js?t=1667528593473"),"");
+    if (not GlobalVar::timeOutFlag[3])
+        initNewsReport();
+//    getEastNews();
     isRunning=false;
+}
+
+void ThreadNewsReport::getEastNews()
+{
+    GlobalVar::getEastData(naManager,allData,1.3,QUrl("https://finance.eastmoney.com/yaowen.html"),"");
+    QString s=GlobalVar::peelStr(QString(allData),"id=\"artitileList1\"","-1");
+    QPair<QString, QString> pair;
+    QList<QStringList> eastNewsList;
+    for (int i=1;i<=50;++i)
+    {
+        QStringList dataList;
+        pair=GlobalVar::cutStr(s,"<li id","</li>");
+        QString content=GlobalVar::peelStr(pair.first,"<a ","-1");
+        s=pair.second;
+//        qDebug()<<pair.first;
+//        qDebug()<<s;
+        QString temp="href=\"";
+        dataList<<content.mid(content.indexOf(temp)+temp.length(),GlobalVar::peelStr(content,temp,"-1").indexOf("\""));
+        dataList<<GlobalVar::getContent(content);
+        dataList<<GlobalVar::getContent(GlobalVar::peelStr(content,"class=\"time\"","-1"));
+        eastNewsList.append(dataList);
+    }
+    std::sort(eastNewsList.begin(),eastNewsList.end(),[](QStringList a,QStringList b){
+        return a[2]<b[2];
+    });
+//    for (int i=0;i<eastNewsList.count();++i)
+//    {
+//        qDebug()<<eastNewsList.at(i);
+//    }
 }
 
 void ThreadNewsReport::initNewsReport()
@@ -64,6 +94,7 @@ void ThreadNewsReport::initNewsReport()
         QString newsText;
         QJsonArray array = doc.array();
         QString dt;
+
         for (int i = array.size()-1; i >-1 ; --i)
         {
             newId=array[i].toObject().value("id").toString().mid(0,14);
@@ -84,7 +115,7 @@ void ThreadNewsReport::initNewsReport()
                     dt=QDateTime::fromString(array[i].toObject().value("time").toString().mid(0,19), "yyyy-MM-ddThh:mm:ss").addSecs(28800).toString("yyyy-MM-dd hh:mm:ss");
                     if (jinShiNewsReportCurTime>=dt)
                         continue;
-                    if (GlobalVar::isSayNews)
+                    if (GlobalVar::isSayNews and tts->state()==QTextToSpeech::Ready)
                         tts->say(newsText);
                     id=newId;
                     emit getNewsFinished("<font size=\"4\" color=red>"+dt+"</font>"+"<font size=\"4\">"+newsText+"</font>");

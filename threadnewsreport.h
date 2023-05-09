@@ -14,11 +14,11 @@ class ThreadNewsReport : public QObject
 public:
     explicit ThreadNewsReport(QObject *parent = nullptr);
     void getNewsData();
+    void getEastNews();
     QTextToSpeech  *tts;
 private:
     QNetworkAccessManager *naManager;
     QByteArray allData;
-//    QTextToSpeech  *tts;
     QString jinShiNewsReportCurTime;
     bool isInitSpeech=false;
     int count=0;

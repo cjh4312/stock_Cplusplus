@@ -21,24 +21,32 @@ class GlobalVar
 {
 public:
     GlobalVar();
-    static bool isWorkDay();
-    static bool isZhMarketDay();
-    static bool isUSMarketDay();
-    static bool isHKMarketDay();
+    static bool isWorkDay(QDateTime curTime);
+    static bool isZhWorkDay(QDateTime curTime,bool select);
+    static QDateTime curRecentWorkDay(bool select);
+    static bool isZhMarketDay(QDateTime curTime);
+    static bool isUSMarketDay(QDateTime curTime);
+    static bool isHKMarketDay(QDateTime curTime);
     static QString getComCode();
+    static QString getStockSymbol();
     static void sortByColumn(QList<StockInfo> *mList,const int column,const bool is_asc);
-    static void getEastData(QNetworkAccessManager *naManager, QByteArray &allData,float timeOut,const QUrl &url);
+    static void getEastData(QNetworkAccessManager *naManager, QByteArray &allData,float timeOut,const QUrl url,const QString referer);
     static void postData(QNetworkAccessManager *naManager, QByteArray &postArray, QByteArray &allData,float timeOut, const QUrl &url);
     static QString format_conversion(float data);
-    static QString peelStr(const QString s,const QString begin,const QString end);
+    static QString peelStr(const QString s,const QString begin,QString end);
     static QPair<QString, QString> cutStr(const QString s,const QString begin,const QString end);
+    static QString getContent(const QString s);
+    static void getAllContent(QString &content,QStringList &strList,QString begin);
 
     static QString curCode;
+    static bool isBoard;
+    static QString curBoard;
     static QString curName;
+    static QString EPSReportDate;
     static QStringList TableList;
     static float preClose;
     static int WhichInterface;
-    static int preInterface;
+    static bool isKState;
     static bool isUsZhStock;
     static QString circle_green_SheetStyle;
     static QString circle_red_SheetStyle;
@@ -51,6 +59,8 @@ public:
     static QList<timeShareTickInfo> mTimeShareTickList;
     static QList<timeShartChartInfo> mTimeShareChartList;
     static QList<candleChartInfo> mCandleChartList;
+    static QList<QStringList> mFundFlowList;
+    static bool timeOutFlag[10];
     static int KRange;
     static float timeShareHighLowPoint[5];
 //    static float candleHighLowPoint[5];
@@ -65,8 +75,6 @@ public:
     static QPalette pBlue;
     static int upNums;
     static int downNums;
-    static bool isNewsReport;
-    static bool isFirst;
     static int trendsTotal;
     static bool isSayNews;
     static int curBlock;

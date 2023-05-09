@@ -13,6 +13,8 @@
 #include "drawchart.h"
 #include "searchstock.h"
 #include "requeststocsv.h"
+#include "f10view.h"
+#include "fundflow.h"
 #include <QTimer>
 #include <QThread>
 #include <QLabel>
@@ -23,6 +25,9 @@
 #include <QWheelEvent>
 #include <QActionGroup>
 #include <QTextBlock>
+#include <QComboBox>
+#include <QDateEdit>
+#include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -46,7 +51,8 @@ private slots:
     void delRightMenu();
     void showSearchResult();
     void downStockIndexPlateInfo();
-    void initKParameter();
+    void resetKParameter();
+    void dealWithFundFlow();
 
 signals:
     void startThreadTable();
@@ -54,14 +60,16 @@ signals:
     void startThreadTimeShareTick();
     void startThreadTimeShareChart();
     void startThreadGetNews();
-    void startThreadCandleChart(QString freq,QString adjustFlag);
+    void startThreadCandleChart(QString freq,QString adjustFlag,bool isFirst);
 
 private:
     Ui::MainWindow *ui;
-    TableStock m_tableStock;
+    TableStock mTableStock;
     DrawChart drawChart;
     SearchStock searchStock;
     RequestsToCsv requestsToCsv;
+    F10View f10View;
+    FundFlow mFundFlow;
     ThreadTable *threadTable;
     ThreadIndex *threadIndex;
     ThreadTimeShareTick *threadTimeShareTick;
@@ -73,12 +81,7 @@ private:
     QLabel *rowTime;
     QLabel *timeSharePrice;
 
-    QThread *thread1;
-    QThread *thread2;
-    QThread *thread3;
-    QThread *thread4;
-    QThread *thread5;
-    QThread *thread6;
+    QThread *thread[6];
     QTimer *tim;
     QLabel *circle;
     QLabel *baseInfoData[16];
@@ -86,20 +89,31 @@ private:
     QLabel *buySellNum[10];
     QLabel *stockCode;
     QLabel *stockName;
-//    QTextEdit *timeShareTick;
     QTextBrowser *newsData;
+    QWidget *rightBaseWindow;
+    QWidget *rightFundWindow;
     QWidget *searchSmallWindow;
+    QWidget *F10SmallWindow;
+
     int timeCount=0;
     bool changeInTurn=true;
+    bool isAsia=true;
+    int ifCanClick=1;
     QString freq="101";
     QString adjustFlag="0";
-    QRadioButton *daily;
-    QRadioButton *weekly;
-    QRadioButton *monthly;
-    QRadioButton *no_adjust;
-    QRadioButton *split_adjusted;
-    QRadioButton *back_adjusted;
+    QRadioButton *periodAdjust[6];
+    QPushButton *F10Info[6];
+    QPushButton *fundFlow[10];
+    QString preCode="";
+    QLabel *EPSLabel;
+    QComboBox *periodBox=new QComboBox(this);
+    QDateEdit *dateEdit=new QDateEdit(this);
+    QComboBox *northBox=new QComboBox(this);
+    QComboBox *tradedetailBox=new QComboBox(this);
+    QComboBox *singleStockBoard=new QComboBox(this);
+    bool preSort=false;
 
+    void initGlobalVar();
     void initThread();
     void initInterface();
     void initSettings();
@@ -109,9 +123,11 @@ private:
     void saveMyStock();
     void saveCode();
     void initFlag();
-//    void drawTimeShareChart();
-//    void drawCandleChart();
     void flashOldCandleInfo(QMouseEvent *mouseEvent);
+    void setF3Window();
+    void setF10Window();
+    void toInterFace(QString what);
+    void toFundFlow();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);//事件过滤器

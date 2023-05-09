@@ -11,6 +11,9 @@ CONFIG += c++17
 SOURCES += \
     commondelegate.cpp \
     drawchart.cpp \
+    f10view.cpp \
+    fundflow.cpp \
+    getf10info.cpp \
     globalvar.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -29,6 +32,9 @@ SOURCES += \
 HEADERS += \
     commondelegate.h \
     drawchart.h \
+    f10view.h \
+    fundflow.h \
+    getf10info.h \
     globalvar.h \
     mainwindow.h \
     modeltablestock.h \

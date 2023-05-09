@@ -222,37 +222,37 @@ RequestsToCsv::RequestsToCsv(QObject *parent)
 void RequestsToCsv::getIndexList()
 {
 //    QDateTime start=QDateTime::currentDateTime();
-    GlobalVar::getEastData(naManager,allData,2,QUrl("https://www.joinquant.com/data/dict/indexData"));
+    GlobalVar::getEastData(naManager,allData,2,QUrl("https://www.joinquant.com/data/dict/indexData"),"");
     QString html=QString(allData);
-    QString tbody=GlobalVar::peelStr(html,"<tbody>\n","</tbody>");
+    QString tbody=GlobalVar::peelStr(html,"<tbody","-1");
     QPair<QString, QString> pair;
     QString temp;
     QList<QStringList> indexList;
     while (1)
     {
-        if (tbody.indexOf("<td>")==-1)
+        if (tbody.indexOf("<td")==-1)
             break;
         QStringList dataList;
         for (int i=0;i<5;++i)
         {
-            pair=GlobalVar::cutStr(tbody,"<td>","</td>");
+            pair=GlobalVar::cutStr(tbody,"<td","</td>");
+            QString content=GlobalVar::getContent(pair.first);
             switch(i)
             {
             case 4:
-                temp=pair.first.toUpper();
+                temp=content.toUpper();
                 break;
             default:
-                temp=pair.first;
+                temp=content;
                 break;
             }
             dataList<<temp;
             tbody=pair.second;
         }
+//        qDebug()<<dataList;
         indexList.append(dataList);
     }
-//    std::sort(indexList.begin(),indexList.end(),[](QStringList a,QStringList b){
-//        return a[4]<b[4];
-//    });
+
     QFile file(GlobalVar::currentPath+"/list/abbreviation_index_list.csv");
     if (file.open(QFile::WriteOnly))
     {
@@ -436,11 +436,11 @@ QString RequestsToCsv::CNToEL(const QString &cnstr)
 void RequestsToCsv::getPlateList()
 {
     QList<QStringList> plateList;
-    GlobalVar::getEastData(naManager,allData,1,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=40&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=f3&fs=m:90+t:1+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1665566741514"));
+    GlobalVar::getEastData(naManager,allData,1,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=40&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=f3&fs=m:90+t:1+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1665566741514"),"");
     dealWithPlateList(plateList);
-    GlobalVar::getEastData(naManager,allData,1,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=600&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=7111416627128474|0|1|0|web&fid=f3&fs=m:90+t:3+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1682126899835"));
+    GlobalVar::getEastData(naManager,allData,1,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=600&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=7111416627128474|0|1|0|web&fid=f3&fs=m:90+t:3+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1682126899835"),"");
     dealWithPlateList(plateList);
-    GlobalVar::getEastData(naManager,allData,1,QUrl("http://1.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=7111416627128474|0|1|0|web&fid=f3&fs=m:90+t:2+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1682127442774"));
+    GlobalVar::getEastData(naManager,allData,1,QUrl("http://1.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=7111416627128474|0|1|0|web&fid=f3&fs=m:90+t:2+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1682127442774"),"");
     dealWithPlateList(plateList);
     std::sort(plateList.begin(),plateList.end(),[](QStringList a,QStringList b){
         return a[2]<b[2];

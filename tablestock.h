@@ -6,6 +6,7 @@
 #include <QAbstractItemView>
 #include <QScrollBar>
 #include "modeltimeshare.h"
+#include <QStandardItemModel>
 
 class TableStock : public QTableView
 {
@@ -15,15 +16,15 @@ public:
     QTableView *risingSpeedView;
     QTableView *myStockView;
     QTableView *timeShareTickView;
+    ModelTableStock *m_tableModel;
     ModelTableStock *m_risingSpeedModel;
     ModelTableStock *m_myStockModel;
     ModelTimeShare *m_timeShareTickModel;
     void setTableView();
     void setTimeShareTickView();
-    ModelTableStock *m_tableModel;
+
 private:
     void initTableView();
-    bool preSort=false;
 
 };
 
