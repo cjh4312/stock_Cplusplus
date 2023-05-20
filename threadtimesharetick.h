@@ -3,7 +3,7 @@
 #define THREADTIMESHARETICK_H
 
 #include <QObject>
-#include <QNetworkAccessManager>
+//#include <QNetworkAccessManager>
 #include <QJsonArray>
 #include <QFile>
 #include <QTextCodec>
@@ -16,11 +16,10 @@ public:
     void getBuySellTimeShareTick();
 
 private:
-    QNetworkAccessManager *naManager;
-    QByteArray allData;
+//    QNetworkAccessManager *naManager;
     bool isRunning=false;
-    void initBuySellList();
-    void initTimeShareTickList();
+    void initBuySellList(const QByteArray &allData);
+    void initTimeShareTickList(const QByteArray &allData);
     void findStockArea();
 signals:
     void getTimeShareTickFinished();

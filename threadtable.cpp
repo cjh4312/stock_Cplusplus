@@ -6,6 +6,7 @@ ThreadTable::ThreadTable(QObject *parent)
     : QObject{parent}
 {
     naManager = new QNetworkAccessManager(this);
+    readMyStock();
 }
 
 void ThreadTable::getTableData()
@@ -13,29 +14,25 @@ void ThreadTable::getTableData()
     if (isRunning)
         return;
     isRunning=true;
+//    bool timeOut=GlobalVar::timeOutFlag[5];
+    QByteArray allData;
     if (GlobalVar::WhichInterface==1)
     {
         QString fs="m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048";
-        //    QTime startTime=QTime::currentTime();
-        GlobalVar::getEastData(naManager,allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=6000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&fid=f22&fs="+fs+"&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667954879297"),"");
-        if (not GlobalVar::timeOutFlag[4])
+        GlobalVar::getData(allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=6000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&fid=f22&fs="+fs+"&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667954879297"));
+        if (not allData.isEmpty())
         {
-            initTableList();
-            if (isFirstReadMyStock)
-            {
-                readMyStock();
-                isFirstReadMyStock=false;
-            }
+            initTableList(allData);
             emit getTableDataFinished();
             reFlaseMyStock();
         }
     }
     else if (GlobalVar::WhichInterface==2)
     {
-        GlobalVar::getEastData(naManager,allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f6&fs=m:116+t:3,m:116+t:4,m:116+t:1,m:116+t:2&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667966922156"),"");
-        if (not GlobalVar::timeOutFlag[4])
+        GlobalVar::getData(allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f6&fs=m:116+t:3,m:116+t:4,m:116+t:1,m:116+t:2&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667966922156"));
+        if (not allData.isEmpty())
         {
-            initTableList();
+            initTableList(allData);
             emit getTableDataFinished();
         }
     }
@@ -47,23 +44,26 @@ void ThreadTable::getTableData()
         else
             fs = "m:105,m:106,m:107";
         QString s="http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f6&fs="+fs+"&fields=f2,f3,f5,f6,f8,f9,f12,f13,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667962034515";
-        GlobalVar::getEastData(naManager,allData,3,QUrl(s),"");
-        if (not GlobalVar::timeOutFlag[4])
+        GlobalVar::getData(allData,3,QUrl(s));
+        if (not allData.isEmpty())
         {
-            initTableList();
+            initTableList(allData);
             emit getTableDataFinished();
         }
     }
-    GlobalVar::timeOutFlag[4]=false;
+//    GlobalVar::timeOutFlag[5]=false;
     isRunning=false;
 }
 
-void ThreadTable::initTableList()
+void ThreadTable::initTableList(const QByteArray &allData)
 {
     if (not GlobalVar::isBoard)
         GlobalVar::mTableList.clear();
-    GlobalVar::mTableListCopy.clear();
-    GlobalVar::mRisingSpeedList.clear();
+    if (GlobalVar::WhichInterface==1)
+    {
+        GlobalVar::mTableListCopy.clear();
+        GlobalVar::mRisingSpeedList.clear();
+    }
     GlobalVar::upNums=0;
     GlobalVar::downNums=0;
     QJsonParseError jsonError;
@@ -104,14 +104,14 @@ void ThreadTable::initTableList()
             info.preClose=ceilMap.value("f18").toFloat();
             if (not GlobalVar::isBoard)
                 GlobalVar::mTableList.append(info);
-            if (GlobalVar::WhichInterface!=2 and GlobalVar::WhichInterface!=5)
+            if (GlobalVar::WhichInterface==1)
             {
                 GlobalVar::mTableListCopy.append(info);
                 if (i<=19)
                     GlobalVar::mRisingSpeedList.append(info);
             }
         }
-        if (GlobalVar::WhichInterface!=2 and GlobalVar::WhichInterface!=5)
+        if (GlobalVar::WhichInterface==1)
             GlobalVar::sortByColumn(&GlobalVar::mTableListCopy,0,true);
         GlobalVar::sortByColumn(&GlobalVar::mTableList,GlobalVar::curSortNum,GlobalVar::is_asc);
     }

@@ -5,7 +5,7 @@
 ThreadCandleChart::ThreadCandleChart(QObject *parent)
     : QObject{parent}
 {
-    naManager = new QNetworkAccessManager(this);
+//    naManager = new QNetworkAccessManager(this);
 }
 
 void ThreadCandleChart::getAllCandleChart(QString freq, QString adjustFlag,bool isFirst)
@@ -18,19 +18,18 @@ void ThreadCandleChart::getAllCandleChart(QString freq, QString adjustFlag,bool 
         startDate="20200101";
     else
         startDate="19901201";
-//    qDebug()<<startDate;
-    GlobalVar::getEastData(naManager,allData,2,QUrl("http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg="+startDate+"&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid="+GlobalVar::getComCode()+"&klt="+freq+"&fqt="+adjustFlag),"");
-    if(not GlobalVar::timeOutFlag[0])
+    QByteArray allData;
+    GlobalVar::getData(allData,2,QUrl("http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg="+startDate+"&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid="+GlobalVar::getComCode()+"&klt="+freq+"&fqt="+adjustFlag));
+    if(not allData.isEmpty())
     {
-        initCandleChartList();
-//    if (not GlobalVar::mCandleChartList.isEmpty())
+        initCandleChartList(allData);
         emit getCandleChartFinished();
     }
-    GlobalVar::timeOutFlag[0]=false;
+//    GlobalVar::timeOutFlag[0]=false;
     isRunning=false;
 }
 
-void ThreadCandleChart::initCandleChartList()
+void ThreadCandleChart::initCandleChartList(const QByteArray &allData)
 {
     GlobalVar::mCandleChartList.clear();
     QJsonParseError jsonError;

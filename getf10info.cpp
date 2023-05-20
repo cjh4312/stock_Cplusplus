@@ -7,7 +7,7 @@
 GetF10Info::GetF10Info(QObject *parent)
     : QObject{parent}
 {
-    naManager = new QNetworkAccessManager(this);
+//    naManager = new QNetworkAccessManager(this);
     calcPeriod();
 }
 
@@ -22,7 +22,8 @@ void GetF10Info::getStockHotRank()
     QJsonDocument doc;
     doc.setObject(json);
     QByteArray dataArray = doc.toJson(QJsonDocument::Compact);
-    GlobalVar::postData(naManager,dataArray,allData,1,QUrl("https://emappdata.eastmoney.com/stockrank/getHotStockRankList"));
+    QByteArray allData;
+    GlobalVar::postData(dataArray,allData,1,QUrl("https://emappdata.eastmoney.com/stockrank/getHotStockRankList"));
     QJsonParseError jsonError;
     doc = QJsonDocument::fromJson(allData, &jsonError);
     if (jsonError.error == QJsonParseError::NoError)
@@ -46,7 +47,8 @@ void GetF10Info::getStockHotRank()
 void GetF10Info::getMainIndex()
 {
     f10QList.clear();
-    GlobalVar::getEastData(naManager,allData,1,QUrl("https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=0&code="+GlobalVar::getStockSymbol()),"");
+    QByteArray allData;
+    GlobalVar::getData(allData,1,QUrl("https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/ZYZBAjaxNew?type=0&code="+GlobalVar::getStockSymbol()));
     QStringList lableList={"EPSJB", "EPSKCJB", "EPSXS","BPS", "MGZBGJ", "MGWFPLR","MGJYXJJE",
                            "TOTALOPERATEREVE","MLR" ,"PARENTNETPROFIT","KCFJCXSYJLR","TOTALOPERATEREVETZ",
                            "PARENTNETPROFITTZ","TOTALDEPOSITS","KCFJCXSYJLRTZ", "YYZSRGDHBZC",
@@ -66,13 +68,14 @@ void GetF10Info::getMainIndex()
                             "总资产周转天数(天)","核心资本充足率(%)","存货周转天数(天)","应收账款周转天数(天)",
                             "总资产周转率(次)","不良贷款率(%)","存货周转率(次)","应收账款周转率(次)",
                             "不良贷款拨备覆盖率(%)","资本净额(元)"};
-    getData(lableList,nameList,colList,f10QList);
+    getData(allData,lableList,nameList,colList,f10QList);
 }
 
 void GetF10Info::mainBusinessComposition()
 {
     f10QList.clear();
-    GlobalVar::getEastData(naManager,allData,1,QUrl("http://f10.emoney.cn/f10/zygc/"+GlobalVar::curCode),"");
+    QByteArray allData;
+    GlobalVar::getData(allData,1,QUrl("http://f10.emoney.cn/f10/zygc/"+GlobalVar::curCode));
     QString html=QTextCodec::codecForName("GBK")->toUnicode(allData);
     QPair<QString, QString> pair;
     QString remainder=GlobalVar::peelStr(html,"class=\"swlab_t\"","-1");
@@ -263,7 +266,7 @@ void GetF10Info::getCashFlow()
     getAllData(lableList,nameList,colList,f10QList,url);
 }
 
-void GetF10Info::getData(QStringList key,QStringList value,QStringList &col,QList<QStringList> &l)
+void GetF10Info::getData(const QByteArray &allData,QStringList key,QStringList value,QStringList &col,QList<QStringList> &l)
 {
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
@@ -304,8 +307,9 @@ void GetF10Info::getAllData(QStringList key, QStringList value, QStringList &col
     for (int k=0;k<period.count();++k)
     {
         QList<QStringList> temp;
-        GlobalVar::getEastData(naManager,allData,1,QUrl(url+period[k]+"&code="+GlobalVar::getStockSymbol()),"");
-        getData(key,value,c,temp);
+        QByteArray allData;
+        GlobalVar::getData(allData,1,QUrl(url+period[k]+"&code="+GlobalVar::getStockSymbol()));
+        getData(allData,key,value,c,temp);
         c.remove(0);
         col<<c;
         for (int i=0;i<temp.count();++i)

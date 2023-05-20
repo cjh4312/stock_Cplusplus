@@ -8,7 +8,7 @@
 #include <QTextCodec>
 #include <QKeyEvent>
 #include <QTextBlock>
-#include <QNetworkAccessManager>
+//#include <QNetworkAccessManager>
 
 class SearchStock : public QLineEdit
 {
@@ -22,11 +22,10 @@ public:
 signals:
     void showSearch();
 private:
-    QNetworkAccessManager *naManager;
+//    QNetworkAccessManager *naManager;
     void matchInput();
     void searchFinished();
     void compare(QStringList Data,QString s,int col);
-
 
 };
 

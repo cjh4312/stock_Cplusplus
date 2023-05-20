@@ -16,11 +16,10 @@ public:
     void getTableData();
 private:
     QNetworkAccessManager *naManager;
-    bool isFirstReadMyStock=true;
-    QByteArray allData;
+//    bool isFirstReadMyStock=true;
     bool isRunning=false;
 
-    void initTableList();
+    void initTableList(const QByteArray &allData);
     void readMyStock();
     void reFlaseMyStock();
 

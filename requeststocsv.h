@@ -14,11 +14,10 @@ class RequestsToCsv : public QObject
 public:
     explicit RequestsToCsv(QObject *parent = nullptr);
     QNetworkAccessManager *naManager;
-    QByteArray allData;
     QStringList listJP;
     void getIndexList();
     void getPlateList();
-    void dealWithPlateList(QList<QStringList> &list);
+    void dealWithPlateList(QList<QStringList> &list,const QByteArray &allData);
     void getStockList();
     void dealWithAllList();
     QString CNToEL(const QString &cnstr);

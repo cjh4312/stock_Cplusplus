@@ -19,7 +19,6 @@ public:
     void drawTimeShareChart();
     void drawCandleChart();
     void calcHighLowPoint(int begin,int end);
-//    void flashOldCandleInfo(QMouseEvent *mouseEvent);
 
 signals:
 

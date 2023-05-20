@@ -3,7 +3,7 @@
 #define THREADTIMESHARECHART_H
 
 #include <QObject>
-#include <QNetworkAccessManager>
+//#include <QNetworkAccessManager>
 #include <QJsonArray>
 
 class ThreadTimeShareChart : public QObject
@@ -13,10 +13,9 @@ public:
     explicit ThreadTimeShareChart(QObject *parent = nullptr);
     void getAllTimeShareChart();
 private:
-    QNetworkAccessManager *naManager;
-    QByteArray allData;
+//    QNetworkAccessManager *naManager;
     bool isRunning=false;
-    void initTimeShareChartList();
+    void initTimeShareChartList(const QByteArray &allData);
 signals:
     void getTimeShareChartFinished();
 };

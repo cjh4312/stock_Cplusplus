@@ -23,7 +23,7 @@ bool GlobalVar::isZhWorkDay(QDateTime curTime,bool select)
     QDateTime local=QDateTime::currentDateTime();
     QString cur_date=curTime.toString("MMdd");
     int cur_time= curTime.toString("hhmmss").toInt();
-    int time=170000;
+    int time=160000;
     if (select)
         time=230000;
     if (not vacation.contains(cur_date) && isWorkDay(curTime))
@@ -84,17 +84,17 @@ bool GlobalVar::isHKMarketDay(QDateTime curTime)
         return false;
 }
 
-bool isNum(QString str)
+bool GlobalVar::isInt(QString s)
 {
-    bool isNum;
-    str.toDouble(&isNum);
-    return isNum;
+    bool isInt;
+    s.toInt(&isInt);
+    return isInt;
 }
 
 QString GlobalVar::getComCode()
 {
 //    qDebug()<<GlobalVar::curCode;
-    if (curCode.length()==5 && isNum(curCode))
+    if (curCode.length()==5 && isInt(curCode))
         return "116."+curCode;
     else if (curCode.left(1)=="1")
         return curCode;
@@ -118,7 +118,6 @@ QString GlobalVar::getStockSymbol()
         symbol="SZ"+GlobalVar::curCode;
     return symbol;
 }
-
 
 void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bool is_asc)
 {
@@ -166,17 +165,13 @@ void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bo
               });
 }
 
-void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allData,float timeOut, const QUrl url,const QString referer)
+void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
 {
     QNetworkRequest request;
-//    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36");
-    if (referer!="")
-        request.setRawHeader("referer", referer.toLocal8Bit());
     request.setUrl(url);
-    //    QNetworkAccessManager *naManager = new QNetworkAccessManager(this);
-    //    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::SameOriginRedirectPolicy);
+    QNetworkAccessManager naManager =QNetworkAccessManager();
     QEventLoop loop;
-    QNetworkReply *reply = naManager->get(request);
+    QNetworkReply *reply = naManager.get(request);
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QTimer timer;
     timer.singleShot(timeOut*1000, &loop, SLOT(quit()));
@@ -194,35 +189,36 @@ void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allDat
         //超时，未知状态
         QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
         QStringList s={"http://push2his.eastmoney.com/api/qt/stock/kline",
-                        "http://push2.eastmoney.com/api/qt/ulist",
-                        "http://futsseapi.eastmoney.com/list/block",
-                        "https://www.jin10.com",
-                        "http://push2.eastmoney.com/api/qt/clist",
-                        "https://push2his.eastmoney.com/api/qt/stock/trends2",
-                        "http://push2.eastmoney.com/api/qt/stock/details",
-                        "http://push2.eastmoney.com/api/qt/stock",
-                        "https://datacenter-web.eastmoney.com"};
+                         "http://push2.eastmoney.com/api/qt/ulist",
+                         "http://futsseapi.eastmoney.com/list/block",
+                         "https://www.jin10.com",
+                         "https://finance.eastmoney.com",
+                         "http://push2.eastmoney.com/api/qt/clist",
+                         "https://push2his.eastmoney.com/api/qt/stock/trends2",
+                         "http://push2.eastmoney.com/api/qt/stock/details",
+                         "http://push2.eastmoney.com/api/qt/stock",
+                         "https://datacenter-web.eastmoney.com"};
         QStringList n={"candle chart of thread",
-                        "index of thread",
-                        "future index of thread",
-                        "newsreport of thread",
-                        "table stock of thread",
-                        "time share chart of thread",
-                        "time share tick of thread",
-                        "buy sell of thread",
-                        "EPS of stock"};
+                         "index of thread",
+                         "future index of thread",
+                         "jin10 newsreport of thread",
+                         "east newsreport of thread",
+                         "table stock of thread",
+                         "time share chart of thread",
+                         "time share tick of thread",
+                         "buy sell of thread",
+                         "EPS of stock"};
         for (int i=0;i<s.count();++i)
         {
             if (url.toString().contains(s[i]))
             {
-                timeOutFlag[i]=true;
+                //                timeOutFlag[i]=true;
                 qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime().toString()<< n[i]<<timeOut;
                 break;
             }
-            if (i==7)
+            if (i==s.count()-1)
                 qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
         }
-//
     }
     if (reply!=nullptr)
     {
@@ -231,14 +227,11 @@ void GlobalVar::getEastData(QNetworkAccessManager *naManager, QByteArray &allDat
     }
 }
 
-void GlobalVar::postData(QNetworkAccessManager *naManager, QByteArray &postArray, QByteArray &allData,float timeOut, const QUrl &url)
+void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest request)
 {
-    QNetworkRequest request;
-//    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36");
-    request.setUrl(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkAccessManager naManager =QNetworkAccessManager();
     QEventLoop loop;
-    QNetworkReply *reply = naManager->post(request,postArray);
+    QNetworkReply *reply = naManager.get(request);
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QTimer timer;
     timer.singleShot(timeOut*1000, &loop, SLOT(quit()));
@@ -253,21 +246,43 @@ void GlobalVar::postData(QNetworkAccessManager *naManager, QByteArray &postArray
     }
     else
     {
-        //超时，未知状态
         QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-        QStringList s={"http://api.waditu.com"};
-        QStringList n={"post"};
-        for (int i=0;i<s.count();++i)
-        {
-            if (url.toString().contains(s[i]))
-            {
-                qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime().toString()<< n[i];
-                break;
-            }
-            if (i==1)
-                qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
-        }
+        qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<request.url()<<timeOut;
     }
+
+    if (reply!=nullptr)
+    {
+        reply->deleteLater();
+        reply = nullptr;
+    }
+}
+
+void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float timeOut, const QUrl &url)
+{
+    QNetworkRequest request;
+    QNetworkAccessManager naManager=QNetworkAccessManager();
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QEventLoop loop;
+    QNetworkReply *reply = naManager.post(request,postArray);
+    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    QTimer timer;
+    timer.singleShot(timeOut*1000, &loop, SLOT(quit()));
+    timer.start();
+    loop.exec();
+
+    int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if (statusCode == 200)
+    {
+        timer.stop();
+        allData=reply->readAll();
+    }
+    else
+    {
+        QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+        qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
+    }
+
     if (reply!=nullptr)
     {
         reply->deleteLater();
@@ -285,7 +300,7 @@ QString GlobalVar::format_conversion(float data)
         return QString::number(data,'f',2);
 }
 
-QString GlobalVar::peelStr(const QString s,const QString begin,QString end)
+QString GlobalVar::peelStr(const QString &s,QString begin,QString end)
 {
     int bPos=s.indexOf(begin)+begin.length();
     int ePos;
@@ -296,10 +311,10 @@ QString GlobalVar::peelStr(const QString s,const QString begin,QString end)
     return s.mid(bPos,ePos);
 }
 
-QString GlobalVar::getContent(const QString s)
+QString GlobalVar::getContent(const QString &s)
 {
     int bPos=s.indexOf(">")+1;
-    int ePos=s.indexOf("<");
+    int ePos=s.indexOf("<",bPos);
     return s.mid(bPos,ePos-bPos);
 }
 
@@ -312,17 +327,35 @@ void GlobalVar::getAllContent(QString &content, QStringList &strList, QString be
         content=GlobalVar::peelStr(content,begin,"-1");
         int bPos=content.indexOf(">")+1;
         int ePos=content.indexOf("<");
-        strList.append(content.mid(bPos,ePos-bPos));
+        if (ePos<=bPos)
+        {
+            QString s=content.mid(ePos+1,1);
+            QString str=cutStr(content,"<"+s,"</"+s).first;
+            getAllContent(str,strList,"<");
+        }
+        else
+            strList.append(content.mid(bPos,ePos-bPos));
     }
 }
 
-QPair<QString, QString> GlobalVar::cutStr(const QString s,const QString begin,const QString end)
+QPair<QString, QString> GlobalVar::cutStr(const QString &s,QString begin,QString end)
 {
-    int bPos=s.indexOf(begin)+begin.length();
-    int ePos=s.indexOf(end)+end.length();
+    int bPos=s.indexOf(begin);
+    int ePos=s.indexOf(end,bPos+1)+end.length();
     QPair<QString, QString> pair;
-    pair.first=s.mid(bPos,ePos-bPos);
-    pair.second=s.mid(ePos,-1);
+    if (ePos<=bPos)
+    {
+        QString str=peelStr(s,end,"-1");
+        pair=cutStr(str,begin,end);
+    }
+    else
+    {
+        pair.first=s.mid(bPos,ePos-bPos);
+        if (begin==end)
+            pair.second=s.mid(ePos-end.length(),-1);
+        else
+            pair.second=s.mid(ePos,-1);
+    }
     return pair;
 }
 
@@ -331,7 +364,7 @@ QString GlobalVar::curName="贵州茅台";
 bool GlobalVar::isBoard=false;
 QString GlobalVar::curBoard;
 QString GlobalVar::EPSReportDate="报告期";
-QStringList GlobalVar::TableList;
+//QStringList GlobalVar::tableHeader;
 float GlobalVar::preClose=0.00;
 int GlobalVar::WhichInterface = 1;
 bool GlobalVar::isKState=false;
@@ -347,8 +380,8 @@ QList<StockInfo> GlobalVar::mMyStockList;
 QList<timeShareTickInfo> GlobalVar::mTimeShareTickList;
 QList<timeShartChartInfo> GlobalVar::mTimeShareChartList;
 QList<candleChartInfo> GlobalVar::mCandleChartList;
-QList<QStringList> GlobalVar::mFundFlowList;
-bool GlobalVar::timeOutFlag[10]={false};
+//QList<QStringList> GlobalVar::mFundFlowList;
+//bool GlobalVar::timeOutFlag[10]={false};
 int GlobalVar::KRange=KRANGE;
 int GlobalVar::offsetEnd;
 int GlobalVar::offsetLocal=GlobalVar::KRange;

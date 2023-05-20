@@ -4,7 +4,7 @@
 
 
 #include <QObject>
-#include <QNetworkAccessManager>
+//#include <QNetworkAccessManager>
 #include <QJsonArray>
 
 class ThreadCandleChart : public QObject
@@ -14,10 +14,9 @@ public:
     explicit ThreadCandleChart(QObject *parent = nullptr);
     void getAllCandleChart(QString freq,QString adjustFlag,bool isFirst);
 private:
-    QNetworkAccessManager *naManager;
-    QByteArray allData;
+//    QNetworkAccessManager *naManager;
     bool isRunning=false;
-    void initCandleChartList();
+    void initCandleChartList(const QByteArray &allData);
 signals:
     void getCandleChartFinished();
 };

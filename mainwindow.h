@@ -111,6 +111,7 @@ private:
     QComboBox *northBox=new QComboBox(this);
     QComboBox *tradedetailBox=new QComboBox(this);
     QComboBox *singleStockBoard=new QComboBox(this);
+    QComboBox *openFundBox=new QComboBox(this);
     bool preSort=false;
 
     void initGlobalVar();
@@ -126,7 +127,7 @@ private:
     void flashOldCandleInfo(QMouseEvent *mouseEvent);
     void setF3Window();
     void setF10Window();
-    void toInterFace(QString what);
+    void toInterFace(QString which);
     void toFundFlow();
 
 protected:

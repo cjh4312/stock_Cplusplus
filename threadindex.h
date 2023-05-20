@@ -3,7 +3,7 @@
 #define THREADINDEX_H
 
 #include <QObject>
-#include <QNetworkAccessManager>
+//#include <QNetworkAccessManager>
 #include <QJsonArray>
 
 class ThreadIndex : public QObject
@@ -13,11 +13,10 @@ public:
     explicit ThreadIndex(QObject *parent = nullptr);
     void getAllIndex();
 private:
-    QNetworkAccessManager *naManager;
-    QByteArray allData;
+//    QNetworkAccessManager *naManager;
     bool isRunning=false;
-    void initIndexList();
-    void initFuturesList();
+    void initIndexList(const QByteArray &allData);
+    void initFuturesList(const QByteArray &allData);
 
 signals:
     void getIndexFinished();

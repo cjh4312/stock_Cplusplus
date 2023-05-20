@@ -6,7 +6,7 @@
 
 FundFlow::FundFlow()
 {
-    naManager = new QNetworkAccessManager(this);
+//    naManager = new QNetworkAccessManager(this);
 }
 
 void FundFlow::getEastPlateFundFlow(int days)
@@ -16,6 +16,7 @@ void FundFlow::getEastPlateFundFlow(int days)
     QString url3="https://push2.eastmoney.com/api/qt/clist/get?fid=f62&po=1&pz=100&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A2&fields=f12%2Cf14%2Cf2%2Cf3%2Cf62%2Cf184%2Cf66%2Cf69%2Cf72%2Cf75%2Cf78%2Cf81%2Cf84%2Cf87%2Cf204%2Cf205%2Cf124%2Cf1%2Cf13";
     QStringList FundFlowCol;
     QString h="今日";
+    QString url[]={url1,url2,url3};
     if (days==5)
     {
         h="5日";
@@ -30,16 +31,15 @@ void FundFlow::getEastPlateFundFlow(int days)
         url2="https://push2.eastmoney.com/api/qt/clist/get?fid=f160&po=1&pz=500&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A3&fields=f12%2Cf14%2Cf2%2Cf160%2Cf174%2Cf175%2Cf176%2Cf177%2Cf178%2Cf179%2Cf180%2Cf181%2Cf182%2Cf183%2Cf260%2Cf261%2Cf124%2Cf1%2Cf13";
         url3="https://push2.eastmoney.com/api/qt/clist/get?fid=f160&po=1&pz=50&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A1&fields=f12%2Cf14%2Cf2%2Cf160%2Cf174%2Cf175%2Cf176%2Cf177%2Cf178%2Cf179%2Cf180%2Cf181%2Cf182%2Cf183%2Cf260%2Cf261%2Cf124%2Cf1%2Cf13";
     }
-
     FundFlowCol<<"名称"<<h+"涨跌幅"<<"主力净额"<<"主力净占比"<<"超大单净额"<<"超大单净占比"<<"大单净额"
                 <<"大单净占比"<<"中单净额"<<"中单净占比"<<"小单净额"<<"小单净占比"<<"主力净流入最大股";
     FundFlowList.clear();
-    GlobalVar::getEastData(naManager,allData,1,QUrl(url1),"");
-    getData(days);
-    GlobalVar::getEastData(naManager,allData,1,QUrl(url2),"");
-    getData(days);
-    GlobalVar::getEastData(naManager,allData,1,QUrl(url3),"");
-    getData(days);
+    for (int i=0;i<3;++i)
+    {
+        QByteArray allData;
+        GlobalVar::getData(allData,1,QUrl(url[i]));
+        getData(days,allData);
+    }
     std::sort(FundFlowList.begin(),FundFlowList.end(),[](QStringList a,QStringList b){
         return a[1].toFloat()>b[1].toFloat();
     });
@@ -81,7 +81,7 @@ void FundFlow::getEastPlateFundFlow(int days)
     model->setHorizontalHeaderLabels(FundFlowCol);
 }
 
-void FundFlow::getData(int days)
+void FundFlow::getData(int days,const QByteArray &allData)
 {
     QString v1="f3",v2="f62",v3="f184",v4="f66",v5="f69",v6="f72",v7="f75",
         v8="f78",v9="f81",v10="f84",v11="f87",v12="f204";
@@ -117,6 +117,7 @@ void FundFlow::getData(int days)
 
 void FundFlow::getBoardStock(QString name)
 {
+    QByteArray allData;
     QFile file(GlobalVar::currentPath+"/list/concept_industry_board.csv");
     if (file.open(QFile::ReadOnly))
     {
@@ -126,7 +127,7 @@ void FundFlow::getBoardStock(QString name)
             QStringList strLine = data.at(i).split(",");
             if (name==strLine[1])
             {
-                GlobalVar::getEastData(naManager,allData,1,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=f3&fs=b:"+strLine[0]+"+f:!50&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1665552114833"),"");
+                GlobalVar::getData(allData,1,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=f3&fs=b:"+strLine[0]+"+f:!50&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1665552114833"));
                 break;
             }
         }
@@ -172,26 +173,23 @@ void FundFlow::getIntervalHighLow()
 {
     QStringList HighLowCol;
     HighLowCol<<"日期"<<"收盘价"<<"20日新高"<<"20日新低"<<"60日新高"<<"60日新低"<<"120日新高"<<"120日新低";
-    GlobalVar::getEastData(naManager,allData,1,QUrl("https://legulegu.com/stockdata/member-ship/get-high-low-statistics/all"),"");
+    QByteArray allData;
+    GlobalVar::getData(allData,1,QUrl("https://legulegu.com/stockdata/member-ship/get-high-low-statistics/all"));
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
     model->clear();
     if (jsonError.error == QJsonParseError::NoError)
     {
         QJsonArray data = doc.array();
+        QString name[]={"date","close","high20","low20","high60","low60","high120","low120"};
         for (int i = 0; i < data.size(); ++i)
         {
             QJsonValue value = data.at(i);
             QVariantMap ceilMap = value.toVariant().toMap();
 
             model->setItem(i,0,new QStandardItem(QDateTime::fromSecsSinceEpoch(ceilMap.value("date").toString().left(10).toInt()).toString("yyyy-MM-dd")));
-            model->setItem(i,1,new QStandardItem(ceilMap.value("close").toString()));
-            model->setItem(i,2,new QStandardItem(ceilMap.value("high20").toString()));
-            model->setItem(i,3,new QStandardItem(ceilMap.value("low20").toString()));
-            model->setItem(i,4,new QStandardItem(ceilMap.value("high60").toString()));
-            model->setItem(i,5,new QStandardItem(ceilMap.value("low60").toString()));
-            model->setItem(i,6,new QStandardItem(ceilMap.value("high120").toString()));
-            model->setItem(i,7,new QStandardItem(ceilMap.value("low120").toString()));
+            for (int j=1;j<8;++j)
+                model->setItem(i,j,new QStandardItem(ceilMap.value(name[j]).toString()));
         }
     }
     model->setHorizontalHeaderLabels(HighLowCol);
@@ -201,8 +199,9 @@ void FundFlow::getStockPoolStrong(QString date)
 {
     QStringList strongStockCol;
     strongStockCol<<"代码"<<"名称"<<"涨跌幅"<<"最新价"<<"涨停价"<<"成交量"<<"流通市值"<<"总市值"
-                <<"换手"<<"涨速"<<"是否新高"<<"量比"<<"涨停统计"<<"入选理由"<<"所属行业";
-    GlobalVar::getEastData(naManager,allData,1,QUrl("https://push2ex.eastmoney.com/getTopicQSPool/get?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=170&sort=zdp:desc&date="+date+"&_=1621590489736"),"");
+                  <<"换手"<<"涨速"<<"是否新高"<<"量比"<<"涨停统计"<<"入选理由"<<"所属行业";
+    QByteArray allData;
+    GlobalVar::getData(allData,1,QUrl("https://push2ex.eastmoney.com/getTopicQSPool/get?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=170&sort=zdp:desc&date="+date+"&_=1621590489736"));
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
     model->clear();
@@ -263,7 +262,8 @@ void FundFlow::getNorthFundFlow(QString days)
     northFundFlowCol<<"代码"<<"名称"<<"收盘价"<<"涨跌幅"<<"持股数"<<"持市值"<<"持占流通股比"<<"持占总股本比"
                    <<"增股数"<<"增市值"<<"增市值增幅"<<"增占流通股比"<<"增占总股本比"<<"所属板块";
     QString curDate=GlobalVar::curRecentWorkDay(true).date().toString("yyyy-MM-dd");
-    GlobalVar::getEastData(naManager,allData,1,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=ADD_MARKET_CAP&sortTypes=-1&pageSize=5000&pageNumber=1&reportName=RPT_MUTUAL_STOCK_NORTHSTA&columns=ALL&source=WEB&client=WEB&filter=(TRADE_DATE%3D%27"+curDate+"%27)(INTERVAL_TYPE%3D%22"+days+"%22)"),"");
+    QByteArray allData;
+    GlobalVar::getData(allData,1,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=ADD_MARKET_CAP&sortTypes=-1&pageSize=5000&pageNumber=1&reportName=RPT_MUTUAL_STOCK_NORTHSTA&columns=ALL&source=WEB&client=WEB&filter=(TRADE_DATE%3D%27"+curDate+"%27)(INTERVAL_TYPE%3D%22"+days+"%22)"));
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
     model->clear();
@@ -347,7 +347,8 @@ void FundFlow::getDragonTigerList(int nums,int pages)
     boldFont.setPixelSize(16);
     for (int j=1;j<pages+1;++j)
     {
-        GlobalVar::getEastData(naManager,allData,1,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=BILLBOARD_NET_AMT%2CTRADE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1%2C1&pageSize=500&pageNumber="+QString::number(j)+"&reportName=RPT_DAILYBILLBOARD_DETAILSNEW&columns=SECURITY_CODE%2CSECUCODE%2CSECURITY_NAME_ABBR%2CTRADE_DATE%2CEXPLAIN%2CCLOSE_PRICE%2CCHANGE_RATE%2CBILLBOARD_NET_AMT%2CBILLBOARD_BUY_AMT%2CBILLBOARD_SELL_AMT%2CBILLBOARD_DEAL_AMT%2CACCUM_AMOUNT%2CDEAL_NET_RATIO%2CDEAL_AMOUNT_RATIO%2CTURNOVERRATE%2CFREE_MARKET_CAP%2CEXPLANATION%2CD1_CLOSE_ADJCHRATE%2CD2_CLOSE_ADJCHRATE%2CD5_CLOSE_ADJCHRATE%2CD10_CLOSE_ADJCHRATE%2CSECURITY_TYPE_CODE&source=WEB&client=WEB&filter=(TRADE_DATE%3C%3D%27"+endDate+"%27)(TRADE_DATE%3E%3D%27"+StartDate+"%27)"),"");
+        QByteArray allData;
+        GlobalVar::getData(allData,1,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=BILLBOARD_NET_AMT%2CTRADE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1%2C1&pageSize=500&pageNumber="+QString::number(j)+"&reportName=RPT_DAILYBILLBOARD_DETAILSNEW&columns=SECURITY_CODE%2CSECUCODE%2CSECURITY_NAME_ABBR%2CTRADE_DATE%2CEXPLAIN%2CCLOSE_PRICE%2CCHANGE_RATE%2CBILLBOARD_NET_AMT%2CBILLBOARD_BUY_AMT%2CBILLBOARD_SELL_AMT%2CBILLBOARD_DEAL_AMT%2CACCUM_AMOUNT%2CDEAL_NET_RATIO%2CDEAL_AMOUNT_RATIO%2CTURNOVERRATE%2CFREE_MARKET_CAP%2CEXPLANATION%2CD1_CLOSE_ADJCHRATE%2CD2_CLOSE_ADJCHRATE%2CD5_CLOSE_ADJCHRATE%2CD10_CLOSE_ADJCHRATE%2CSECURITY_TYPE_CODE&source=WEB&client=WEB&filter=(TRADE_DATE%3C%3D%27"+endDate+"%27)(TRADE_DATE%3E%3D%27"+StartDate+"%27)"));
         QJsonParseError jsonError;
         QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
 
@@ -418,7 +419,8 @@ void FundFlow::countSingleStockBoard(QString nums,int pages)
     boldFont.setPixelSize(16);
     for (int i=1;i<pages+1;++i)
     {
-        GlobalVar::getEastData(naManager,allData,1,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=BILLBOARD_TIMES%2CLATEST_TDATE%2CSECURITY_CODE&sortTypes=-1%2C-1%2C1&pageSize=1000&pageNumber="+QString::number(i)+"&reportName=RPT_BILLBOARD_TRADEALLNEW&columns=ALL&source=WEB&client=WEB&filter=(STATISTICS_CYCLE%3D%22"+nums+"%22)"),"");
+        QByteArray allData;
+        GlobalVar::getData(allData,1,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=BILLBOARD_TIMES%2CLATEST_TDATE%2CSECURITY_CODE&sortTypes=-1%2C-1%2C1&pageSize=1000&pageNumber="+QString::number(i)+"&reportName=RPT_BILLBOARD_TRADEALLNEW&columns=ALL&source=WEB&client=WEB&filter=(STATISTICS_CYCLE%3D%22"+nums+"%22)"));
         QJsonParseError jsonError;
         QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
 
@@ -427,6 +429,7 @@ void FundFlow::countSingleStockBoard(QString nums,int pages)
             QJsonObject jsonObject = doc.object();
             QJsonArray data=jsonObject.value("result").toObject().value("data").toArray();
             int n=model->rowCount();
+            QString name[]={"IPCT1M","IPCT3M","IPCT6M","IPCT1Y"};
             for (int i = 0; i < data.size(); ++i)
             {
                 QJsonValue value = data.at(i);
@@ -476,41 +479,17 @@ void FundFlow::countSingleStockBoard(QString nums,int pages)
                 model->setItem(i+n,14,new QStandardItem(GlobalVar::format_conversion(ceilMap.value("ORG_SELL_AMT").toFloat())));
                 model->item(i+n,14)->setForeground(QColor(0, 191, 0));
 
-                b=ceilMap.value("IPCT1M").toFloat();
-                model->setItem(i+n,15,new QStandardItem(GlobalVar::format_conversion(b)));
-                if (b>=100)
-                    model->item(i+n,15)->setForeground(QColor(153, 0, 153));
-                else if (b>0)
-                    model->item(i+n,15)->setForeground(Qt::red);
-                else if (b<0)
-                    model->item(i+n,15)->setForeground(QColor(0, 191, 0));
-
-                b=ceilMap.value("IPCT3M").toFloat();
-                model->setItem(i+n,16,new QStandardItem(GlobalVar::format_conversion(b)));
-                if (b>=100)
-                    model->item(i+n,16)->setForeground(QColor(153, 0, 153));
-                else if (b>0)
-                    model->item(i+n,16)->setForeground(Qt::red);
-                else if (b<0)
-                    model->item(i+n,16)->setForeground(QColor(0, 191, 0));
-
-                b=ceilMap.value("IPCT6M").toFloat();
-                model->setItem(i+n,17,new QStandardItem(GlobalVar::format_conversion(b)));
-                if (b>=100)
-                    model->item(i+n,17)->setForeground(QColor(153, 0, 153));
-                else if (b>0)
-                    model->item(i+n,17)->setForeground(Qt::red);
-                else if (b<0)
-                    model->item(i+n,17)->setForeground(QColor(0, 191, 0));
-
-                b=ceilMap.value("IPCT1Y").toFloat();
-                model->setItem(i+n,18,new QStandardItem(GlobalVar::format_conversion(b)));
-                if (b>=100)
-                    model->item(i+n,18)->setForeground(QColor(153, 0, 153));
-                else if (b>0)
-                    model->item(i+n,18)->setForeground(Qt::red);
-                else if (b<0)
-                    model->item(i+n,18)->setForeground(QColor(0, 191, 0));
+                for (int j=0;j<4;++j)
+                {
+                    b=ceilMap.value(name[j]).toFloat();
+                    model->setItem(i+n,j+15,new QStandardItem(GlobalVar::format_conversion(b)));
+                    if (b>=100)
+                        model->item(i+n,j+15)->setForeground(QColor(153, 0, 153));
+                    else if (b>0)
+                        model->item(i+n,j+15)->setForeground(Qt::red);
+                    else if (b<0)
+                        model->item(i+n,j+15)->setForeground(QColor(0, 191, 0));
+                }
             }
         }
         model->setHorizontalHeaderLabels(everyStockCol);
@@ -529,7 +508,8 @@ void FundFlow::getStockHot()
     QJsonDocument doc;
     doc.setObject(json);
     QByteArray dataArray = doc.toJson(QJsonDocument::Compact);
-    GlobalVar::postData(naManager,dataArray,allData,1,QUrl("https://emappdata.eastmoney.com/stockrank/getAllCurrentList"));
+    QByteArray allData;
+    GlobalVar::postData(dataArray,allData,1,QUrl("https://emappdata.eastmoney.com/stockrank/getAllCurrentList"));
     QJsonParseError jsonError;
     doc = QJsonDocument::fromJson(allData, &jsonError);
     QStringList stockHotCol;
@@ -591,11 +571,14 @@ void FundFlow::openFundRank(QString ft,QString sc)
     QDateTime curtime=QDateTime::currentDateTime();
     QString sd=curtime.addYears(-1).toString("yyyy-MM-dd");
     QString ed=curtime.toString("yyyy-MM-dd");
-    GlobalVar::getEastData(naManager,allData,5,QUrl("https://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft="+ft+"&rs=&gs=0&sc="+sc+"&st=desc&sd="+sd+"&ed="+ed+"&qdii=&tabSubtype=,,,,,&pi=1&pn=20000&dx=1&v=0.1591891419018292"),"http://fund.eastmoney.com/fundguzhi.html");
+    QNetworkRequest request;
+    request.setRawHeader("referer", "http://fund.eastmoney.com/fundguzhi.html");
+    request.setUrl("https://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft="+ft+"&rs=&gs=0&sc="+sc+"&st=desc&sd="+sd+"&ed="+ed+"&qdii=&tabSubtype=,,,,,&pi=1&pn=20000&dx=1&v=0.1591891419018292");
+    QByteArray allData;
+    GlobalVar::getData(allData,8,request);
     QJsonParseError jsonError;
     allData=allData.mid(22,allData.lastIndexOf("]")-21);
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
-
     QStringList openFundCol;
     openFundCol<<"代码"<<"基金名称"<<"日期"<<"单位净值"<<"累计净值"<<"日增长率"<<"近一周"<<"近一月"<<"近3月"
         <<"近6月"<<"近1年"<<"近2年"<<"近3年"<<"今年来"<<"成立来"<<"手续费";
@@ -634,4 +617,101 @@ void FundFlow::openFundRank(QString ft,QString sc)
         }
     }
     model->setHorizontalHeaderLabels(openFundCol);
+}
+
+void FundFlow::getRoyalFlushFundFlow()
+{
+    QByteArray allData;
+    QStringList RoyalFlushCol;
+    RoyalFlushCol<<"行业"<<"行业指数"<<"涨跌幅"<<"流入资金"<<"流出资金"<<"净额"<<"公司家数"<<"领涨股"<<"涨跌幅"<<"当前价";
+    QJSEngine myEngine;
+    QString fileName = "/list/ths.js";
+    QFile scriptFile(GlobalVar::currentPath+fileName);
+    if (!scriptFile.open(QIODevice::ReadOnly))
+        return;
+    QTextStream stream(&scriptFile);
+    QString contents = stream.readAll();
+    scriptFile.close();
+    myEngine.evaluate(contents);
+    QJSValue func;
+    func = myEngine.globalObject().property("v");
+
+    QNetworkRequest request;
+    QNetworkAccessManager naManager =QNetworkAccessManager();
+    model->clear();
+    model->setHorizontalHeaderLabels(RoyalFlushCol);
+
+    QString url[]={"http://data.10jqka.com.cn/funds/gnzjl/field/tradezdf/order/desc/page/",
+                    "http://data.10jqka.com.cn/funds/hyzjl/field/tradezdf/order/desc/page/"};
+    int page[]={7,2};
+    //    request.setRawHeader("referer","http://data.10jqka.com.cn/funds/gnzjl/");
+//    request.setRawHeader("X-Requested-With", "XMLHttpRequest");
+    int len=sizeof(url)/sizeof(url[0]);
+    for (int n=0;n<len;++n)
+    {
+        for (int i=1;i<=page[n];++i)
+        {
+            request.setRawHeader("hexin-v", func.call().toString().toLocal8Bit());
+            request.setUrl(QUrl(url[n]+QString::number(i)+"/ajax/1/free/1/"));
+            GlobalVar::getData(allData,1,request);
+
+            QString html=QTextCodec::codecForName("GBK")->toUnicode(allData);
+            QString str=GlobalVar::peelStr(html,"<tbody","-1");
+
+            QPair<QString, QString> pair;
+            int n=model->rowCount();
+            int m=0;
+            while(1)
+            {
+                if (str.indexOf("<tr")==-1)
+                    break;
+                pair=GlobalVar::cutStr(str,"<tr","</tr>");
+                str=pair.second;
+                QStringList l;
+                GlobalVar::getAllContent(pair.first,l,"<td");
+    //            qDebug()<<l;
+//                QString p;
+                for (int j=0;j<10;++j)
+                {
+//                    if (j==2)
+//                    {
+//                        p=l[j+1].split("%")[0];
+//                        model->setItem(m+n,j,new QStandardItem(p));
+//                    }
+//                    else
+                        model->setItem(m+n,j,new QStandardItem(l[j+1]));
+                }
+                m+=1;
+            }
+        }
+    }
+    model->sort(2,Qt::DescendingOrder);
+}
+
+void FundFlow::getNotNormalStock()
+{
+    QByteArray allData;
+    QNetworkRequest request;
+    request.setUrl(QUrl("https://ssr1.scrape.center/page/1"));
+    request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    request.setRawHeader("Host","ssr1.scrape.center");
+    GlobalVar::getData(allData,2,request);
+    if (allData.isEmpty())
+        return;
+    QString html=QString(allData);
+//    QString str=GlobalVar::peelStr(html,"class=\"el-col el-col-18 el-col-offset-3\"","-1");
+//    qDebug()<<str;
+//    QString temp=GlobalVar::peelStr(str,"class=\"categories\"","-1");
+//    temp=GlobalVar::peelStr(temp,"<div","-1");
+//    temp=GlobalVar::peelStr(temp,"<div","-1");
+//    temp=GlobalVar::peelStr(temp,"<div","-1");
+    QPair<QString, QString> pair=GlobalVar::cutStr(html,"class=\"el-card item m-t is-hover-shadow\"",
+                        "class=\"el-card item m-t is-hover-shadow\"");
+    html=pair.second;
+    pair=GlobalVar::cutStr(pair.first,"class=\"categories\"","</div>");
+
+    QStringList l;
+    GlobalVar::getAllContent(pair.first,l,"<span");
+    qDebug()<<l;
+
 }

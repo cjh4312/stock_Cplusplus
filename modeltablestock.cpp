@@ -6,7 +6,7 @@
 ModelTableStock::ModelTableStock(QObject *parent)
     : QAbstractTableModel(parent)
 {
-
+    tableHeader<<"代码"<<"名称"<<"最新价"<<"涨跌幅"<<"换手率"<<"成交额"<<"涨速"<<"市盈率"<<"总市值"<<"流通市值"<<"今年"<<"60日"<<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收";
 }
 
 void ModelTableStock::setModelData(const QList<StockInfo> &data)
@@ -39,7 +39,7 @@ QVariant ModelTableStock::headerData(int section, Qt::Orientation orientation, i
 
     // 仅仅只是返回水平方向的表头
     if (orientation == Qt::Orientation::Horizontal) {
-        return GlobalVar::TableList[section];
+        return tableHeader[section];
     }
 
     return QAbstractTableModel::headerData(section, orientation, role);

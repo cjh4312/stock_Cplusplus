@@ -41,7 +41,6 @@ void MainWindow::initGlobalVar()
     GlobalVar::settings=new QSettings(GlobalVar::currentPath+"/config.ini",QSettings::IniFormat);
     GlobalVar::curCode=GlobalVar::settings->value("curCode").toString();
     GlobalVar::isSayNews=GlobalVar::settings->value("sayNews").toBool();
-    GlobalVar::TableList<<"代码"<<"名称"<<"最新价"<<"涨跌幅"<<"换手率"<<"成交额"<<"涨速"<<"市盈率"<<"总市值"<<"流通市值"<<"今年"<<"60日"<<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收";
     GlobalVar::offsetEnd=GlobalVar::settings->value("offsetEnd").toInt();
     GlobalVar::pRed.setColor(QPalette::WindowText, Qt::red);
     GlobalVar::pGreen.setColor(QPalette::WindowText, QColor(0,191,0));
@@ -122,6 +121,7 @@ void MainWindow::initInterface()
     ui->mainLayout->addWidget(drawChart.candleChart);
     drawChart.candleChart->hide();
 
+
     //中间界面
     QVBoxLayout *mainLayout2 =new QVBoxLayout();
     mainLayout2->setSpacing(0);
@@ -188,6 +188,7 @@ void MainWindow::initInterface()
     northBox->addItems({"今日", "3日", "5日", "10日", "月", "季", "年"});
     singleStockBoard->addItems({"近一月", "近三月", "近半年", "近一年"});
     tradedetailBox->addItems({GlobalVar::curRecentWorkDay(false).toString("yyyy-MM-dd"),"近3日", "近5日", "近10日", "近30日"});
+    openFundBox->addItems({"全部","股票型","混合型","债券型","指数型","QDII","LOF","FOF"});
     dateEdit->setCurrentSection(QDateEdit::DaySection);
     QStringList fundFlowName={"东方财富板块资金流","同花顺板块资金流","新高新低数量","股票热度、淘股吧",
                         "异常波动","昨日强势股票","北向资金买入","龙虎榜详情","个股上榜统计","开放式基金排行"};
@@ -206,6 +207,7 @@ void MainWindow::initInterface()
         fundFlow[i]=new QPushButton(fundFlowName[i]);
         rightFundLayout->addWidget(fundFlow[i]);
     }
+    rightFundLayout->addWidget(openFundBox);
     QTextBrowser *instructionText=new QTextBrowser(this);
     instructionText->setStyleSheet("background-color:#F3F3F3;");
 //    instructionText->setMaximumHeight(300);
@@ -231,6 +233,7 @@ void MainWindow::initSettings()
 {
     mTableStock.stockTableView->verticalScrollBar()->installEventFilter(this);
     newsData->verticalScrollBar()->installEventFilter(this);
+    newsData->setOpenExternalLinks(true);
     mTableStock.timeShareTickView->verticalScrollBar()->installEventFilter(this);
     drawChart.timeShareChart->installEventFilter(this);
     drawChart.candleChart->installEventFilter(this);
@@ -579,6 +582,17 @@ void MainWindow::initSignals()
     });
     for (int i=0;i<10;++i)
         connect(fundFlow[i],&QPushButton::clicked,this,&MainWindow::toFundFlow);
+    connect(f10View.stockInfoView,&QTableView::doubleClicked,this,[=](const QModelIndex &index){
+        GlobalVar::curBoard=f10View.model->item(index.row(),3)->text();
+        GlobalVar::isBoard=true;
+        searchStock.getBoardData();
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
+        toInterFace("main");
+        mTableStock.risingSpeedView->show();
+        mTableStock.myStockView->show();
+    });
 }
 void MainWindow::saveMyStock()
 {
@@ -613,7 +627,10 @@ void MainWindow::initFlag()
     else if (sender()==periodAdjust[5])
         adjustFlag="2";
     if (GlobalVar::isKState)
+    {
+        preCode="";
         emit startThreadCandleChart(freq,adjustFlag,true);
+    }
 }
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
@@ -650,15 +667,15 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         drawChart.drawTimeShareChart();
         return true;
     }
-    else if(obj==drawChart.candleChart and event->type()==QEvent::Paint)
-    {
-        drawChart.drawCandleChart();
-        return true;
-    }
     else if(obj==drawChart.candleChart and event->type()==QEvent::MouseMove)
     {
         QMouseEvent *mouseEvent = (QMouseEvent *)event;
         flashOldCandleInfo(mouseEvent);
+        return true;
+    }
+    else if(obj==drawChart.candleChart and event->type()==QEvent::Paint)
+    {
+        drawChart.drawCandleChart();
         return true;
     }
     else if(obj==drawChart.candleChart and event->type()==QEvent::Leave)
@@ -850,16 +867,17 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
         if (GlobalVar::isKState)
         {
+            int temp=GlobalVar::KRange;
             GlobalVar::KRange=GlobalVar::KRange*0.8;
-            GlobalVar::offsetLocal=GlobalVar::offsetLocal-GlobalVar::KRange*0.1;
+
             if (GlobalVar::KRange<50)
             {
                 GlobalVar::KRange=50;
                 return;
             }
-
-            if (GlobalVar::offsetLocal<GlobalVar::KRange)
-                GlobalVar::offsetLocal=GlobalVar::KRange;
+            GlobalVar::offsetLocal=GlobalVar::offsetLocal-temp+GlobalVar::KRange;
+//            if (GlobalVar::offsetLocal<GlobalVar::KRange)
+//                GlobalVar::offsetLocal=GlobalVar::KRange;
 
             drawChart.candleChart->update();
         }
@@ -1443,9 +1461,9 @@ void MainWindow::setF10Window()
     F10SmallWindow->show();
     f10View.dealWithMainIndex();
 }
-void MainWindow::toInterFace(QString what)
+void MainWindow::toInterFace(QString which)
 {
-    if (what=="main")
+    if (which=="main")
     {
         rightFundWindow->hide();
         drawChart.candleChart->hide();
@@ -1453,7 +1471,7 @@ void MainWindow::toInterFace(QString what)
         mTableStock.stockTableView->show();
 //        mTableStock.stockTableView->setFocus();
     }
-    else if (what=="k")
+    else if (which=="k")
     {
         GlobalVar::isKState=true;
         mTableStock.stockTableView->hide();
@@ -1461,10 +1479,10 @@ void MainWindow::toInterFace(QString what)
         mTableStock.myStockView->hide();
         rightFundWindow->hide();
         drawChart.candleChart->show();
-//        drawChart.candleChart->setFocus();
         rightBaseWindow->show();
+        rightBaseWindow->setFocus();
     }
-    else if (what=="fund")
+    else if (which=="fund")
     {
         GlobalVar::WhichInterface=4;
         GlobalVar::isKState=false;
@@ -1486,6 +1504,8 @@ void MainWindow::toFundFlow()
     else if((sender()==fundFlow[1]))
     {
         ifCanClick=-1;
+        mFundFlow.getRoyalFlushFundFlow();
+        mTableStock.stockTableView->setModel(mFundFlow.model);
     }
     else if((sender()==fundFlow[2]))
     {
@@ -1497,10 +1517,13 @@ void MainWindow::toFundFlow()
     {
         ifCanClick=2;
         mFundFlow.getStockHot();
+        mTableStock.stockTableView->setModel(mFundFlow.model);
     }
     else if((sender()==fundFlow[4]))
     {
-        ifCanClick=1;
+        ifCanClick=-1;
+        mFundFlow.getNotNormalStock();
+        mTableStock.stockTableView->setModel(mFundFlow.model);
     }
     else if((sender()==fundFlow[5]))
     {
@@ -1530,6 +1553,7 @@ void MainWindow::toFundFlow()
         int nums[]={1,3,5,10,30};
         int pages[]={1,1,1,2,4};
         mFundFlow.getDragonTigerList(nums[tradedetailBox->currentIndex()],pages[tradedetailBox->currentIndex()]);
+        mTableStock.stockTableView->setModel(mFundFlow.model);
         mTableStock.stockTableView->setColumnWidth(0,60);
         mTableStock.stockTableView->setColumnWidth(1,75);
         mTableStock.stockTableView->setColumnWidth(2,210);
@@ -1548,6 +1572,7 @@ void MainWindow::toFundFlow()
         QString nums[]={"01","02","03","04"};
         int pages[]={2,3,4,7};
         mFundFlow.countSingleStockBoard(nums[singleStockBoard->currentIndex()],pages[singleStockBoard->currentIndex()]);
+        mTableStock.stockTableView->setModel(mFundFlow.model);
         mTableStock.stockTableView->setColumnWidth(0,65);
         mTableStock.stockTableView->setColumnWidth(1,80);
         mTableStock.stockTableView->setColumnWidth(2,100);
@@ -1562,7 +1587,8 @@ void MainWindow::toFundFlow()
         ifCanClick=-1;
         QString ft[]={"all","gp","hh","zq","zs","qdii","lof","fof"};
         QString sc[]={"zzf", "6yzf", "6yzf", "6yzf", "6yzf", "6yzf", "6yzf", "6yzf"};
-        mFundFlow.openFundRank(ft[0],sc[0]);
+        mFundFlow.openFundRank(ft[openFundBox->currentIndex()],sc[openFundBox->currentIndex()]);
+        mTableStock.stockTableView->setModel(mFundFlow.model);
         mTableStock.stockTableView->setColumnWidth(0,65);
         mTableStock.stockTableView->setColumnWidth(1,280);
         mTableStock.stockTableView->setColumnWidth(2,100);

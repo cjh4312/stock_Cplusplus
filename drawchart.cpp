@@ -10,9 +10,7 @@ DrawChart::DrawChart(QWidget *parent)
 
 void DrawChart::drawTimeShareChart()
 {
-    int trendsTotal=0;
-    if (GlobalVar::mTimeShareChartList.count()!=0)
-        trendsTotal=GlobalVar::trendsTotal;
+    int trendsTotal=GlobalVar::trendsTotal;
     QPainter painter(timeShareChart);
     painter.setPen(Qt::gray);
     painter.setBrush(Qt::black);
@@ -45,6 +43,9 @@ void DrawChart::drawTimeShareChart()
         d=90;
     for (int i=1;i<=trendsTotal/30;++i)
         painter.drawLine(QPointF(i*d*aveWidth/2+WIDTHEDGE,0),QPointF(i*d*aveWidth/2+WIDTHEDGE,timeShareChartHeight-BOTTOMHEIGHTEDGE));
+
+    if (GlobalVar::mTimeShareChartList.isEmpty())
+        return;
     //绘制时间
     QRect rect;
     painter.setPen(Qt::white);
@@ -137,8 +138,6 @@ void DrawChart::drawTimeShareChart()
 void DrawChart::drawCandleChart()
 {
     int total=GlobalVar::mCandleChartList.count();
-    if (total==0)
-        return;
     int begin=total-GlobalVar::offsetLocal;
     if (begin<0)
         begin=0;
@@ -155,6 +154,9 @@ void DrawChart::drawCandleChart()
     int priceH=canldeChartHeight*12/15;
     painter.drawRect(0,0,candleChartWidth,canldeChartHeight);
     painter.drawLine(0,priceH,candleChartWidth,priceH);
+
+    if (GlobalVar::mCandleChartList.isEmpty())
+        return;
     calcHighLowPoint(begin,end);
     float highPoint=candleHighLowPoint[0];
     float lowPoint=candleHighLowPoint[1];

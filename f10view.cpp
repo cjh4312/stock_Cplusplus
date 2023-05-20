@@ -10,6 +10,7 @@ F10View::F10View()
     stockInfoView->setItemDelegate(new CommonDelegate());
     stockInfoView->setStyleSheet("QTableView{selection-background-color:lightgray}");
     stockInfoView->setAlternatingRowColors(true);
+    stockInfoView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
 void F10View::dealWithHotRank()

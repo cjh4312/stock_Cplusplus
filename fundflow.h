@@ -5,22 +5,22 @@
 #include "stockinfo.h"
 #include <QTableView>
 #include <QStandardItemModel>
-#include <QNetworkAccessManager>
+//#include <QNetworkAccessManager>
 #include <QJsonArray>
 #include <QFile>
 #include <QTextCodec>
-#include <QStringRef>
+//#include <QStringRef>
+#include <QJSEngine>
 
 class FundFlow : public QTableView
 {
 public:
     FundFlow();
-    QNetworkAccessManager *naManager;
-    QByteArray allData;
+//    QNetworkAccessManager *naManager;
     QList<QStringList> FundFlowList;
     QStandardItemModel *model=new QStandardItemModel(this);
     void getEastPlateFundFlow(int days);
-    void getData(int days);
+    void getData(int days,const QByteArray &allData);
     void getBoardStock(QString name);
     void getIntervalHighLow();
     void getStockPoolStrong(QString date);
@@ -29,6 +29,8 @@ public:
     void countSingleStockBoard(QString nums,int pages);
     void getStockHot();
     void openFundRank(QString ft,QString sc);
+    void getRoyalFlushFundFlow();
+    void getNotNormalStock();
 };
 
 #endif // FUNDFLOW_H

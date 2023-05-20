@@ -4,9 +4,11 @@
 
 
 #include <QObject>
-#include <QNetworkAccessManager>
+//#include <QNetworkAccessManager>
 #include <QJsonArray>
 #include <QTextToSpeech>
+//#include <QRegularExpression>
+//#include <QRegularExpressionMatch>
 
 class ThreadNewsReport : public QObject
 {
@@ -17,14 +19,17 @@ public:
     void getEastNews();
     QTextToSpeech  *tts;
 private:
-    QNetworkAccessManager *naManager;
-    QByteArray allData;
+//    QNetworkAccessManager *naManager;
     QString jinShiNewsReportCurTime;
-    bool isInitSpeech=false;
+    int eastNewsReportCurTime;
+    QList<QStringList> eastNewsList;
+//    bool isInitSpeech=false;
     int count=0;
     QString id;
     bool isRunning=false;
-    void initNewsReport();
+    void initNewsReport(const QByteArray &allData);
+    void sayJsNews(QJsonObject object);
+    void sayEastNews(QStringList l,int time);
 signals:
     void getNewsFinished(QString s);
 
