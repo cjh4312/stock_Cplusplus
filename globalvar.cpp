@@ -17,14 +17,16 @@ bool GlobalVar::isWorkDay(QDateTime curTime)
         return false;
 }
 
-bool GlobalVar::isZhWorkDay(QDateTime curTime,bool select)
+bool GlobalVar::isZhWorkDay(QDateTime curTime,int select)
 {
     QStringList vacation=GlobalVar::settings->value("Vacation_ZH").toStringList();
     QDateTime local=QDateTime::currentDateTime();
     QString cur_date=curTime.toString("MMdd");
     int cur_time= curTime.toString("hhmmss").toInt();
-    int time=160000;
-    if (select)
+    int time=150000;
+    if (select==1)
+        time=163000;
+    else if(select==2)
         time=230000;
     if (not vacation.contains(cur_date) && isWorkDay(curTime))
     {
@@ -36,7 +38,7 @@ bool GlobalVar::isZhWorkDay(QDateTime curTime,bool select)
         return false;
 }
 
-QDateTime GlobalVar::curRecentWorkDay(bool select)
+QDateTime GlobalVar::curRecentWorkDay(int select)
 {
     QDateTime curTime=QDateTime::currentDateTime();
     for (int i=0;i<15;++i)
@@ -363,7 +365,8 @@ QString GlobalVar::curCode="600519";
 QString GlobalVar::curName="贵州茅台";
 bool GlobalVar::isBoard=false;
 QString GlobalVar::curBoard;
-QString GlobalVar::EPSReportDate="报告期";
+QString GlobalVar::EPSReportDate="每股收益";
+QString GlobalVar::PEName="市盈率";
 //QStringList GlobalVar::tableHeader;
 float GlobalVar::preClose=0.00;
 int GlobalVar::WhichInterface = 1;
@@ -389,7 +392,7 @@ float GlobalVar::timeShareHighLowPoint[5]={0.0};
 //float GlobalVar::candleHighLowPoint[5]={0.0};
 float GlobalVar::buySellPrice[10]={0.0};
 float GlobalVar::buySellNum[10]={0.0};
-float GlobalVar::baseInfoData[13]={0.0};
+float GlobalVar::baseInfoData[14]={0.0};
 int GlobalVar::curSortNum=3;
 bool GlobalVar::is_asc=false;
 QPalette GlobalVar::pRed;
@@ -402,4 +405,7 @@ bool GlobalVar::isSayNews=true;
 int GlobalVar::trendsTotal=0;
 int GlobalVar::curBlock=0;
 QString GlobalVar::currentPath;
-
+bool GlobalVar::areaFlag[5]={true};
+QString GlobalVar::formulaContent;
+int GlobalVar::mTableListNum;
+QString GlobalVar::mCandleListCode;

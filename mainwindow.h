@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "jspickstock.h"
 #include "qgridlayout.h"
 #include "tablestock.h"
 #include "threadtable.h"
@@ -50,7 +51,6 @@ private slots:
     void addRightMenu(int num);
     void delRightMenu();
     void showSearchResult();
-    void downStockIndexPlateInfo();
     void resetKParameter();
     void dealWithFundFlow();
 
@@ -70,6 +70,7 @@ private:
     RequestsToCsv requestsToCsv;
     F10View f10View;
     FundFlow mFundFlow;
+    JSPickStock mPickStock;
     ThreadTable *threadTable;
     ThreadIndex *threadIndex;
     ThreadTimeShareTick *threadTimeShareTick;
@@ -106,6 +107,7 @@ private:
     QPushButton *fundFlow[10];
     QString preCode="";
     QLabel *EPSLabel;
+    QLabel *PELabel;
     QComboBox *periodBox=new QComboBox(this);
     QDateEdit *dateEdit=new QDateEdit(this);
     QComboBox *northBox=new QComboBox(this);
@@ -125,8 +127,6 @@ private:
     void saveCode();
     void initFlag();
     void flashOldCandleInfo(QMouseEvent *mouseEvent);
-    void setF3Window();
-    void setF10Window();
     void toInterFace(QString which);
     void toFundFlow();
 

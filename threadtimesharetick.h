@@ -21,6 +21,7 @@ private:
     void initBuySellList(const QByteArray &allData);
     void initTimeShareTickList(const QByteArray &allData);
     void findStockArea();
+    QList<QStringList> areaData;
 signals:
     void getTimeShareTickFinished();
     void getBuySellFinished();

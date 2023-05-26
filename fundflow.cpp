@@ -11,25 +11,24 @@ FundFlow::FundFlow()
 
 void FundFlow::getEastPlateFundFlow(int days)
 {
-    QString url1="https://push2.eastmoney.com/api/qt/clist/get?fid=f62&po=1&pz=50&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A1&fields=f12%2Cf14%2Cf2%2Cf3%2Cf62%2Cf184%2Cf66%2Cf69%2Cf72%2Cf75%2Cf78%2Cf81%2Cf84%2Cf87%2Cf204%2Cf205%2Cf124%2Cf1%2Cf13";
-    QString url2="https://push2.eastmoney.com/api/qt/clist/get?fid=f62&po=1&pz=500&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A3&fields=f12%2Cf14%2Cf2%2Cf3%2Cf62%2Cf184%2Cf66%2Cf69%2Cf72%2Cf75%2Cf78%2Cf81%2Cf84%2Cf87%2Cf204%2Cf205%2Cf124%2Cf1%2Cf13";
-    QString url3="https://push2.eastmoney.com/api/qt/clist/get?fid=f62&po=1&pz=100&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A2&fields=f12%2Cf14%2Cf2%2Cf3%2Cf62%2Cf184%2Cf66%2Cf69%2Cf72%2Cf75%2Cf78%2Cf81%2Cf84%2Cf87%2Cf204%2Cf205%2Cf124%2Cf1%2Cf13";
+    QString url[]={"https://push2.eastmoney.com/api/qt/clist/get?fid=f62&po=1&pz=50&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A1&fields=f12%2Cf14%2Cf2%2Cf3%2Cf62%2Cf184%2Cf66%2Cf69%2Cf72%2Cf75%2Cf78%2Cf81%2Cf84%2Cf87%2Cf204%2Cf205%2Cf124%2Cf1%2Cf13",
+                "https://push2.eastmoney.com/api/qt/clist/get?fid=f62&po=1&pz=500&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A3&fields=f12%2Cf14%2Cf2%2Cf3%2Cf62%2Cf184%2Cf66%2Cf69%2Cf72%2Cf75%2Cf78%2Cf81%2Cf84%2Cf87%2Cf204%2Cf205%2Cf124%2Cf1%2Cf13",
+                "https://push2.eastmoney.com/api/qt/clist/get?fid=f62&po=1&pz=100&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A2&fields=f12%2Cf14%2Cf2%2Cf3%2Cf62%2Cf184%2Cf66%2Cf69%2Cf72%2Cf75%2Cf78%2Cf81%2Cf84%2Cf87%2Cf204%2Cf205%2Cf124%2Cf1%2Cf13"};
     QStringList FundFlowCol;
     QString h="今日";
-    QString url[]={url1,url2,url3};
     if (days==5)
     {
         h="5日";
-        url1="https://push2.eastmoney.com/api/qt/clist/get?fid=f109&po=1&pz=50&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A1&fields=f12%2Cf14%2Cf2%2Cf109%2Cf164%2Cf165%2Cf166%2Cf167%2Cf168%2Cf169%2Cf170%2Cf171%2Cf172%2Cf173%2Cf257%2Cf258%2Cf124%2Cf1%2Cf13";
-        url2="https://push2.eastmoney.com/api/qt/clist/get?fid=f109&po=1&pz=500&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A3&fields=f12%2Cf14%2Cf2%2Cf109%2Cf164%2Cf165%2Cf166%2Cf167%2Cf168%2Cf169%2Cf170%2Cf171%2Cf172%2Cf173%2Cf257%2Cf258%2Cf124%2Cf1%2Cf13";
-        url3="https://push2.eastmoney.com/api/qt/clist/get?fid=f109&po=1&pz=100&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A2&fields=f12%2Cf14%2Cf2%2Cf109%2Cf164%2Cf165%2Cf166%2Cf167%2Cf168%2Cf169%2Cf170%2Cf171%2Cf172%2Cf173%2Cf257%2Cf258%2Cf124%2Cf1%2Cf13";
+        url[0]="https://push2.eastmoney.com/api/qt/clist/get?fid=f109&po=1&pz=50&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A1&fields=f12%2Cf14%2Cf2%2Cf109%2Cf164%2Cf165%2Cf166%2Cf167%2Cf168%2Cf169%2Cf170%2Cf171%2Cf172%2Cf173%2Cf257%2Cf258%2Cf124%2Cf1%2Cf13";
+        url[1]="https://push2.eastmoney.com/api/qt/clist/get?fid=f109&po=1&pz=500&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A3&fields=f12%2Cf14%2Cf2%2Cf109%2Cf164%2Cf165%2Cf166%2Cf167%2Cf168%2Cf169%2Cf170%2Cf171%2Cf172%2Cf173%2Cf257%2Cf258%2Cf124%2Cf1%2Cf13";
+        url[2]="https://push2.eastmoney.com/api/qt/clist/get?fid=f109&po=1&pz=100&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A2&fields=f12%2Cf14%2Cf2%2Cf109%2Cf164%2Cf165%2Cf166%2Cf167%2Cf168%2Cf169%2Cf170%2Cf171%2Cf172%2Cf173%2Cf257%2Cf258%2Cf124%2Cf1%2Cf13";
     }
     else if (days==10)
     {
         h="10日";
-        url1="https://push2.eastmoney.com/api/qt/clist/get?fid=f160&po=1&pz=100&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A2&fields=f12%2Cf14%2Cf2%2Cf160%2Cf174%2Cf175%2Cf176%2Cf177%2Cf178%2Cf179%2Cf180%2Cf181%2Cf182%2Cf183%2Cf260%2Cf261%2Cf124%2Cf1%2Cf13";
-        url2="https://push2.eastmoney.com/api/qt/clist/get?fid=f160&po=1&pz=500&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A3&fields=f12%2Cf14%2Cf2%2Cf160%2Cf174%2Cf175%2Cf176%2Cf177%2Cf178%2Cf179%2Cf180%2Cf181%2Cf182%2Cf183%2Cf260%2Cf261%2Cf124%2Cf1%2Cf13";
-        url3="https://push2.eastmoney.com/api/qt/clist/get?fid=f160&po=1&pz=50&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A1&fields=f12%2Cf14%2Cf2%2Cf160%2Cf174%2Cf175%2Cf176%2Cf177%2Cf178%2Cf179%2Cf180%2Cf181%2Cf182%2Cf183%2Cf260%2Cf261%2Cf124%2Cf1%2Cf13";
+        url[0]="https://push2.eastmoney.com/api/qt/clist/get?fid=f160&po=1&pz=100&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A2&fields=f12%2Cf14%2Cf2%2Cf160%2Cf174%2Cf175%2Cf176%2Cf177%2Cf178%2Cf179%2Cf180%2Cf181%2Cf182%2Cf183%2Cf260%2Cf261%2Cf124%2Cf1%2Cf13";
+        url[1]="https://push2.eastmoney.com/api/qt/clist/get?fid=f160&po=1&pz=500&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A3&fields=f12%2Cf14%2Cf2%2Cf160%2Cf174%2Cf175%2Cf176%2Cf177%2Cf178%2Cf179%2Cf180%2Cf181%2Cf182%2Cf183%2Cf260%2Cf261%2Cf124%2Cf1%2Cf13";
+        url[2]="https://push2.eastmoney.com/api/qt/clist/get?fid=f160&po=1&pz=50&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A90+t%3A1&fields=f12%2Cf14%2Cf2%2Cf160%2Cf174%2Cf175%2Cf176%2Cf177%2Cf178%2Cf179%2Cf180%2Cf181%2Cf182%2Cf183%2Cf260%2Cf261%2Cf124%2Cf1%2Cf13";
     }
     FundFlowCol<<"名称"<<h+"涨跌幅"<<"主力净额"<<"主力净占比"<<"超大单净额"<<"超大单净占比"<<"大单净额"
                 <<"大单净占比"<<"中单净额"<<"中单净占比"<<"小单净额"<<"小单净占比"<<"主力净流入最大股";
@@ -127,7 +126,7 @@ void FundFlow::getBoardStock(QString name)
             QStringList strLine = data.at(i).split(",");
             if (name==strLine[1])
             {
-                GlobalVar::getData(allData,1,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=f3&fs=b:"+strLine[0]+"+f:!50&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1665552114833"));
+                GlobalVar::getData(allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=2000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=f3&fs=b:"+strLine[0]+"+f:!50&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1665552114833"));
                 break;
             }
         }
@@ -261,9 +260,9 @@ void FundFlow::getNorthFundFlow(QString days)
     QStringList northFundFlowCol;
     northFundFlowCol<<"代码"<<"名称"<<"收盘价"<<"涨跌幅"<<"持股数"<<"持市值"<<"持占流通股比"<<"持占总股本比"
                    <<"增股数"<<"增市值"<<"增市值增幅"<<"增占流通股比"<<"增占总股本比"<<"所属板块";
-    QString curDate=GlobalVar::curRecentWorkDay(true).date().toString("yyyy-MM-dd");
+    QString curDate=GlobalVar::curRecentWorkDay(2).date().toString("yyyy-MM-dd");
     QByteArray allData;
-    GlobalVar::getData(allData,1,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=ADD_MARKET_CAP&sortTypes=-1&pageSize=5000&pageNumber=1&reportName=RPT_MUTUAL_STOCK_NORTHSTA&columns=ALL&source=WEB&client=WEB&filter=(TRADE_DATE%3D%27"+curDate+"%27)(INTERVAL_TYPE%3D%22"+days+"%22)"));
+    GlobalVar::getData(allData,3,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=ADD_MARKET_CAP&sortTypes=-1&pageSize=5000&pageNumber=1&reportName=RPT_MUTUAL_STOCK_NORTHSTA&columns=ALL&source=WEB&client=WEB&filter=(TRADE_DATE%3D%27"+curDate+"%27)(INTERVAL_TYPE%3D%22"+days+"%22)"));
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
     model->clear();
@@ -329,7 +328,7 @@ void FundFlow::getDragonTigerList(int nums,int pages)
     for (int i=0;i<60;++i)
     {
         QDateTime t=curDate.addDays(-i);
-        if (GlobalVar::isZhWorkDay(t,false))
+        if (GlobalVar::isZhWorkDay(t,1))
         {
             counts+=1;
             if (counts==1)
@@ -348,7 +347,7 @@ void FundFlow::getDragonTigerList(int nums,int pages)
     for (int j=1;j<pages+1;++j)
     {
         QByteArray allData;
-        GlobalVar::getData(allData,1,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=BILLBOARD_NET_AMT%2CTRADE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1%2C1&pageSize=500&pageNumber="+QString::number(j)+"&reportName=RPT_DAILYBILLBOARD_DETAILSNEW&columns=SECURITY_CODE%2CSECUCODE%2CSECURITY_NAME_ABBR%2CTRADE_DATE%2CEXPLAIN%2CCLOSE_PRICE%2CCHANGE_RATE%2CBILLBOARD_NET_AMT%2CBILLBOARD_BUY_AMT%2CBILLBOARD_SELL_AMT%2CBILLBOARD_DEAL_AMT%2CACCUM_AMOUNT%2CDEAL_NET_RATIO%2CDEAL_AMOUNT_RATIO%2CTURNOVERRATE%2CFREE_MARKET_CAP%2CEXPLANATION%2CD1_CLOSE_ADJCHRATE%2CD2_CLOSE_ADJCHRATE%2CD5_CLOSE_ADJCHRATE%2CD10_CLOSE_ADJCHRATE%2CSECURITY_TYPE_CODE&source=WEB&client=WEB&filter=(TRADE_DATE%3C%3D%27"+endDate+"%27)(TRADE_DATE%3E%3D%27"+StartDate+"%27)"));
+        GlobalVar::getData(allData,2,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=BILLBOARD_NET_AMT%2CTRADE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1%2C1&pageSize=500&pageNumber="+QString::number(j)+"&reportName=RPT_DAILYBILLBOARD_DETAILSNEW&columns=SECURITY_CODE%2CSECUCODE%2CSECURITY_NAME_ABBR%2CTRADE_DATE%2CEXPLAIN%2CCLOSE_PRICE%2CCHANGE_RATE%2CBILLBOARD_NET_AMT%2CBILLBOARD_BUY_AMT%2CBILLBOARD_SELL_AMT%2CBILLBOARD_DEAL_AMT%2CACCUM_AMOUNT%2CDEAL_NET_RATIO%2CDEAL_AMOUNT_RATIO%2CTURNOVERRATE%2CFREE_MARKET_CAP%2CEXPLANATION%2CD1_CLOSE_ADJCHRATE%2CD2_CLOSE_ADJCHRATE%2CD5_CLOSE_ADJCHRATE%2CD10_CLOSE_ADJCHRATE%2CSECURITY_TYPE_CODE&source=WEB&client=WEB&filter=(TRADE_DATE%3C%3D%27"+endDate+"%27)(TRADE_DATE%3E%3D%27"+StartDate+"%27)"));
         QJsonParseError jsonError;
         QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
 
@@ -420,7 +419,7 @@ void FundFlow::countSingleStockBoard(QString nums,int pages)
     for (int i=1;i<pages+1;++i)
     {
         QByteArray allData;
-        GlobalVar::getData(allData,1,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=BILLBOARD_TIMES%2CLATEST_TDATE%2CSECURITY_CODE&sortTypes=-1%2C-1%2C1&pageSize=1000&pageNumber="+QString::number(i)+"&reportName=RPT_BILLBOARD_TRADEALLNEW&columns=ALL&source=WEB&client=WEB&filter=(STATISTICS_CYCLE%3D%22"+nums+"%22)"));
+        GlobalVar::getData(allData,2,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=BILLBOARD_TIMES%2CLATEST_TDATE%2CSECURITY_CODE&sortTypes=-1%2C-1%2C1&pageSize=1000&pageNumber="+QString::number(i)+"&reportName=RPT_BILLBOARD_TRADEALLNEW&columns=ALL&source=WEB&client=WEB&filter=(STATISTICS_CYCLE%3D%22"+nums+"%22)"));
         QJsonParseError jsonError;
         QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
 
@@ -523,6 +522,8 @@ void FundFlow::getStockHot()
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toArray();
         int n=GlobalVar::mTableListCopy.count();
+        if (n==0)
+            return;
         for (int i = 0; i < data.size(); ++i)
         {
             QJsonValue value = data.at(i);
@@ -699,12 +700,6 @@ void FundFlow::getNotNormalStock()
     if (allData.isEmpty())
         return;
     QString html=QString(allData);
-//    QString str=GlobalVar::peelStr(html,"class=\"el-col el-col-18 el-col-offset-3\"","-1");
-//    qDebug()<<str;
-//    QString temp=GlobalVar::peelStr(str,"class=\"categories\"","-1");
-//    temp=GlobalVar::peelStr(temp,"<div","-1");
-//    temp=GlobalVar::peelStr(temp,"<div","-1");
-//    temp=GlobalVar::peelStr(temp,"<div","-1");
     QPair<QString, QString> pair=GlobalVar::cutStr(html,"class=\"el-card item m-t is-hover-shadow\"",
                         "class=\"el-card item m-t is-hover-shadow\"");
     html=pair.second;
@@ -714,4 +709,15 @@ void FundFlow::getNotNormalStock()
     GlobalVar::getAllContent(pair.first,l,"<span");
     qDebug()<<l;
 
+//    QJsonObject json;
+//    json.insert("api_name", "stock_basic");
+//    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
+//    json.insert("fields", "ts_code,symbol,name,area,industry,list_date,cnspell");
+
+//    QJsonDocument doc;
+//    doc.setObject(json);
+//    QByteArray dataArray = doc.toJson(QJsonDocument::Compact);
+//    QByteArray allData1;
+//    GlobalVar::postData(dataArray,allData1,1,QUrl("http://api.waditu.com"));
+//    qDebug()<<QString(allData1);
 }

@@ -5,7 +5,7 @@
 ThreadTable::ThreadTable(QObject *parent)
     : QObject{parent}
 {
-    naManager = new QNetworkAccessManager(this);
+//    naManager = new QNetworkAccessManager(this);
     readMyStock();
 }
 
@@ -131,6 +131,8 @@ void ThreadTable::readMyStock()
 void ThreadTable::reFlaseMyStock()
 {
     int n=GlobalVar::mTableListCopy.count();
+    if (n==0)
+        return;
     for (int i=0;i<GlobalVar::mMyStockList.count();++i)
     {
         int l = 0;

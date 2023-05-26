@@ -55,6 +55,7 @@
     <property name="title">
      <string>开始</string>
     </property>
+    <addaction name="DLAllStockK"/>
     <addaction name="DLStockInfo"/>
     <addaction name="newsReport"/>
     <addaction name="exit"/>
@@ -85,6 +86,7 @@
      <string>分析</string>
     </property>
     <addaction name="fundFlow"/>
+    <addaction name="pickStock"/>
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="font">
@@ -197,7 +199,20 @@
   </action>
   <action name="DLStockInfo">
    <property name="text">
-    <string>下载股票基本信息</string>
+    <string>下载指数板块个股信息</string>
+   </property>
+  </action>
+  <action name="DLAllStockK">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>下载所有股票k线</string>
+   </property>
+  </action>
+  <action name="pickStock">
+   <property name="text">
+    <string>公式选股</string>
    </property>
   </action>
  </widget>

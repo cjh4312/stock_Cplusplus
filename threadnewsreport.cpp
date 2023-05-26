@@ -35,6 +35,8 @@ void ThreadNewsReport::getEastNews()
 {
     QByteArray allData;
     GlobalVar::getData(allData,1.3,QUrl("https://finance.eastmoney.com/yaowen.html"));
+    if (allData.isEmpty())
+        return;
     QString s=GlobalVar::peelStr(QString(allData),"id=\"artitileList1\"","-1");
     QPair<QString, QString> pair;
     eastNewsList.clear();

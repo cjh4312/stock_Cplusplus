@@ -4,7 +4,7 @@
 
 
 #include <QObject>
-#include <QNetworkAccessManager>
+//#include <QNetworkAccessManager>
 #include <QFile>
 #include <QTextCodec>
 
@@ -15,7 +15,7 @@ public:
     explicit ThreadTable(QObject *parent = nullptr);
     void getTableData();
 private:
-    QNetworkAccessManager *naManager;
+//    QNetworkAccessManager *naManager;
 //    bool isFirstReadMyStock=true;
     bool isRunning=false;
 

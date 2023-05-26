@@ -1,5 +1,6 @@
 QT       += core gui network texttospeech qml
 RC_FILE += app.rc
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 5): QT += core5compat
 CONFIG += c++17
@@ -15,6 +16,7 @@ SOURCES += \
     fundflow.cpp \
     getf10info.cpp \
     globalvar.cpp \
+    jspickstock.cpp \
     main.cpp \
     mainwindow.cpp \
     modeltablestock.cpp \
@@ -36,6 +38,7 @@ HEADERS += \
     fundflow.h \
     getf10info.h \
     globalvar.h \
+    jspickstock.h \
     mainwindow.h \
     modeltablestock.h \
     modeltimeshare.h \

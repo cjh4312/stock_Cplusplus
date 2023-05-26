@@ -42,6 +42,8 @@ void MainWindow::initGlobalVar()
     GlobalVar::curCode=GlobalVar::settings->value("curCode").toString();
     GlobalVar::isSayNews=GlobalVar::settings->value("sayNews").toBool();
     GlobalVar::offsetEnd=GlobalVar::settings->value("offsetEnd").toInt();
+    for (int i=0;i<5;++i)
+        GlobalVar::areaFlag[i]=true;
     GlobalVar::pRed.setColor(QPalette::WindowText, Qt::red);
     GlobalVar::pGreen.setColor(QPalette::WindowText, QColor(0,191,0));
     GlobalVar::pBlack.setColor(QPalette::WindowText, Qt::black);
@@ -121,7 +123,6 @@ void MainWindow::initInterface()
     ui->mainLayout->addWidget(drawChart.candleChart);
     drawChart.candleChart->hide();
 
-
     //中间界面
     QVBoxLayout *mainLayout2 =new QVBoxLayout();
     mainLayout2->setSpacing(0);
@@ -187,7 +188,7 @@ void MainWindow::initInterface()
     periodBox->addItems({"即时", "3日排行", "5日排行", "10日排行", "20日排行"});
     northBox->addItems({"今日", "3日", "5日", "10日", "月", "季", "年"});
     singleStockBoard->addItems({"近一月", "近三月", "近半年", "近一年"});
-    tradedetailBox->addItems({GlobalVar::curRecentWorkDay(false).toString("yyyy-MM-dd"),"近3日", "近5日", "近10日", "近30日"});
+    tradedetailBox->addItems({GlobalVar::curRecentWorkDay(1).toString("yyyy-MM-dd"),"近3日", "近5日", "近10日", "近30日"});
     openFundBox->addItems({"全部","股票型","混合型","债券型","指数型","QDII","LOF","FOF"});
     dateEdit->setCurrentSection(QDateEdit::DaySection);
     QStringList fundFlowName={"东方财富板块资金流","同花顺板块资金流","新高新低数量","股票热度、淘股吧",
@@ -233,6 +234,7 @@ void MainWindow::initSettings()
 {
     mTableStock.stockTableView->verticalScrollBar()->installEventFilter(this);
     newsData->verticalScrollBar()->installEventFilter(this);
+    newsData->document()->setMaximumBlockCount(10);
     newsData->setOpenExternalLinks(true);
     mTableStock.timeShareTickView->verticalScrollBar()->installEventFilter(this);
     drawChart.timeShareChart->installEventFilter(this);
@@ -262,7 +264,7 @@ void MainWindow::initSettings()
 
     searchSmallWindow=new QWidget(this);
     searchSmallWindow->setWindowFlag(Qt::Popup);
-    searchSmallWindow->setGeometry(1466, 645, 280, 350);
+    searchSmallWindow->setGeometry(1466, 645, 300, 350);
     QVBoxLayout *search =new QVBoxLayout();
     search->setContentsMargins(2, 2, 2, 2);
     searchSmallWindow->setLayout(search);
@@ -297,8 +299,8 @@ void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
     baseInfoLayout->addWidget(stockCode, 0, 0, 2, 1);
     baseInfoLayout->addWidget(stockName, 0, 1, 2, 3);
 
-    QString lName[]={"现价", "涨幅","换手", "成交额", "总股本", "总市值", "PE(静)", "上涨总数",
-                       "今开", "最高", "最低", "成交量(手)", "流通股", "", "PE(动)", "下跌总数"};
+    QString lName[]={"现价", "涨幅","换手", "成交额", "总股本", "总市值", "市净率", "上涨总数",
+                       "今开", "最高", "最低", "成交量(手)", "流通股", "", "", "下跌总数"};
 
     for (int i=0;i<16;++i)
     {
@@ -332,7 +334,10 @@ void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
     }
     EPSLabel=new QLabel();
     EPSLabel->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑}");
+    PELabel=new QLabel();
+    PELabel->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑}");
     baseInfoLayout->addWidget(EPSLabel,7,2);
+    baseInfoLayout->addWidget(PELabel,8,2);
 }
 void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
 {
@@ -548,21 +553,26 @@ void MainWindow::initSignals()
     });
     connect(ui->fundFlow,&QAction::triggered,this,&MainWindow::dealWithFundFlow);
     connect(&searchStock,SIGNAL(showSearch()),this,SLOT(showSearchResult()));
-    connect(ui->DLStockInfo,&QAction::triggered,this,&MainWindow::downStockIndexPlateInfo);
+    connect(ui->DLAllStockK,&QAction::triggered,this,[=](){
+        requestsToCsv.downloadAllStockK();
+    });
+    connect(ui->DLStockInfo,&QAction::triggered,this,[=](){
+        requestsToCsv.downStockIndexPlateInfo();
+    });
     for (int i=0;i<6;++i)
         connect(periodAdjust[i],&QRadioButton::clicked,this,&MainWindow::initFlag);
 
     connect(F10Info[0],&QPushButton::clicked,this,[=](){
-        setF3Window();
+        toInterFace("f3");
     });
     connect(ui->actionF3,&QAction::triggered,this,[=](){
-        setF3Window();
+        toInterFace("f3");
     });
     connect(F10Info[1],&QPushButton::clicked,this,[=](){
-        setF10Window();
+        toInterFace("f10");
     });
     connect(ui->actionF10,&QAction::triggered,this,[=](){
-        setF10Window();
+        toInterFace("f10");
     });
     connect(F10Info[2],&QPushButton::clicked,this,[=](){
         F10SmallWindow->setFixedSize(1470,700);
@@ -592,6 +602,12 @@ void MainWindow::initSignals()
         toInterFace("main");
         mTableStock.risingSpeedView->show();
         mTableStock.myStockView->show();
+    });
+    connect(ui->pickStock,&QAction::triggered,this,[=](){
+        mPickStock.PickStockInterface();
+    });
+    connect(&mPickStock,&JSPickStock::updateTableList,this,[=](){
+        mTableStock.setTableView();
     });
 }
 void MainWindow::saveMyStock()
@@ -929,9 +945,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         }
     }
     else if (key==Qt::Key_F3)
-        setF3Window();
+        toInterFace("f3");
     else if (key==Qt::Key_F10)
-        setF10Window();
+        toInterFace("f10");
 }
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
@@ -1142,22 +1158,6 @@ void MainWindow::showSearchResult()
         toInterFace("k");
     }
 }
-void MainWindow::downStockIndexPlateInfo()
-{
-    QWidget *promptWindow=new QWidget(this);
-    QTextEdit *promptText=new QTextEdit(promptWindow);
-    promptText->setStyleSheet("background-color: rgb(211, 211, 211);");
-    promptWindow->setWindowFlag(Qt::Popup);
-    promptWindow->setGeometry(850, 400, 300, 150);
-    QVBoxLayout *Vlay=new QVBoxLayout(promptWindow);
-    promptWindow->setLayout(Vlay);
-    Vlay->addWidget(promptText);
-    promptWindow->show();
-    promptText->append("开始下载指数、板块、个股信息...请稍等");
-    requestsToCsv.dealWithAllList();
-    promptText->append("指数、板块、个股信息处理完毕");
-//    ui->DLStockInfo->setDisabled(true);
-}
 void MainWindow::resetKParameter()
 {
     GlobalVar::offsetEnd=GlobalVar::settings->value("offsetEnd").toInt();
@@ -1172,8 +1172,8 @@ void MainWindow::dealWithFundFlow()
         QMessageBox::information(this,"提示","东方只能查看1日、5日和10日",QMessageBox::Ok);
         return;
     }
-    dateEdit->setDate(GlobalVar::curRecentWorkDay(false).date());
-    tradedetailBox->setItemText(0,GlobalVar::curRecentWorkDay(false).toString("yyyy-MM-dd"));
+    dateEdit->setDate(GlobalVar::curRecentWorkDay(0).date());
+    tradedetailBox->setItemText(0,GlobalVar::curRecentWorkDay(1).toString("yyyy-MM-dd"));
 
     GlobalVar::isKState=false;
     ifCanClick=0;
@@ -1196,6 +1196,8 @@ void MainWindow::tradingTimeRunThread()
 //    int a = timeCount % 10;
     //每1秒，A股交易时段刷新个股买卖及每笔成交
     QDateTime curTime=QDateTime::currentDateTime();
+//    if (not ui->DLAllStockK->isEnabled() and curTime.time().toString("hh:mm")>="15:00")
+//        ui->DLAllStockK->setEnabled(true);
     if (timeCount%2==1)
     {
         if (GlobalVar::WhichInterface==1 and GlobalVar::isZhMarketDay(curTime))
@@ -1249,7 +1251,7 @@ void MainWindow::tradingTimeRunThread()
             QString d=curTime.date().toString("yyyy-MM-dd");
             if (curTime.time().toString("hh:mm")>="09:00" and d>GlobalVar::settings->value("curTime").toString())
             {
-                downStockIndexPlateInfo();
+                requestsToCsv.downStockIndexPlateInfo();
                 GlobalVar::settings->setValue("curTime",d);
             }
         }
@@ -1356,7 +1358,7 @@ void MainWindow::reFlashBuySellBaseInfo()
         baseInfoData[0]->setPalette(GlobalVar::pBlack);
         baseInfoData[1]->setPalette(GlobalVar::pBlack);
     }
-    for (int i=0;i<6;++i)
+    for (int i=0;i<7;++i)
         if (i==0)
             baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i],'f',2));
         else if (i==1 or i==2)
@@ -1367,7 +1369,7 @@ void MainWindow::reFlashBuySellBaseInfo()
     for (int i=8;i<15;++i)
         if (i==8 or i==9 or i==10)
         {
-            float p=GlobalVar::baseInfoData[i-2];
+            float p=GlobalVar::baseInfoData[i-1];
             if (GlobalVar::preClose==0 or p==0)
                 pct=0;
             else
@@ -1382,10 +1384,11 @@ void MainWindow::reFlashBuySellBaseInfo()
                 baseInfoData[i]->setPalette(GlobalVar::pBlack);
         }
         else
-            baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i-2]));
+            baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i-1]));
     stockCode->setText(GlobalVar::curCode);
     stockName->setText(GlobalVar::curName);
     EPSLabel->setText(GlobalVar::EPSReportDate);
+    PELabel->setText(GlobalVar::PEName);
 }
 void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
 {
@@ -1449,22 +1452,11 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
     colPrice->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-KWIDTHEDGE)*colPrice->width()/(drawChart.candleChart->width()-2*KWIDTHEDGE),mouseEvent->pos().ry()-25);
     rowTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-KWIDTHEDGE)*rowTime->width()/(drawChart.candleChart->width()-2*KWIDTHEDGE),drawChart.candleChart->height()*12/15);
 }
-void MainWindow::setF3Window()
-{
-    F10SmallWindow->setFixedSize(675,500);
-    F10SmallWindow->show();
-    f10View.dealWithHotRank();
-}
-void MainWindow::setF10Window()
-{
-    F10SmallWindow->setFixedSize(1275,700);
-    F10SmallWindow->show();
-    f10View.dealWithMainIndex();
-}
 void MainWindow::toInterFace(QString which)
 {
     if (which=="main")
     {
+        GlobalVar::isKState=false;
         rightFundWindow->hide();
         drawChart.candleChart->hide();
         rightBaseWindow->show();
@@ -1494,6 +1486,18 @@ void MainWindow::toInterFace(QString which)
         mTableStock.stockTableView->show();
 //        mTableStock.stockTableView->setFocus();
     }
+    else if(which=="f3")
+    {
+        F10SmallWindow->setFixedSize(675,500);
+        F10SmallWindow->show();
+        f10View.dealWithHotRank();
+    }
+    else if(which=="f10")
+    {
+        F10SmallWindow->setFixedSize(1275,700);
+        F10SmallWindow->show();
+        f10View.dealWithMainIndex();
+    }
     else
         QMessageBox::information(this,"提示", "界面转换错误", QMessageBox::Ok);
 }
@@ -1521,7 +1525,7 @@ void MainWindow::toFundFlow()
     }
     else if((sender()==fundFlow[4]))
     {
-        ifCanClick=-1;
+        ifCanClick=2;
         mFundFlow.getNotNormalStock();
         mTableStock.stockTableView->setModel(mFundFlow.model);
     }

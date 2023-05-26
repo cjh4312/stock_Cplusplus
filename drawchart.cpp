@@ -279,7 +279,7 @@ void DrawChart::drawCandleChart()
 void DrawChart::calcHighLowPoint(int begin,int end)
 {
     candleHighLowPoint[0]={0.0};
-    candleHighLowPoint[1]={100000.0};
+    candleHighLowPoint[1]={1000000.0};
     candleHighLowPoint[2]={0.0};
     float temp;
     for (int i=begin;i<end;++i)

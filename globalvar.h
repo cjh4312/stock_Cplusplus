@@ -22,8 +22,8 @@ class GlobalVar
 public:
     GlobalVar();
     static bool isWorkDay(QDateTime curTime);
-    static bool isZhWorkDay(QDateTime curTime,bool select);
-    static QDateTime curRecentWorkDay(bool select);
+    static bool isZhWorkDay(QDateTime curTime,int select);
+    static QDateTime curRecentWorkDay(int select);
     static bool isZhMarketDay(QDateTime curTime);
     static bool isUSMarketDay(QDateTime curTime);
     static bool isHKMarketDay(QDateTime curTime);
@@ -45,6 +45,7 @@ public:
     static QString curBoard; //当前板块
     static QString curName;  //当前股票名称
     static QString EPSReportDate;  //EPS报告期
+    static QString PEName;
 //    static QStringList tableHeader;
     static float preClose; //昨日收盘价
     static int WhichInterface;  //界面标识
@@ -68,7 +69,7 @@ public:
 //    static float candleHighLowPoint[5];
     static float buySellPrice[10];             //买卖价格1-5
     static float buySellNum[10];              //买卖数量1-5
-    static float baseInfoData[13];            //基本信息
+    static float baseInfoData[14];            //基本信息
     static int curSortNum;                   //当前排序列
     static bool is_asc;                     //标识升序和倒序
     static QPalette pRed;                   //定义颜色
@@ -83,6 +84,10 @@ public:
     static QString currentPath;            //当前路径
     static int offsetEnd;                  //最近k线是否显示的偏移量
     static int offsetLocal;                //k线显示范围的偏移量
+    static bool areaFlag[5];
+    static QString formulaContent;
+    static int mTableListNum;
+    static QString mCandleListCode;
 };
 
 #endif // GLOBALVAR_H

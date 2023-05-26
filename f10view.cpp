@@ -1,6 +1,7 @@
 
 #include "f10view.h"
 #include "commondelegate.h"
+#include "qheaderview.h"
 
 F10View::F10View()
 {
@@ -11,6 +12,10 @@ F10View::F10View()
     stockInfoView->setStyleSheet("QTableView{selection-background-color:lightgray}");
     stockInfoView->setAlternatingRowColors(true);
     stockInfoView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    QFont boldFont;
+    boldFont.setBold(true);
+    boldFont.setPixelSize(16);
+    stockInfoView->horizontalHeader()->setFont(boldFont);
 }
 
 void F10View::dealWithHotRank()
