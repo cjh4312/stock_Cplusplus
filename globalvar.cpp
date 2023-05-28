@@ -409,3 +409,4 @@ bool GlobalVar::areaFlag[5]={true};
 QString GlobalVar::formulaContent;
 int GlobalVar::mTableListNum;
 QString GlobalVar::mCandleListCode;
+QList<QStringList> GlobalVar::formula;

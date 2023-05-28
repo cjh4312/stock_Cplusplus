@@ -3,6 +3,7 @@
 #include "qbuttongroup.h"
 #include "qlineedit.h"
 #include "qmessagebox.h"
+#include "qtextcodec.h"
 #include <QFile>
 
 JSPickStock::JSPickStock(QDialog *parent)
@@ -23,24 +24,44 @@ void JSPickStock::PickStockInterface()
         QMessageBox::information(this,"提示", "只能选A股或者在主界面", QMessageBox::Ok);
         return;
     }
-    QDialog *pickStockWindow=new QDialog(this);
-    pickStockWindow->setWindowFlags(pickStockWindow->windowFlags() | Qt::WindowStaysOnTopHint);
+    else if (isRunning)
+    {
+        QMessageBox::information(this,"提示", "不要重复打开", QMessageBox::Ok);
+        return;
+    }
+    isRunning=true;
+    QDialog *pickStockWindow=new QDialog();
+    pickStockWindow->setAttribute(Qt::WA_DeleteOnClose);
+//    pickStockWindow->setWindowFlags(pickStockWindow->windowFlags() | Qt::WindowStaysOnTopHint);
     pickStockWindow->setWindowTitle("公式选股");
     pickStockWindow->setGeometry(450, 200, 1000, 650);
     pickStockWindow->show();
     QHBoxLayout *mainLayout =new QHBoxLayout();
     pickStockWindow->setLayout(mainLayout);
 
-    QTreeWidget *formulaTree=new QTreeWidget();
+    QTreeWidget *formulaTree=new QTreeWidget(pickStockWindow);
     formulaTree->setMaximumWidth(250);
-    formulaTree->setHeaderLabel(QStringLiteral("公式"));
-    QStringList formula=GlobalVar::settings->value("formula").toStringList();
-
+    formulaTree->setHeaderLabel(QStringLiteral("选股公式"));
+    QFile file(GlobalVar::currentPath+"/list/formula.f");
+    GlobalVar::formula.clear();
+    if (file.open(QFile::ReadWrite))
+    {
+        QTextCodec *codec = QTextCodec::codecForName("gbk");
+        QStringList data=codec->toUnicode(file.readAll()).split(SPLITBACK,Qt::SkipEmptyParts);
+        for (int i=0;i<data.count();++i)
+            GlobalVar::formula.append(data[i].split(SPLITMID));
+    }
+    file.close();
     QTreeWidgetItem *class_ = new QTreeWidgetItem(formulaTree,QStringList("个人"));
     formulaTree->expandAll();
-    for (int i=0;i<formula.count();++i)
+    for (int i=0;i<GlobalVar::formula.count();++i)
     {
-        QTreeWidgetItem *f=new QTreeWidgetItem(class_,QStringList(formula[i]));
+        QTreeWidgetItem *f=new QTreeWidgetItem(class_,QStringList(GlobalVar::formula[i][0]));
+        if (i==0)
+        {
+            f->setSelected(true);
+            formulaTree->setCurrentItem(f);
+        }
         f->setFlags(f->flags() | Qt::ItemIsEditable);
     }
     QGridLayout *layout2=new QGridLayout();
@@ -48,7 +69,7 @@ void JSPickStock::PickStockInterface()
     mainLayout->addLayout(layout2,Qt::AlignLeft);
 
     QLabel *formulaName=new QLabel("公式名称:");
-    QLineEdit *nameLine=new QLineEdit();
+    QLineEdit *nameLine=new QLineEdit(pickStockWindow);
     QLabel *formulaDes=new QLabel("公式描述:");
     QTextEdit *desText=new QTextEdit();
     desText->setMaximumHeight(200);
@@ -58,18 +79,18 @@ void JSPickStock::PickStockInterface()
     layout2->addWidget(formulaDes,1,0,Qt::AlignTop|Qt::AlignCenter);
     layout2->addWidget(desText,1,1,1,5);
     layout2->addWidget(area,4,0,Qt::AlignCenter);
-    QButtonGroup *mButtonGroup = new QButtonGroup();
+    QButtonGroup *mButtonGroup = new QButtonGroup(pickStockWindow);
     mButtonGroup->setExclusive(false);
     QString name[]={"上证A股","深圳A股","科创版","北交所","剔除ST"};
     for (int i=0;i<5;++i)
     {
-        QCheckBox *nameBox = new QCheckBox();
+        QCheckBox *nameBox = new QCheckBox(pickStockWindow);
         nameBox->setText(name[i]);
         nameBox->setChecked(GlobalVar::areaFlag[i]);
         layout2->addWidget(nameBox,4,i+1);
         mButtonGroup->addButton(nameBox);
     }
-    QPlainTextEdit *editFormula=new QPlainTextEdit();
+    QPlainTextEdit *editFormula=new QPlainTextEdit(pickStockWindow);
     editFormula->setPlainText(GlobalVar::formulaContent);
     editFormula->setStyleSheet("QPlainTextEdit{font:bold 24px;font:bold}");
     editFormula->setMaximumHeight(350);
@@ -85,54 +106,123 @@ void JSPickStock::PickStockInterface()
         button[i]=new QPushButton(buttonName[i]);
         layout3->addWidget(button[i]);
     }
-    connect(formulaTree,&QTreeWidget::itemClicked,this,[=](QTreeWidgetItem *item){
-        if (item->text(0)==formula[0])
+    connect(formulaTree,&QTreeWidget::itemClicked,this,[=](QTreeWidgetItem */*item*/){
+        int row=formulaTree->currentIndex().row();
+        nameLine->setText(GlobalVar::formula.at(row)[1]);
+        desText->setText(GlobalVar::formula.at(row)[2]);
+        editFormula->setPlainText(GlobalVar::formula.at(row)[3]);
+    });
+    connect(button[2],&QPushButton::clicked,this,[=](){
+        formulaTree->blockSignals(true);
+        QString s=QString::number(class_->childCount());
+        QString name="公式"+s;
+        QTreeWidgetItem *c=new QTreeWidgetItem(class_,QStringList(name));
+        c->setFlags(c->flags() | Qt::ItemIsEditable);
+        formulaTree->setCurrentItem(c);
+        QFile file(GlobalVar::currentPath+"/list/formula.f");
+        QStringList t;
+        if (file.open(QFile::Append))
         {
-            QStringList temp=GlobalVar::settings->value("formula1").toStringList();
-            nameLine->setText(temp[0]);
-            desText->setText(temp[1]);
-            editFormula->setPlainText(temp[2]);
+            t<<name<<""<<""<<"";
+            GlobalVar::formula.append(t);
+            file.write(t.join(SPLITMID).toLocal8Bit()+SPLITBACK);
         }
-        else if (item->text(0)==formula[1])
+        file.close();
+        formulaTree->blockSignals(false);
+    });
+    connect(button[3],&QPushButton::clicked,this,[=](){
+        int row=formulaTree->currentIndex().row();
+        int r=QMessageBox::information(this,"提示", "确定删除:"+GlobalVar::formula[row][0], QMessageBox::Yes | QMessageBox::No);
+        if (r==QMessageBox::Yes)
         {
-            QStringList temp=GlobalVar::settings->value("formula2").toStringList();
-            nameLine->setText(temp[0]);
-            desText->setText(temp[1]);
-            editFormula->setPlainText(temp[2]);
+            delete formulaTree->currentItem();
+            QFile file(GlobalVar::currentPath+"/list/formula.f");
+            if (file.open(QFile::WriteOnly))
+                for (int i=0;i<GlobalVar::formula.count();++i)
+                {
+                    if (i==row)
+                        continue;
+                    file.write(GlobalVar::formula.at(i).join(SPLITMID).toLocal8Bit()+SPLITBACK);
+                }
+            GlobalVar::formula.removeOne(GlobalVar::formula.at(row));
+            file.close();
         }
     });
     connect(button[4],&QPushButton::clicked,this,[=](){
-        if (formulaTree->currentItem()->text(0)==formula[0])
-        {
-            QStringList t;
-            t<<nameLine->text()<<desText->toPlainText()<<editFormula->toPlainText();
-            GlobalVar::settings->setValue("formula1",t);
-        }
-        else if (formulaTree->currentItem()->text(0)==formula[1])
-        {
-            QStringList t;
-            t<<nameLine->text()<<desText->toPlainText()<<editFormula->toPlainText();
-            GlobalVar::settings->setValue("formula2",t);
-        }
-    });
-    connect(formulaTree,&QTreeWidget::itemDoubleClicked,this,[=](QTreeWidgetItem *item){
-        GlobalVar::formulaContent=item->text(0);
-    });
-    connect(formulaTree,&QTreeWidget::itemChanged,this,[=](QTreeWidgetItem *item){
-
+        int row=formulaTree->currentIndex().row();
         QStringList t;
-        if (GlobalVar::formulaContent==formula[0])
-        {
-            t<<item->text(0)<<formula[1];
-        }
-        else if (GlobalVar::formulaContent==formula[1])
-            t<<formula[0]<<item->text(0);
-
-        GlobalVar::settings->setValue("formula",t);
+        t<<GlobalVar::formula.at(row)[0]<<nameLine->text()<<desText->toPlainText()<<editFormula->toPlainText();
+        GlobalVar::formula.replace(row,t);
+        QFile file(GlobalVar::currentPath+"/list/formula.f");
+        if (file.open(QFile::WriteOnly))
+            for (int i=0;i<GlobalVar::formula.count();++i)
+                file.write(GlobalVar::formula.at(i).join(SPLITMID).toLocal8Bit()+SPLITBACK);
+        file.close();
+    });
+//    connect(formulaTree,&QTreeWidget::itemDoubleClicked,this,[=](QTreeWidgetItem *item){
+//        GlobalVar::formulaContent=item->text(0);
+//    });
+    connect(formulaTree,&QTreeWidget::itemChanged,this,[=](QTreeWidgetItem *item){
+        int row=formulaTree->currentIndex().row();
+        QStringList t;
+        t<<item->text(0)<<GlobalVar::formula.at(row)[1]<<GlobalVar::formula.at(row)[2]<<GlobalVar::formula.at(row)[3];
+        GlobalVar::formula.replace(row,t);
+        QFile file(GlobalVar::currentPath+"/list/formula.f");
+        if (file.open(QFile::WriteOnly))
+            for (int i=0;i<GlobalVar::formula.count();++i)
+                file.write(GlobalVar::formula.at(i).join(SPLITMID).toLocal8Bit()+SPLITBACK);
+        file.close();
     });
     connect(editFormula,&QPlainTextEdit::textChanged,editFormula,[=](){
+        editFormula->blockSignals(true);
         GlobalVar::formulaContent=editFormula->toPlainText();
-//        qDebug()<<GlobalVar::formulaContent;
+        int post=0;
+        QTextCursor cursor = editFormula->textCursor();
+        QTextCharFormat fmt;
+        fmt.setForeground(QColor("black"));
+        cursor.setPosition(0,QTextCursor::MoveAnchor);
+        cursor.setPosition(GlobalVar::formulaContent.size(),QTextCursor::KeepAnchor);
+        cursor.mergeCharFormat(fmt);
+        QString nums[]={"0","1","2","3","4","5","6","7","8","9",","};
+        while((post=GlobalVar::formulaContent.indexOf("(",post))!=-1)
+        {
+            QString t=GlobalVar::formulaContent.mid(post-1,1);
+            if (t>='A' && t<='Z')
+            {
+                int p=GlobalVar::formulaContent.indexOf(")",post)+1;
+                if (p==0)
+                    break;
+                fmt.setForeground(QColor("red"));
+                QString s=GlobalVar::formulaContent.mid(post-1,p-post+1);
+                bool isCon=true;
+                for (int i=2;i<s.length()-1;++i)
+                {
+                    isCon=false;
+                    for (int j=0;j<11;++j)
+                    {
+                        if (s.mid(i,1)==nums[j])
+                        {
+                            isCon=true;
+                            break;
+                        }
+                    }
+                    if (not isCon)
+                        break;
+                }
+                if (not isCon)
+                {
+                    post+=1;
+                    continue;
+                }
+                cursor.setPosition(post-1,QTextCursor::MoveAnchor);
+                cursor.setPosition(p,QTextCursor::KeepAnchor);
+                cursor.mergeCharFormat(fmt);
+                fmt.setForeground(QColor("black"));
+                editFormula->mergeCurrentCharFormat(fmt);
+            }
+            post+=1;
+        }
+        editFormula->blockSignals(false);
     });
     connect(mButtonGroup, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(onButtonClicked(QAbstractButton*)));
 
@@ -167,11 +257,12 @@ void JSPickStock::PickStockInterface()
         }
         emit updateTableList();
     });
+    connect(pickStockWindow,&QDialog::destroyed,this,[=](){isRunning=false;});
 }
 
 void JSPickStock::onButtonClicked(QAbstractButton *button)
 {
-    QString name[]={"上证A股","深圳A股","科创版","北交所","剔除ST"};
+    QString name[]={"上证A股","深圳A股","科创板","北交所","剔除ST"};
     for (int i=0;i<5;++i)
     {
         if (button->text()==name[i])
@@ -310,7 +401,7 @@ float JSPickStock::T(int startDay, int endDay)
         QString s = in.readAll();
         QList<QString> data=s.split("\n",Qt::SkipEmptyParts).toList();
         float temp=0;
-        for (int i=startDay;i<=startDay+endDay;++i)
+        for (int i=startDay;i<startDay+endDay;++i)
         {
             int t=data.count()-1-i;
             if (t<0 or i<0)
@@ -319,6 +410,82 @@ float JSPickStock::T(int startDay, int endDay)
                 return -100;
             }
             temp+=data.at(t).split(",",Qt::SkipEmptyParts).toList()[10].toFloat();
+        }
+        file.close();
+        return temp;
+    }
+    file.close();
+    return -100;
+}
+
+float JSPickStock::A(int startDay, int endDay)
+{
+    QString path;
+    if (GlobalVar::mCandleListCode.left(1)=="6")
+        path="/list/data/sh/"+GlobalVar::mCandleListCode+".csv";
+    else if (GlobalVar::mCandleListCode.left(1)=="8" or GlobalVar::mCandleListCode.left(1)=="4")
+        path="/list/data/bj/"+GlobalVar::mCandleListCode+".csv";
+    else
+        path="/list/data/sz/"+GlobalVar::mCandleListCode+".csv";
+    QFile file(GlobalVar::currentPath+path);
+    if (file.open(QFile::ReadOnly) and file.size()>0)
+    {
+        QTextStream in(&file);
+        QString s = in.readAll();
+        QList<QString> data=s.split("\n",Qt::SkipEmptyParts).toList();
+        float temp=0;
+        for (int i=startDay;i<startDay+endDay;++i)
+        {
+            int t=data.count()-1-i;
+            if (t<0 or i<0)
+            {
+                file.close();
+                return -100;
+            }
+            temp+=data.at(t).split(",",Qt::SkipEmptyParts).toList()[2].toFloat();
+        }
+        file.close();
+        return temp/endDay;
+    }
+    file.close();
+    return -100;
+}
+
+float JSPickStock::M()
+{
+    return GlobalVar::mTableListCopy.at(GlobalVar::mTableListNum).volume;
+}
+
+float JSPickStock::M(int day)
+{
+    return getData(day,5);
+}
+
+float JSPickStock::M(int startDay, int endDay)
+{
+    QString path;
+    if (GlobalVar::mCandleListCode.left(1)=="6")
+        path="/list/data/sh/"+GlobalVar::mCandleListCode+".csv";
+    else if (GlobalVar::mCandleListCode.left(1)=="8" or GlobalVar::mCandleListCode.left(1)=="4")
+        path="/list/data/bj/"+GlobalVar::mCandleListCode+".csv";
+    else
+        path="/list/data/sz/"+GlobalVar::mCandleListCode+".csv";
+    QFile file(GlobalVar::currentPath+path);
+    if (file.open(QFile::ReadOnly) and file.size()>0)
+    {
+        QTextStream in(&file);
+        QString s = in.readAll();
+        QList<QString> data=s.split("\n",Qt::SkipEmptyParts).toList();
+        float temp=0;
+        for (int i=startDay;i<startDay+endDay;++i)
+        {
+            int t=data.count()-1-i;
+            if (t<0 or i<0)
+            {
+                file.close();
+                return -100;
+            }
+            temp+=data.at(t).split(",",Qt::SkipEmptyParts).toList()[5].toFloat();
         }
         file.close();
         return temp;

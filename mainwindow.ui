@@ -100,6 +100,7 @@
     </property>
     <addaction name="actionF10"/>
     <addaction name="actionF3"/>
+    <addaction name="formula"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -213,6 +214,11 @@
   <action name="pickStock">
    <property name="text">
     <string>公式选股</string>
+   </property>
+  </action>
+  <action name="formula">
+   <property name="text">
+    <string>公式编写说明</string>
    </property>
   </action>
  </widget>

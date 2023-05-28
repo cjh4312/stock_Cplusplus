@@ -249,6 +249,8 @@ void MainWindow::initSettings()
     mTableStock.risingSpeedView->setFocusPolicy(Qt::NoFocus);
     mTableStock.myStockView->setFocusPolicy(Qt::NoFocus);
 
+//    mPickStock.pickStockWindow->setParent(ui->centralwidget);
+
     colPrice=new QLabel(drawChart.candleChart);
     rowTime=new QLabel(drawChart.candleChart);
     colPrice->resize(72,15);
@@ -604,10 +606,53 @@ void MainWindow::initSignals()
         mTableStock.myStockView->show();
     });
     connect(ui->pickStock,&QAction::triggered,this,[=](){
-        mPickStock.PickStockInterface();
+        mPickStock->PickStockInterface();
     });
-    connect(&mPickStock,&JSPickStock::updateTableList,this,[=](){
+    connect(mPickStock,&JSPickStock::updateTableList,this,[=](){
         mTableStock.setTableView();
+    });
+    connect(ui->formula,&QAction::triggered,this,[](){
+        QDialog *formulaDes=new QDialog();
+        formulaDes->setWindowTitle("编写公式说明");
+        formulaDes->setGeometry(450, 200, 1000, 700);
+        formulaDes->setAttribute(Qt::WA_DeleteOnClose);
+        QTextBrowser *des=new QTextBrowser(formulaDes);
+        des->setMinimumHeight(380);
+        des->setStyleSheet("QTextBrowser{font:bold 22px;font:bold}");
+        QVBoxLayout *mainLayout =new QVBoxLayout();
+        mainLayout->setContentsMargins(2,0,2,2);
+        mainLayout->setSpacing(0);
+        formulaDes->setLayout(mainLayout);
+        mainLayout->addWidget(des);
+        QFile file(GlobalVar::currentPath+"/list/formulades.txt");
+        if (file.open(QFile::ReadOnly))
+        {
+            QTextCodec *codec = QTextCodec::codecForName("utf-8");
+            des->setText(codec->toUnicode(file.readAll()));
+            int post=0;
+            QString s=des->toPlainText();
+            QTextCharFormat fmt;
+            fmt.setForeground(QColor("red"));
+            while((post=s.indexOf("(",post))!=-1)
+            {
+                QString t=s.mid(post-1,1);
+                if (t>='A' && t<='Z')
+                {
+                    QTextCursor cursor = des->textCursor();
+                    int p=s.indexOf(")",post)+1;
+                    cursor.setPosition(post-1,QTextCursor::MoveAnchor);
+                    cursor.setPosition(p,QTextCursor::KeepAnchor);
+                    cursor.mergeCharFormat(fmt);
+                }
+                post+=1;
+            }
+        }
+//        des->setCursor();
+        QTextBrowser *d=new QTextBrowser(formulaDes);
+        mainLayout->addWidget(d);
+        d->insertHtml("<img src=:/new/pictures/des.jpg/>");
+        formulaDes->show();
+        file.close();
     });
 }
 void MainWindow::saveMyStock()

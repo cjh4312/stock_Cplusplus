@@ -88,6 +88,7 @@ public:
     static QString formulaContent;
     static int mTableListNum;
     static QString mCandleListCode;
+    static QList<QStringList> formula;
 };
 
 #endif // GLOBALVAR_H

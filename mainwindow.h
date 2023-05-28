@@ -70,7 +70,7 @@ private:
     RequestsToCsv requestsToCsv;
     F10View f10View;
     FundFlow mFundFlow;
-    JSPickStock mPickStock;
+    JSPickStock *mPickStock=new JSPickStock();
     ThreadTable *threadTable;
     ThreadIndex *threadIndex;
     ThreadTimeShareTick *threadTimeShareTick;

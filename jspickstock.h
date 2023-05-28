@@ -32,19 +32,25 @@ public:
     Q_INVOKABLE float T();
     Q_INVOKABLE float T(int day);
     Q_INVOKABLE float T(int startDay,int endDay);
+    Q_INVOKABLE float A(int startDay,int endDay);
+    Q_INVOKABLE float M();
+    Q_INVOKABLE float M(int day);
+    Q_INVOKABLE float M(int startDay,int endDay);
     Q_INVOKABLE float V();
 
+    void initPickStockWindow();
     void PickStockInterface();
     void initWindow();
     float getData(int day,int column);
     QString replaceFormula(QString s);
+    bool isRunning=false;
 
 signals:
     void updateTableList();
 
 private slots:
     void onButtonClicked(QAbstractButton *button);
-
+//    void saveFormula();
 };
 
 #endif // JSPICKSTOCK_H
