@@ -89,6 +89,9 @@ public:
     static int mTableListNum;
     static QString mCandleListCode;
     static QList<QStringList> formula;
+
+signals:
+    void timeOutReport(QString s);
 };
 
 #endif // GLOBALVAR_H

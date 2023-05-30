@@ -215,7 +215,9 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
             if (url.toString().contains(s[i]))
             {
                 //                timeOutFlag[i]=true;
+//                QString s=QDateTime::currentDateTime().toString()+n[i];
                 qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime().toString()<< n[i]<<timeOut;
+
                 break;
             }
             if (i==s.count()-1)

@@ -15,7 +15,7 @@ void ThreadCandleChart::getAllCandleChart(QString freq, QString adjustFlag,bool 
     isRunning=true;
     QString startDate;
     if (isFirst and freq=="101")
-        startDate=QDateTime::currentDateTime().addDays(-280).toString("yyyyMMdd");
+        startDate=QDateTime::currentDateTime().addDays(-KRANGE*7/3).toString("yyyyMMdd");
     else
         startDate="19900101";
     QByteArray allData;

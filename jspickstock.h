@@ -37,6 +37,7 @@ public:
     Q_INVOKABLE float M(int day);
     Q_INVOKABLE float M(int startDay,int endDay);
     Q_INVOKABLE float V();
+    Q_INVOKABLE float D(float f);
 
     void initPickStockWindow();
     void PickStockInterface();
@@ -44,6 +45,7 @@ public:
     float getData(int day,int column);
     QString replaceFormula(QString s);
     bool isRunning=false;
+    QString name[5]={"上证A股","深圳A股","科创版","北交所","剔除ST和退市"};
 
 signals:
     void updateTableList();

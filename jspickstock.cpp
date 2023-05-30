@@ -81,7 +81,7 @@ void JSPickStock::PickStockInterface()
     layout2->addWidget(area,4,0,Qt::AlignCenter);
     QButtonGroup *mButtonGroup = new QButtonGroup(pickStockWindow);
     mButtonGroup->setExclusive(false);
-    QString name[]={"上证A股","深圳A股","科创版","北交所","剔除ST"};
+
     for (int i=0;i<5;++i)
     {
         QCheckBox *nameBox = new QCheckBox(pickStockWindow);
@@ -91,6 +91,7 @@ void JSPickStock::PickStockInterface()
         mButtonGroup->addButton(nameBox);
     }
     QPlainTextEdit *editFormula=new QPlainTextEdit(pickStockWindow);
+//    editFormula->redoAvailable(true);
     editFormula->setPlainText(GlobalVar::formulaContent);
     editFormula->setStyleSheet("QPlainTextEdit{font:bold 24px;font:bold}");
     editFormula->setMaximumHeight(350);
@@ -183,7 +184,7 @@ void JSPickStock::PickStockInterface()
         cursor.setPosition(0,QTextCursor::MoveAnchor);
         cursor.setPosition(GlobalVar::formulaContent.size(),QTextCursor::KeepAnchor);
         cursor.mergeCharFormat(fmt);
-        QString nums[]={"0","1","2","3","4","5","6","7","8","9",","};
+//        QString nums[]={"0","1","2","3","4","5","6","7","8","9",","};
         while((post=GlobalVar::formulaContent.indexOf("(",post))!=-1)
         {
             QString t=GlobalVar::formulaContent.mid(post-1,1);
@@ -195,24 +196,45 @@ void JSPickStock::PickStockInterface()
                 fmt.setForeground(QColor("red"));
                 QString s=GlobalVar::formulaContent.mid(post-1,p-post+1);
                 bool isCon=true;
-                for (int i=2;i<s.length()-1;++i)
+                if (t=="D")
                 {
-                    isCon=false;
-                    for (int j=0;j<11;++j)
+                    for (int i=2;i<s.length()-1;++i)
                     {
-                        if (s.mid(i,1)==nums[j])
+                        isCon=false;
+                        if ((s.mid(i,1)>="A" && s.mid(i,1)<="Z") ||
+                            (s.mid(i,1)>="a" && s.mid(i,1)<="z") ||
+                            (s.mid(i,1)>="0" && s.mid(i,1)<="9"))
                         {
                             isCon=true;
-                            break;
+                            continue;
                         }
+                        if (not isCon)
+                            break;
                     }
                     if (not isCon)
-                        break;
+                    {
+                        post+=1;
+                        continue;
+                    }
                 }
-                if (not isCon)
+                else
                 {
-                    post+=1;
-                    continue;
+                    for (int i=2;i<s.length()-1;++i)
+                    {
+                        isCon=false;
+                        if ((s.mid(i,1)==",") || (s.mid(i,1)>="0" && s.mid(i,1)<="9"))
+                        {
+                            isCon=true;
+                            continue;
+                        }
+                        if (not isCon)
+                            break;
+                    }
+                    if (not isCon)
+                    {
+                        post+=1;
+                        continue;
+                    }
                 }
                 cursor.setPosition(post-1,QTextCursor::MoveAnchor);
                 cursor.setPosition(p,QTextCursor::KeepAnchor);
@@ -234,7 +256,8 @@ void JSPickStock::PickStockInterface()
         GlobalVar::mTableList.clear();
         for (int i=0;i<GlobalVar::mTableListCopy.count();++i)
         {
-            if (GlobalVar::areaFlag[4] and GlobalVar::mTableListCopy.at(i).name.contains("ST"))
+            if (GlobalVar::areaFlag[4] and (GlobalVar::mTableListCopy.at(i).name.contains("ST") or
+                                            GlobalVar::mTableListCopy.at(i).name.contains("退")))
                 continue;
             else if (not GlobalVar::areaFlag[0] and GlobalVar::mTableListCopy.at(i).code.left(1)=="6" and
                     GlobalVar::mTableListCopy.at(i).code.left(3)!="688" )
@@ -250,6 +273,13 @@ void JSPickStock::PickStockInterface()
             GlobalVar::mTableListNum=i;
             GlobalVar::mCandleListCode=GlobalVar::mTableListCopy.at(i).code;
             QJSValue value = myEngine.evaluate(replaceFormula(editFormula->toPlainText()));
+            if (value.isError())
+            {
+                QMessageBox::information(this,"提示", value.property("name").toString()+"\n"+
+                        value.property("message").toString()+"\n"+
+                        QString::number(value.property("lineNumber").toInt()), QMessageBox::Ok);
+                return;
+            }
             if (value.toNumber())
             {
                 GlobalVar::mTableList.append(GlobalVar::mTableListCopy.at(i));
@@ -262,7 +292,7 @@ void JSPickStock::PickStockInterface()
 
 void JSPickStock::onButtonClicked(QAbstractButton *button)
 {
-    QString name[]={"上证A股","深圳A股","科创板","北交所","剔除ST"};
+//    QString name[]={"上证A股","深圳A股","科创板","北交所","剔除ST和退市"};
     for (int i=0;i<5;++i)
     {
         if (button->text()==name[i])
@@ -499,6 +529,11 @@ float JSPickStock::V()
     return GlobalVar::mTableListCopy.at(GlobalVar::mTableListNum).totalValue;
 }
 
+float JSPickStock::D(float f)
+{
+    return int(f*100+0.5)/100.0;
+}
+
 float JSPickStock::P()
 {
     return GlobalVar::mTableListCopy.at(GlobalVar::mTableListNum).pctChg;
@@ -541,7 +576,6 @@ float JSPickStock::getData(int day, int column)
             return -100;
         }
         float temp=data.at(t).split(",",Qt::SkipEmptyParts).toList()[column].toFloat();
-        //        qDebug()<<p;
         file.close();
         return temp;
     }

@@ -266,6 +266,9 @@ void RequestsToCsv::downloadAllStockK()
             break;
         }
         QString code=GlobalVar::mTableListCopy.at(i-1).code;
+        if (GlobalVar::mTableListCopy.at(i-1).name.contains("退"))
+//            qDebug()<<GlobalVar::mTableListCopy.at(i-1).name;
+            continue;
         QString path;
         if (code.left(1)=="6")
         {

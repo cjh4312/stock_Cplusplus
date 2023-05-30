@@ -249,7 +249,7 @@ void MainWindow::initSettings()
     mTableStock.risingSpeedView->setFocusPolicy(Qt::NoFocus);
     mTableStock.myStockView->setFocusPolicy(Qt::NoFocus);
 
-//    mPickStock.pickStockWindow->setParent(ui->centralwidget);
+//    mPickStock->pickStockWindow->setParent(this);
 
     colPrice=new QLabel(drawChart.candleChart);
     rowTime=new QLabel(drawChart.candleChart);
