@@ -2,6 +2,7 @@
 #include "requeststocsv.h"
 #include "globalvar.h"
 #include "qlabel.h"
+#include "qmessagebox.h"
 #include "qpushbutton.h"
 
 RequestsToCsv::RequestsToCsv(QDialog *parent)
@@ -16,6 +17,8 @@ void RequestsToCsv::getIndexList()
 //    QDateTime start=QDateTime::currentDateTime();
     QByteArray allData;
     GlobalVar::getData(allData,2,QUrl("https://www.joinquant.com/data/dict/indexData"));
+    if (allData.isEmpty())
+        return;
     QString html=QString(allData);
     QString tbody=GlobalVar::peelStr(html,"<tbody","-1");
     QPair<QString, QString> pair;
@@ -89,8 +92,8 @@ void RequestsToCsv::getStockList()
 {
     QJsonObject json;
     json.insert("api_name", "stock_basic");
-    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
-//    json.insert("token", "bbe1d68e9a152f87296960ffd981449ed98fff7cfd13b3cf2a50be79");
+//    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
+    json.insert("token", "bbe1d68e9a152f87296960ffd981449ed98fff7cfd13b3cf2a50be79");
     json.insert("fields", "ts_code,symbol,name,area,industry,list_date,cnspell");
 
     QJsonDocument doc;
@@ -98,6 +101,8 @@ void RequestsToCsv::getStockList()
     QByteArray dataArray = doc.toJson(QJsonDocument::Compact);
     QByteArray allData;
     GlobalVar::postData(dataArray,allData,1,QUrl("http://api.waditu.com"));
+    if (allData.size()<800)
+        return;
 //    qDebug()<<QString(allData);
     QJsonParseError jsonError;
     doc = QJsonDocument::fromJson(allData, &jsonError);
@@ -224,6 +229,9 @@ void RequestsToCsv::downStockIndexPlateInfo()
 
 void RequestsToCsv::downloadAllStockK()
 {
+    if (GlobalVar::settings->value("isDownloadK").toString()==
+        QDateTime::currentDateTime().toString("yyyy-MM-dd"))
+        QMessageBox::information(this,"提示", "已经下载过了", QMessageBox::Ok);
     if (isDownload)
         return;
     isDownload=true;
@@ -261,20 +269,17 @@ void RequestsToCsv::downloadAllStockK()
         progressBar->setValue(i);
         if (isStop)
         {
-            isStop=false;
             stopBtn->setEnabled(false);
             break;
         }
         QString code=GlobalVar::mTableListCopy.at(i-1).code;
-        if (GlobalVar::mTableListCopy.at(i-1).name.contains("退"))
-//            qDebug()<<GlobalVar::mTableListCopy.at(i-1).name;
-            continue;
+//        if (GlobalVar::mTableListCopy.at(i-1).name.contains("退"))
+//            continue;
         QString path;
         if (code.left(1)=="6")
         {
             path="/list/data/sh/"+code+".csv";
             code= "1."+code;
-
         }
         else if (code.left(1)=="8" or code.left(1)=="4")
         {
@@ -316,18 +321,16 @@ void RequestsToCsv::downloadAllStockK()
                 QJsonObject jsonObject = doc.object();
                 QJsonArray data=jsonObject.value("data").toObject().value("klines").toArray();
                 for (int j = 0; j < data.size(); ++j)
-                {
-//                    QStringList list=data.at(j).toString().split(",");
-//                    file.write(list.join(",").toLocal8Bit()+"\n");
-
                     file.write(data.at(j).toString().toLocal8Bit()+"\n");
-                }
             }
         }
         file.close();
     }
+    if (not isStop)
+        GlobalVar::settings->setValue("isDownloadK",QDateTime::currentDateTime().toString("yyyy-MM-dd"));
     stopBtn->setText("下载完成");
     stopBtn->setEnabled(false);
+    isStop=false;
     isDownload=false;
 }
 

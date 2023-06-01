@@ -63,3 +63,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resources.qrc
+
+QMAKE_LFLAGS_RELEASE = /INCREMENTAL:NO /DEBUG
+LIBS += -lDbgHelp

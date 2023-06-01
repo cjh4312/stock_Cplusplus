@@ -94,13 +94,20 @@ void ThreadNewsReport::initNewsReport(const QByteArray &allData)
             QString eastTime;
             if (eastNums!=-1)
             {
-                QString s=eastNewsList.at(eastNums)[2];
+                QString m=eastNewsList.at(eastNums)[2].split("月")[0];
+                QString s=eastNewsList.at(eastNums)[2].split(" ")[1];
+//                qDebug()<<m<<s;
                 for (int i=0;i<s.size();++i)
                 {
                     QString temp=s.mid(i,1);
                     if (GlobalVar::isInt(temp))
                         eastTime+=temp;
                 }
+                if (m==QDateTime::currentDateTime().toString("M"))
+                    eastTime=QDateTime::currentDateTime().toString("MMdd")+eastTime;
+                else
+                    eastTime=QDateTime::currentDateTime().addDays(-1).toString("MMdd")+eastTime;
+//                qDebug()<<QDateTime::currentDateTime().toString("M")<<eastTime;
             }
             else
                 eastTime="123456789";
@@ -110,6 +117,7 @@ void ThreadNewsReport::initNewsReport(const QByteArray &allData)
             else
                 jsTime="123456789";
             int et=eastTime.toInt();
+//            qDebug()<<jsTime.toInt()<<et;
             if (jsTime.toInt()>et and eastNums!=-1)
             {
                 sayEastNews(eastNewsList[eastNums],et);

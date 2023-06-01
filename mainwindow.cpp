@@ -90,7 +90,10 @@ void MainWindow::initThread()
     threadTimeShareChart=new ThreadTimeShareChart;
     threadTimeShareChart->moveToThread(thread[4]);
     connect(threadTimeShareChart,&ThreadTimeShareChart::getTimeShareChartFinished,this,[=](){
-        drawChart.timeShareChart->update();
+        QWidget *pActiveWindow = QApplication::activeWindow();
+        MainWindow *pMainWindow = dynamic_cast<MainWindow*>(pActiveWindow);
+        if(pMainWindow && pMainWindow == this)
+            drawChart.timeShareChart->update();
     });
     connect(this,&MainWindow::startThreadTimeShareChart,threadTimeShareChart,&ThreadTimeShareChart::getAllTimeShareChart);
     thread[4]->start();
@@ -234,7 +237,7 @@ void MainWindow::initSettings()
 {
     mTableStock.stockTableView->verticalScrollBar()->installEventFilter(this);
     newsData->verticalScrollBar()->installEventFilter(this);
-    newsData->document()->setMaximumBlockCount(10);
+//    newsData->document()->setMaximumBlockCount(10);
     newsData->setOpenExternalLinks(true);
     mTableStock.timeShareTickView->verticalScrollBar()->installEventFilter(this);
     drawChart.timeShareChart->installEventFilter(this);
@@ -1241,7 +1244,7 @@ void MainWindow::tradingTimeRunThread()
 //    int a = timeCount % 10;
     //每1秒，A股交易时段刷新个股买卖及每笔成交
     QDateTime curTime=QDateTime::currentDateTime();
-//    if (not ui->DLAllStockK->isEnabled() and curTime.time().toString("hh:mm")>="15:00")
+//    if (not ui->DLAllStockK->isEnabled() and curTime.time().toString("hh:mm")>"15:00")
 //        ui->DLAllStockK->setEnabled(true);
     if (timeCount%2==1)
     {

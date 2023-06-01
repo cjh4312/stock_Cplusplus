@@ -208,8 +208,7 @@ void JSPickStock::PickStockInterface()
                             isCon=true;
                             continue;
                         }
-                        if (not isCon)
-                            break;
+                        break;
                     }
                     if (not isCon)
                     {
@@ -227,8 +226,7 @@ void JSPickStock::PickStockInterface()
                             isCon=true;
                             continue;
                         }
-                        if (not isCon)
-                            break;
+                        break;
                     }
                     if (not isCon)
                     {
@@ -249,6 +247,12 @@ void JSPickStock::PickStockInterface()
     connect(mButtonGroup, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(onButtonClicked(QAbstractButton*)));
 
     connect(button[0],&QPushButton::clicked,this,[=](){
+        if (GlobalVar::settings->value("isDownloadK").toString()!=
+                    QDateTime::currentDateTime().toString("yyyy-MM-dd"))
+        {
+            QMessageBox::information(this,"提示", "请先下载数据", QMessageBox::Ok);
+            return;
+        }
         JSPickStock* object = new JSPickStock();
         QJSEngine myEngine;
         QJSValue jsObject = myEngine.newQObject(object);

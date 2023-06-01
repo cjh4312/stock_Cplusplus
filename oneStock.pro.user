@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 10.0.1, 2023-05-29T22:33:27. -->
+<!-- Written by QtCreator 10.0.1, 2023-05-31T22:03:59. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -175,6 +175,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4BuildConfiguration</value>
     <value type="int" key="Qt4ProjectManager.Qt4BuildConfiguration.BuildConfiguration">0</value>
     <value type="int" key="QtQuickCompiler">0</value>
+    <value type="int" key="SeparateDebugInfo">0</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.2">
     <value type="int" key="EnableQmlDebugging">0</value>

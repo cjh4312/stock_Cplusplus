@@ -73,12 +73,16 @@ void ThreadTable::initTableList(const QByteArray &allData)
     {
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("diff").toArray();
+        int n=0;
         for (int i = 0; i < data.size(); ++i)
         {
             QJsonValue value = data.at(i);
             QVariantMap ceilMap = value.toVariant().toMap();
 
             StockInfo info;
+            info.name = ceilMap.value("f14").toString();
+            if (info.name.contains("退"))
+                continue;
             info.code = ceilMap.value("f12").toString();
             if (GlobalVar::WhichInterface==5)
                 info.code = ceilMap.value("f13").toString()+"."+ceilMap.value("f12").toString();
@@ -107,8 +111,11 @@ void ThreadTable::initTableList(const QByteArray &allData)
             if (GlobalVar::WhichInterface==1)
             {
                 GlobalVar::mTableListCopy.append(info);
-                if (i<=19)
+                if (n<=19)
+                {
                     GlobalVar::mRisingSpeedList.append(info);
+                    n+=1;
+                }
             }
         }
         if (GlobalVar::WhichInterface==1)
