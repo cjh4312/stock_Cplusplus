@@ -48,6 +48,7 @@ void MainWindow::initGlobalVar()
     GlobalVar::pGreen.setColor(QPalette::WindowText, QColor(0,191,0));
     GlobalVar::pBlack.setColor(QPalette::WindowText, Qt::black);
     GlobalVar::pBlue.setColor(QPalette::WindowText, Qt::blue);
+    GlobalVar::pWhite.setColor(QPalette::WindowText, Qt::white);
 }
 void MainWindow::initThread()
 {
@@ -90,9 +91,9 @@ void MainWindow::initThread()
     threadTimeShareChart=new ThreadTimeShareChart;
     threadTimeShareChart->moveToThread(thread[4]);
     connect(threadTimeShareChart,&ThreadTimeShareChart::getTimeShareChartFinished,this,[=](){
-        QWidget *pActiveWindow = QApplication::activeWindow();
-        MainWindow *pMainWindow = dynamic_cast<MainWindow*>(pActiveWindow);
-        if(pMainWindow && pMainWindow == this)
+//        QWidget *pActiveWindow = QApplication::activeWindow();
+//        MainWindow *pMainWindow = dynamic_cast<MainWindow*>(pActiveWindow);
+//        if(pMainWindow && pMainWindow == this)
             drawChart.timeShareChart->update();
     });
     connect(this,&MainWindow::startThreadTimeShareChart,threadTimeShareChart,&ThreadTimeShareChart::getAllTimeShareChart);
@@ -263,9 +264,15 @@ void MainWindow::initSettings()
     rowTime->setStyleSheet("color:yellow;font:bold;font-size:18px");
     rowTime->setAlignment(Qt::AlignCenter);
     timeSharePrice=new QLabel(drawChart.timeShareChart);
+    timeShareVol=new QLabel(drawChart.timeShareChart);
+    timeShareTime=new QLabel(drawChart.timeShareChart);
     drawChart.timeShareChart->setStyleSheet("color:white;font:bold;font-size:14px");
     timeSharePrice->setAlignment(Qt::AlignCenter);
-    timeSharePrice->resize(110,15);
+    timeShareVol->setStyleSheet("color:white;font:bold;font-size:18px");
+    timeShareVol->setAlignment(Qt::AlignCenter);
+    timeShareTime->setStyleSheet("color:white;font:bold;font-size:18px");
+    timeShareTime->setAlignment(Qt::AlignCenter);
+    timeShareTime->resize(50,18);
 
     searchSmallWindow=new QWidget(this);
     searchSmallWindow->setWindowFlag(Qt::Popup);
@@ -752,17 +759,43 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     else if(obj==drawChart.timeShareChart and event->type()==QEvent::MouseMove)
     {
         QMouseEvent *mouseEvent = (QMouseEvent *)event;
-        float price=GlobalVar::timeShareHighLowPoint[0]-(GlobalVar::timeShareHighLowPoint[0]-GlobalVar::timeShareHighLowPoint[1])*(mouseEvent->pos().ry()-TOPHEIGHTEDGE)/(drawChart.timeShareChart->height()*12/15-2*TOPHEIGHTEDGE);
-        timeSharePrice->setText(QString::number((1+price/100)*GlobalVar::preClose,'f',2)+"("+QString::number(price,'f',2)+")%");
-        timeSharePrice->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*timeSharePrice->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),mouseEvent->pos().ry()-15);
-        timeSharePrice->show();
-        if (mouseEvent->pos().ry()>drawChart.timeShareChart->height()*12/15)
+//        float price=GlobalVar::timeShareHighLowPoint[0]-(GlobalVar::timeShareHighLowPoint[0]-GlobalVar::timeShareHighLowPoint[1])*(mouseEvent->pos().ry()-TOPHEIGHTEDGE)/(drawChart.timeShareChart->height()*12/15-2*TOPHEIGHTEDGE);
+//        timeSharePrice->setText(QString::number((1+price/100)*GlobalVar::preClose,'f',2)+"("+QString::number(price,'f',2)+")%");
+        int n=int(mouseEvent->pos().rx()/((drawChart.timeShareChart->width()-2*WIDTHEDGE)/GlobalVar::trendsTotal))-1;
+        if (n<0 or n>GlobalVar::mTimeShareChartList.size()-1 or mouseEvent->pos().ry()<TOPHEIGHTEDGE or
+            mouseEvent->pos().ry()>drawChart.timeShareChart->height()-BOTTOMHEIGHTEDGE)
+        {
             timeSharePrice->hide();
+            timeShareVol->hide();
+            timeShareTime->hide();
+            return false;
+        }
+        float p=GlobalVar::mTimeShareChartList.at(n).price;
+        if (p>0)
+            timeSharePrice->setStyleSheet("color:red;font:bold;font-size:18px");
+        else
+            timeSharePrice->setStyleSheet("color:white;font:bold;font-size:18px");
+        float price=(1+p/100)*GlobalVar::preClose;
+//        int y=(GlobalVar::timeShareHighLowPoint[0]-p)*(drawChart.timeShareChart->height()*12/15-2*TOPHEIGHTEDGE)/(GlobalVar::timeShareHighLowPoint[0]-GlobalVar::timeShareHighLowPoint[1])+TOPHEIGHTEDGE;
+
+        timeSharePrice->setText(QString::number(price,'f',2)+"("+QString::number(p)+"%)");
+        timeShareVol->setText(GlobalVar::format_conversion(int(GlobalVar::mTimeShareChartList.at(n).vol)));
+        timeShareTime->setText(GlobalVar::mTimeShareChartList.at(n).time.right(5));
+        timeSharePrice->adjustSize();
+        timeShareVol->adjustSize();
+        timeSharePrice->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*timeSharePrice->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),100);
+        timeShareVol->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*timeShareVol->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),250);
+        timeShareTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*timeShareTime->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),220);
+        timeSharePrice->show();
+        timeShareVol->show();
+        timeShareTime->show();
         return true;
     }
     else if(obj==drawChart.timeShareChart and event->type()==QEvent::Leave)
     {
         timeSharePrice->hide();
+        timeShareVol->hide();
+        timeShareTime->hide();
         return true;
     }
     else if(obj==newsData->verticalScrollBar() and event->type() == QEvent::Wheel)
@@ -1197,7 +1230,7 @@ void MainWindow::showSearchResult()
     }
     else
     {
-        GlobalVar::isKState=true;
+//        GlobalVar::isKState=true;
         resetKParameter();
         searchSmallWindow->hide();
         emit startThreadCandleChart(freq,adjustFlag,true);
@@ -1347,11 +1380,11 @@ void MainWindow::reFlashIndex()
         }
         bb->setText(GlobalVar::mIndexList.at(n).name);
         if (GlobalVar::mIndexList.at(n).pctChg.toFloat()>0)
-            bl->setPalette(GlobalVar().pRed);
+            bl->setPalette(GlobalVar::pRed);
         else if (GlobalVar::mIndexList.at(n).pctChg.toFloat()<0)
-            bl->setPalette(GlobalVar().pGreen);
+            bl->setPalette(GlobalVar::pGreen);
         else
-            bl->setPalette(GlobalVar().pBlack);
+            bl->setPalette(GlobalVar::pBlack);
         bl->setText(GlobalVar::mIndexList.at(n).close+" "+GlobalVar::mIndexList.at(n).pctChg+"%");
     }
     if (changeInTurn)
@@ -1362,11 +1395,11 @@ void MainWindow::reFlashIndex()
     bb->setText(GlobalVar::mIndexList.at(n).name);
     QLabel *bl = (QLabel *)(ui->statusBar->children().at(16));
     if (GlobalVar::mIndexList.at(n).pctChg.toFloat()>0)
-        bl->setPalette(GlobalVar().pRed);
+        bl->setPalette(GlobalVar::pRed);
     else if (GlobalVar::mIndexList.at(n).pctChg.toFloat()<0)
-        bl->setPalette(GlobalVar().pGreen);
+        bl->setPalette(GlobalVar::pGreen);
     else
-        bl->setPalette(GlobalVar().pBlack);
+        bl->setPalette(GlobalVar::pBlack);
     bl->setText(GlobalVar::mIndexList.at(n).close+" "+GlobalVar::mIndexList.at(n).pctChg+"%");
 
 }

@@ -304,6 +304,16 @@ QString GlobalVar::format_conversion(float data)
         return QString::number(data,'f',2);
 }
 
+QString GlobalVar::format_conversion(int data)
+{
+    if (data>=100000000 or data<=-100000000)
+        return QString::number(data/100000000.0, 'f', 2)+"亿";
+    else if (data>=10000 or data<=-10000)
+        return QString::number(data/10000.0, 'f', 2)+"万";
+    else
+        return QString::number(data);
+}
+
 QString GlobalVar::peelStr(const QString &s,QString begin,QString end)
 {
     int bPos=s.indexOf(begin)+begin.length();
@@ -401,6 +411,7 @@ QPalette GlobalVar::pRed;
 QPalette GlobalVar::pGreen;
 QPalette GlobalVar::pBlack;
 QPalette GlobalVar::pBlue;
+QPalette GlobalVar::pWhite;
 int GlobalVar::upNums=0;
 int GlobalVar::downNums=0;
 bool GlobalVar::isSayNews=true;

@@ -184,7 +184,6 @@ void JSPickStock::PickStockInterface()
         cursor.setPosition(0,QTextCursor::MoveAnchor);
         cursor.setPosition(GlobalVar::formulaContent.size(),QTextCursor::KeepAnchor);
         cursor.mergeCharFormat(fmt);
-//        QString nums[]={"0","1","2","3","4","5","6","7","8","9",","};
         while((post=GlobalVar::formulaContent.indexOf("(",post))!=-1)
         {
             QString t=GlobalVar::formulaContent.mid(post-1,1);
@@ -248,11 +247,8 @@ void JSPickStock::PickStockInterface()
 
     connect(button[0],&QPushButton::clicked,this,[=](){
         if (GlobalVar::settings->value("isDownloadK").toString()!=
-                    QDateTime::currentDateTime().toString("yyyy-MM-dd"))
-        {
-            QMessageBox::information(this,"提示", "请先下载数据", QMessageBox::Ok);
-            return;
-        }
+                    GlobalVar::curRecentWorkDay(0).toString("yyyy-MM-dd"))
+            QMessageBox::information(this,"提示", "确保数据是最新的", QMessageBox::Ok);
         JSPickStock* object = new JSPickStock();
         QJSEngine myEngine;
         QJSValue jsObject = myEngine.newQObject(object);
@@ -296,7 +292,6 @@ void JSPickStock::PickStockInterface()
 
 void JSPickStock::onButtonClicked(QAbstractButton *button)
 {
-//    QString name[]={"上证A股","深圳A股","科创板","北交所","剔除ST和退市"};
     for (int i=0;i<5;++i)
     {
         if (button->text()==name[i])
@@ -409,6 +404,11 @@ float JSPickStock::C(int day)
     return getData(day,2);
 }
 
+float JSPickStock::Y()
+{
+    return GlobalVar::mTableListCopy.at(GlobalVar::mTableListNum).preClose;
+}
+
 float JSPickStock::T()
 {
     return GlobalVar::mTableListCopy.at(GlobalVar::mTableListNum).turn;
@@ -479,6 +479,7 @@ float JSPickStock::A(int startDay, int endDay)
             temp+=data.at(t).split(",",Qt::SkipEmptyParts).toList()[2].toFloat();
         }
         file.close();
+//        qDebug()<<GlobalVar::mCandleListCode<<temp/endDay;
         return temp/endDay;
     }
     file.close();

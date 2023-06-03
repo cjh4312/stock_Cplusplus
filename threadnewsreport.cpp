@@ -50,6 +50,7 @@ void ThreadNewsReport::getEastNews()
         dataList<<content.mid(content.indexOf(temp)+temp.length(),GlobalVar::peelStr(content,temp,"-1").indexOf("\""));
         dataList<<GlobalVar::getContent(content);
         dataList<<GlobalVar::getContent(GlobalVar::peelStr(content,"class=\"time\"","-1"));
+//        qDebug()<<dataList;
         eastNewsList.append(dataList);
     }
     std::sort(eastNewsList.begin(),eastNewsList.end(),[](QStringList a,QStringList b){
@@ -94,20 +95,15 @@ void ThreadNewsReport::initNewsReport(const QByteArray &allData)
             QString eastTime;
             if (eastNums!=-1)
             {
-                QString m=eastNewsList.at(eastNums)[2].split("月")[0];
-                QString s=eastNewsList.at(eastNums)[2].split(" ")[1];
-//                qDebug()<<m<<s;
-                for (int i=0;i<s.size();++i)
-                {
-                    QString temp=s.mid(i,1);
-                    if (GlobalVar::isInt(temp))
-                        eastTime+=temp;
-                }
-                if (m==QDateTime::currentDateTime().toString("M"))
-                    eastTime=QDateTime::currentDateTime().toString("MMdd")+eastTime;
-                else
-                    eastTime=QDateTime::currentDateTime().addDays(-1).toString("MMdd")+eastTime;
-//                qDebug()<<QDateTime::currentDateTime().toString("M")<<eastTime;
+                QString str=eastNewsList.at(eastNums)[2];
+                int a=str.indexOf("月");
+                QString m=str.mid(0,a);
+                QString d=str.mid(a+1,str.indexOf("日")-a-1);
+                if (d.length()==1)
+                    d="0"+d;
+                QString s=str.right(5);
+                eastTime=m+d+s.left(2)+s.right(2);
+//                qDebug()<<eastTime;
             }
             else
                 eastTime="123456789";

@@ -29,6 +29,7 @@ public:
     Q_INVOKABLE float L(int startDay,int endDay);
     Q_INVOKABLE float C();
     Q_INVOKABLE float C(int day);
+    Q_INVOKABLE float Y();
     Q_INVOKABLE float T();
     Q_INVOKABLE float T(int day);
     Q_INVOKABLE float T(int startDay,int endDay);

@@ -15,6 +15,8 @@ public:
     QWidget *timeShareChart;
     QWidget *candleChart;
     float candleHighLowPoint[5];
+    bool isTimeShareChartPaint=false;
+    bool isCandleChartPaint=false;
 
     void drawTimeShareChart();
     void drawCandleChart();

@@ -81,6 +81,8 @@ private:
     QLabel *colPrice;
     QLabel *rowTime;
     QLabel *timeSharePrice;
+    QLabel *timeShareVol;
+    QLabel *timeShareTime;
 
     QThread *thread[6];
     QTimer *tim;

@@ -34,6 +34,7 @@ public:
     static void getData(QByteArray &allData,float timeOut,const QUrl &url);
     static void postData(const QByteArray &postArray,QByteArray &allData, float timeOut, const QUrl &url);
     static QString format_conversion(float data);
+    static QString format_conversion(int data);
     static QString peelStr(const QString &s,QString begin,QString end);
     static QPair<QString, QString> cutStr(const QString &s,QString begin,QString end);
     static QString getContent(const QString &s);
@@ -76,6 +77,7 @@ public:
     static QPalette pGreen;
     static QPalette pBlack;
     static QPalette pBlue;
+    static QPalette pWhite;
     static int upNums;                     //上涨家数
     static int downNums;                   //下跌家数
     static int trendsTotal;                //分时图交易数据量

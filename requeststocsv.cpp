@@ -327,7 +327,7 @@ void RequestsToCsv::downloadAllStockK()
         file.close();
     }
     if (not isStop)
-        GlobalVar::settings->setValue("isDownloadK",QDateTime::currentDateTime().toString("yyyy-MM-dd"));
+        GlobalVar::settings->setValue("isDownloadK",GlobalVar::curRecentWorkDay(0).toString("yyyy-MM-dd"));
     stopBtn->setText("下载完成");
     stopBtn->setEnabled(false);
     isStop=false;

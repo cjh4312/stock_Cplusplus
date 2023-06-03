@@ -10,6 +10,9 @@ DrawChart::DrawChart(QWidget *parent)
 
 void DrawChart::drawTimeShareChart()
 {
+    if (isTimeShareChartPaint)
+        return;
+    isTimeShareChartPaint=true;
     int trendsTotal=GlobalVar::trendsTotal;
     QPainter painter(timeShareChart);
     painter.setPen(Qt::gray);
@@ -45,7 +48,10 @@ void DrawChart::drawTimeShareChart()
         painter.drawLine(QPointF(i*d*aveWidth/2+WIDTHEDGE,0),QPointF(i*d*aveWidth/2+WIDTHEDGE,timeShareChartHeight-BOTTOMHEIGHTEDGE));
 
     if (GlobalVar::mTimeShareChartList.isEmpty())
+    {
+        isTimeShareChartPaint=false;
         return;
+    }
     //绘制时间
     QRect rect;
     painter.setPen(Qt::white);
@@ -133,10 +139,14 @@ void DrawChart::drawTimeShareChart()
         painter.drawLine(QPointF(WIDTHEDGE+aveWidth*i, timeShareChartHeight-BOTTOMHEIGHTEDGE-vol*volAveHeight), QPointF(WIDTHEDGE+aveWidth*i, timeShareChartHeight-BOTTOMHEIGHTEDGE));
 //        qDebug()<<vol<<timeShareChartHeight-BOTTOMHEIGHTEDGE-vol*volAveHeight;
     }
+    isTimeShareChartPaint=false;
 }
 
 void DrawChart::drawCandleChart()
 {
+    if (isCandleChartPaint)
+        return;
+    isCandleChartPaint=true;
     int total=GlobalVar::mCandleChartList.count();
     int begin=total-GlobalVar::offsetLocal;
     if (begin<0)
@@ -156,7 +166,10 @@ void DrawChart::drawCandleChart()
     painter.drawLine(0,priceH,candleChartWidth,priceH);
 
     if (GlobalVar::mCandleChartList.isEmpty())
+    {
+        isCandleChartPaint=false;
         return;
+    }
     calcHighLowPoint(begin,end);
     float highPoint=candleHighLowPoint[0];
     float lowPoint=candleHighLowPoint[1];
@@ -274,6 +287,7 @@ void DrawChart::drawCandleChart()
             }
         }
     }
+    isCandleChartPaint=false;
 }
 
 void DrawChart::calcHighLowPoint(int begin,int end)
