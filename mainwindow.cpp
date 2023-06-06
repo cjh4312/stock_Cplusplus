@@ -244,6 +244,9 @@ void MainWindow::initSettings()
     drawChart.timeShareChart->installEventFilter(this);
     drawChart.candleChart->installEventFilter(this);
     drawChart.candleChart->setMouseTracking(true);
+    drawChart.hisTimeShareChart->setParent(this);
+    drawChart.hisTimeShareChartView->installEventFilter(this);
+    drawChart.hisTimeShareChartTitle->installEventFilter(this);
 
     mTableStock.stockTableView->setContextMenuPolicy(Qt::CustomContextMenu);
     mTableStock.risingSpeedView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -252,31 +255,6 @@ void MainWindow::initSettings()
     mTableStock.stockTableView->setFocusPolicy(Qt::NoFocus);
     mTableStock.risingSpeedView->setFocusPolicy(Qt::NoFocus);
     mTableStock.myStockView->setFocusPolicy(Qt::NoFocus);
-
-//    mPickStock->pickStockWindow->setParent(this);
-
-    colPrice=new QLabel(drawChart.candleChart);
-    rowTime=new QLabel(drawChart.candleChart);
-    colPrice->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-    rowTime->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-//    colPrice->resize(72,15);
-    colPrice->setStyleSheet("color:yellow;font:bold;font-size:18px");
-    colPrice->setAlignment(Qt::AlignCenter);
-    rowTime->resize(95,15);
-    rowTime->setStyleSheet("color:yellow;font:bold;font-size:18px");
-    rowTime->setAlignment(Qt::AlignCenter);
-    hKLine->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-    vKLine->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-    timeSharePrice=new QLabel(drawChart.timeShareChart);
-    timeShareVol=new QLabel(drawChart.timeShareChart);
-    timeShareTime=new QLabel(drawChart.timeShareChart);
-    drawChart.timeShareChart->setStyleSheet("color:white;font:bold;font-size:14px");
-    timeSharePrice->setAlignment(Qt::AlignCenter);
-    timeShareVol->setStyleSheet("color:white;font:bold;font-size:18px");
-    timeShareVol->setAlignment(Qt::AlignCenter);
-    timeShareTime->setStyleSheet("color:white;font:bold;font-size:18px");
-    timeShareTime->setAlignment(Qt::AlignCenter);
-    timeShareTime->resize(50,18);
 
     searchSmallWindow=new QWidget(this);
     searchSmallWindow->setWindowFlag(Qt::Popup);
@@ -737,84 +715,185 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 //        qDebug()<<mTableStock.stockTableView->height();
         return true;
     }
-    else if (obj==drawChart.timeShareChart and event->type() == QEvent::Paint)
+    else if (obj==drawChart.timeShareChart)
     {
-        drawChart.drawTimeShareChart();
-        return true;
-    }
-    else if(obj==drawChart.candleChart and event->type()==QEvent::MouseMove)
-    {
-        QMouseEvent *mouseEvent = (QMouseEvent *)event;
-        flashOldCandleInfo(mouseEvent);
-        return true;
-    }
-    else if(obj==drawChart.candleChart and event->type()==QEvent::Paint)
-    {
-        drawChart.drawCandleChart();
-        return true;
-    }
-    else if(obj==drawChart.candleChart and event->type()==QEvent::Leave)
-    {
-        colPrice->hide();
-        rowTime->hide();
-        vKLine->hide();
-        hKLine->hide();
-        reFlashBuySellBaseInfo();
-        return true;
-    }
-    else if(obj==drawChart.timeShareChart and event->type()==QEvent::MouseMove)
-    {
-        QMouseEvent *mouseEvent = (QMouseEvent *)event;
-//        float price=GlobalVar::timeShareHighLowPoint[0]-(GlobalVar::timeShareHighLowPoint[0]-GlobalVar::timeShareHighLowPoint[1])*(mouseEvent->pos().ry()-TOPHEIGHTEDGE)/(drawChart.timeShareChart->height()*12/15-2*TOPHEIGHTEDGE);
-//        timeSharePrice->setText(QString::number((1+price/100)*GlobalVar::preClose,'f',2)+"("+QString::number(price,'f',2)+")%");
-        int n=int(mouseEvent->pos().rx()/((drawChart.timeShareChart->width()-2*WIDTHEDGE)/GlobalVar::trendsTotal))-1;
-        if (n<0 or n>GlobalVar::mTimeShareChartList.size()-1 or mouseEvent->pos().ry()<TOPHEIGHTEDGE or
-            mouseEvent->pos().ry()>drawChart.timeShareChart->height()-BOTTOMHEIGHTEDGE)
+        if (event->type() == QEvent::Paint)
+            drawChart.drawTimeShareChart();
+        else if(event->type()==QEvent::MouseMove)
         {
-            timeSharePrice->hide();
-            timeShareVol->hide();
-            timeShareTime->hide();
-            vLine.hide();
-            hLine.hide();
-            return false;
+            QMouseEvent *mouseEvent = (QMouseEvent *)event;
+            //        float price=GlobalVar::timeShareHighLowPoint[0]-(GlobalVar::timeShareHighLowPoint[0]-GlobalVar::timeShareHighLowPoint[1])*(mouseEvent->pos().ry()-TOPHEIGHTEDGE)/(drawChart.timeShareChart->height()*12/15-2*TOPHEIGHTEDGE);
+            //        timeSharePrice->setText(QString::number((1+price/100)*GlobalVar::preClose,'f',2)+"("+QString::number(price,'f',2)+")%");
+            int n=int(mouseEvent->pos().rx()*GlobalVar::trendsTotal/(drawChart.timeShareChart->width()-2*WIDTHEDGE))-1;
+            if (n<0 or n>GlobalVar::mTimeShareChartList.size()-1 or mouseEvent->pos().ry()<TOPHEIGHTEDGE or
+                mouseEvent->pos().ry()>drawChart.timeShareChart->height()-BOTTOMHEIGHTEDGE)
+            {
+                drawChart.timeSharePrice->hide();
+                drawChart.timeShareVol->hide();
+                drawChart.timeShareTime->hide();
+                drawChart.vLine.hide();
+                drawChart.hLine.hide();
+                return false;
+            }
+            drawChart.vLine.setStyleSheet("QLabel{border:2px dotted white;}");
+            drawChart.vLine.resize(1,drawChart.timeShareChart->height()-BOTTOMHEIGHTEDGE);
+            drawChart.hLine.setStyleSheet("QLabel{border:2px dotted white;}");
+            drawChart.hLine.resize(drawChart.timeShareChart->width()-2*WIDTHEDGE,1);
+            float p=GlobalVar::mTimeShareChartList.at(n).price;
+            if (p>0)
+                drawChart.timeSharePrice->setStyleSheet("color:red;font:bold;font-size:18px");
+            else
+                drawChart.timeSharePrice->setStyleSheet("color:white;font:bold;font-size:18px");
+            float price=(1+p/100)*GlobalVar::preClose;
+            int x=(drawChart.timeShareChart->width()-2*WIDTHEDGE)*n/GlobalVar::trendsTotal+WIDTHEDGE;
+            int y=(GlobalVar::timeShareHighLowPoint[0]-p)*(drawChart.timeShareChart->height()*12/15-2*TOPHEIGHTEDGE)/(GlobalVar::timeShareHighLowPoint[0]-GlobalVar::timeShareHighLowPoint[1])+TOPHEIGHTEDGE;
+            //        qDebug()<<x<<y;
+            drawChart.timeSharePrice->setText(QString::number(price,'f',2)+"("+QString::number(p)+"%)");
+            drawChart.timeShareVol->setText(GlobalVar::format_conversion(int(GlobalVar::mTimeShareChartList.at(n).vol)));
+            drawChart.timeShareTime->setText(GlobalVar::mTimeShareChartList.at(n).time.right(5));
+            drawChart.timeSharePrice->adjustSize();
+            drawChart.timeShareVol->adjustSize();
+            drawChart.timeSharePrice->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.timeSharePrice->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),100);
+            drawChart.timeShareVol->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.timeShareVol->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),250);
+            drawChart.timeShareTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.timeShareTime->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),220);
+            drawChart.vLine.move(x,0);
+            drawChart.hLine.move(0,y);
+            drawChart.timeSharePrice->show();
+            drawChart.timeShareVol->show();
+            drawChart.timeShareTime->show();
+            drawChart.vLine.show();
+            drawChart.hLine.show();
         }
-        vLine.setStyleSheet("QLabel{border:2px dotted white;}");
-        vLine.resize(1,drawChart.timeShareChart->height()-BOTTOMHEIGHTEDGE);
-        hLine.setStyleSheet("QLabel{border:2px dotted white;}");
-        hLine.resize(drawChart.timeShareChart->width()-2*WIDTHEDGE,1);
-        float p=GlobalVar::mTimeShareChartList.at(n).price;
-        if (p>0)
-            timeSharePrice->setStyleSheet("color:red;font:bold;font-size:18px");
-        else
-            timeSharePrice->setStyleSheet("color:white;font:bold;font-size:18px");
-        float price=(1+p/100)*GlobalVar::preClose;
-        int x=(drawChart.timeShareChart->width()-2*WIDTHEDGE)*n/GlobalVar::trendsTotal+WIDTHEDGE;
-        int y=(GlobalVar::timeShareHighLowPoint[0]-p)*(drawChart.timeShareChart->height()*12/15-2*TOPHEIGHTEDGE)/(GlobalVar::timeShareHighLowPoint[0]-GlobalVar::timeShareHighLowPoint[1])+TOPHEIGHTEDGE;
-//        qDebug()<<x<<y;
-        timeSharePrice->setText(QString::number(price,'f',2)+"("+QString::number(p)+"%)");
-        timeShareVol->setText(GlobalVar::format_conversion(int(GlobalVar::mTimeShareChartList.at(n).vol)));
-        timeShareTime->setText(GlobalVar::mTimeShareChartList.at(n).time.right(5));
-        timeSharePrice->adjustSize();
-        timeShareVol->adjustSize();
-        timeSharePrice->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*timeSharePrice->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),100);
-        timeShareVol->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*timeShareVol->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),250);
-        timeShareTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*timeShareTime->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),220);
-        vLine.move(x,0);
-        hLine.move(0,y);
-        timeSharePrice->show();
-        timeShareVol->show();
-        timeShareTime->show();
-        vLine.show();
-        hLine.show();
+        else if (event->type()==QEvent::Leave)
+        {
+            drawChart.timeSharePrice->hide();
+            drawChart.timeShareVol->hide();
+            drawChart.timeShareTime->hide();
+            drawChart.vLine.hide();
+            drawChart.hLine.hide();
+        }
         return true;
     }
-    else if(obj==drawChart.timeShareChart and event->type()==QEvent::Leave)
+    else if (obj==drawChart.hisTimeShareChartTitle)
     {
-        timeSharePrice->hide();
-        timeShareVol->hide();
-        timeShareTime->hide();
-        vLine.hide();
-        hLine.hide();
+        if (event->type()==QEvent::MouseButtonPress)
+        {
+            QMouseEvent *mouseEvent = (QMouseEvent *)event;
+            drawChart.isMoveHisTimeShareChart=true;
+            p=mouseEvent->pos();
+        }
+        else if (event->type()==QEvent::MouseMove)
+        {
+            QMouseEvent *mouseEvent = (QMouseEvent *)event;
+            if (drawChart.isMoveHisTimeShareChart)
+                drawChart.hisTimeShareChart->move((mouseEvent->scenePosition()-p).rx(),(mouseEvent->scenePosition()-p).ry());
+        }
+        else if (event->type()==QEvent::MouseButtonRelease)
+        {
+            drawChart.isMoveHisTimeShareChart=false;
+        }
+        return true;
+    }
+    else if (obj==drawChart.hisTimeShareChartView)
+    {
+        if (event->type() == QEvent::Paint)
+            drawChart.drawHisTimeShare();
+        else if (event->type()==QEvent::MouseMove)
+        {
+
+            QMouseEvent *mouseEvent = (QMouseEvent *)event;
+            int n=int(mouseEvent->pos().rx()*(GlobalVar::mHisTimeShareChartList.size())/(drawChart.hisTimeShareChartView->width()-2*WIDTHEDGE));
+
+            if (n<0 or n>GlobalVar::mHisTimeShareChartList.size()-1 or mouseEvent->pos().ry()<TOPHEIGHTEDGE or
+                mouseEvent->pos().ry()>drawChart.hisTimeShareChartView->height()-BOTTOMHEIGHTEDGE)
+            {
+                drawChart.hisTimeSharePrice->hide();
+                drawChart.hisTimeShareVol->hide();
+                drawChart.hisTimeShareTime->hide();
+                drawChart.vHisLine.hide();
+                drawChart.hHisLine.hide();
+                return false;
+            }
+//            qDebug()<<n;
+            drawChart.vHisLine.setStyleSheet("QLabel{border:2px dotted white;}");
+            drawChart.vHisLine.resize(1,drawChart.hisTimeShareChartView->height()-BOTTOMHEIGHTEDGE);
+            drawChart.hHisLine.setStyleSheet("QLabel{border:2px dotted white;}");
+            drawChart.hHisLine.resize(drawChart.hisTimeShareChartView->width()-2*WIDTHEDGE,1);
+            float price=GlobalVar::mHisTimeShareChartList.at(n).price;
+
+            if (price>GlobalVar::hisPreClose)
+                drawChart.hisTimeSharePrice->setStyleSheet("color:red;font:bold;font-size:18px");
+            else
+                drawChart.hisTimeSharePrice->setStyleSheet("color:white;font:bold;font-size:18px");
+            float p=(price-GlobalVar::hisPreClose)*100/GlobalVar::hisPreClose;
+            int x=(drawChart.hisTimeShareChartView->width()-2*WIDTHEDGE)*n/GlobalVar::mHisTimeShareChartList.size()+WIDTHEDGE;
+            int y=(drawChart.hisTimeShareHighLowPoint[0]-price)*(drawChart.hisTimeShareChartView->height()*12/15-2*TOPHEIGHTEDGE)/(drawChart.hisTimeShareHighLowPoint[0]-drawChart.hisTimeShareHighLowPoint[1])+TOPHEIGHTEDGE;
+//            qDebug()<<x<<y;
+            drawChart.hisTimeSharePrice->setText(QString::number(price,'f',2)+"("+QString::number(p,'f',2)+"%)");
+            drawChart.hisTimeShareVol->setText(GlobalVar::format_conversion(GlobalVar::mHisTimeShareChartList.at(n).vol));
+            drawChart.hisTimeShareTime->setText(GlobalVar::mHisTimeShareChartList.at(n).time.right(5));
+            drawChart.hisTimeSharePrice->adjustSize();
+            drawChart.hisTimeShareVol->adjustSize();
+            drawChart.hisTimeSharePrice->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.hisTimeSharePrice->width()/(drawChart.hisTimeShareChartView->width()-2*WIDTHEDGE),100);
+            drawChart.hisTimeShareVol->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.hisTimeShareVol->width()/(drawChart.hisTimeShareChartView->width()-2*WIDTHEDGE),380);
+            drawChart.hisTimeShareTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.hisTimeShareTime->width()/(drawChart.hisTimeShareChart->width()-2*WIDTHEDGE),350);
+            drawChart.vHisLine.move(x,TITLEHEIGHT);
+            drawChart.hHisLine.move(0,y+TITLEHEIGHT);
+            drawChart.hisTimeSharePrice->show();
+            drawChart.hisTimeShareVol->show();
+            drawChart.hisTimeShareTime->show();
+            drawChart.vHisLine.show();
+            drawChart.hHisLine.show();
+            drawChart.hisTimeShareChart->update();
+        }
+        else if (event->type()==QEvent::Leave)
+        {
+            drawChart.hisTimeSharePrice->hide();
+            drawChart.hisTimeShareVol->hide();
+            drawChart.hisTimeShareTime->hide();
+            drawChart.vHisLine.hide();
+            drawChart.hHisLine.hide();
+        }
+        return true;
+    }
+    else if(obj==drawChart.candleChart)
+    {
+        if (event->type()==QEvent::MouseMove)
+        {
+            QMouseEvent *mouseEvent = (QMouseEvent *)event;
+            flashOldCandleInfo(mouseEvent);
+        }
+        else if (event->type()==QEvent::MouseButtonDblClick)
+        {
+            if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5)
+            {
+                QMessageBox::information(this,"提示", "只能查看A股", QMessageBox::Ok);
+                return false;
+            }
+            QMouseEvent *mouseEvent = (QMouseEvent *)event;
+            int m=(mouseEvent->pos().x()-KWIDTHEDGE)*GlobalVar::KRange/(drawChart.candleChart->width()-2*KWIDTHEDGE);
+            int n;
+            if (GlobalVar::mCandleChartList.count()<GlobalVar::KRange)
+                n=m;
+            else
+                n=GlobalVar::mCandleChartList.count()-GlobalVar::offsetLocal+m;
+            if (n>GlobalVar::mCandleChartList.count()-1 or n<0)
+                return false;
+            mFundFlow.getTimeShareMin(GlobalVar::getStockSymbol(),GlobalVar::mCandleChartList.at(n).time);
+            drawChart.hisTimeShareChart->show();
+            drawChart.title->setText(GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+GlobalVar::mCandleChartList.at(n).time+"分时图");
+            drawChart.hisTimeShareChart->update();
+        }
+        else if (event->type()==QEvent::Paint)
+            drawChart.drawCandleChart();
+        else if (event->type()==QEvent::Leave)
+        {
+            drawChart.colPrice->hide();
+            drawChart.rowTime->hide();
+            drawChart.vKLine->hide();
+            drawChart.hKLine->hide();
+            reFlashBuySellBaseInfo();
+        }
         return true;
     }
     else if(obj==newsData->verticalScrollBar() and event->type() == QEvent::Wheel)
@@ -1542,26 +1621,32 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
             baseInfoData[i+8]->setPalette(GlobalVar::pBlack);
         baseInfoData[i+8]->setText(QString::number(t[i])+"("+QString::number((t[i]-temp)*100/temp,'f',2)+"%)");
     }
-    rowTime->show();
-    colPrice->show();
+    drawChart.rowTime->show();
+    drawChart.colPrice->show();
     if (mouseEvent->pos().ry()>drawChart.candleChart->height()*12/15)
-        colPrice->hide();
-    float price=drawChart.candleHighLowPoint[0]-(drawChart.candleHighLowPoint[0]-drawChart.candleHighLowPoint[1])*(mouseEvent->pos().ry()-KTOPHEIGHTEDGE)/(drawChart.candleChart->height()*12/15-2*KTOPHEIGHTEDGE);
-    colPrice->setText(QString::number(price,'f',2));
-    colPrice->adjustSize();
-    rowTime->setText(GlobalVar::mCandleChartList.at(n).time);
-    colPrice->move(0,mouseEvent->pos().ry()-25);
-    rowTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-KWIDTHEDGE)*rowTime->width()/(drawChart.candleChart->width()-2*KWIDTHEDGE),drawChart.candleChart->height()*12/15);
-    vKLine->setStyleSheet("QLabel{border:2px dotted white;}");
-    vKLine->resize(1,drawChart.candleChart->height());
-    hKLine->setStyleSheet("QLabel{border:2px dotted white;}");
-    hKLine->resize(drawChart.candleChart->width(),1);
+    {
+        float vol=drawChart.candleHighLowPoint[2]-drawChart.candleHighLowPoint[2]*(mouseEvent->pos().ry()-drawChart.candleChart->height()*12/15-KBOTTOMHEIGHTEDGE)/(drawChart.candleChart->height()*3/15-2*KBOTTOMHEIGHTEDGE);
+        drawChart.colPrice->setText(GlobalVar::format_conversion(int(vol)));
+    }
+    else
+    {
+        float price=drawChart.candleHighLowPoint[0]-(drawChart.candleHighLowPoint[0]-drawChart.candleHighLowPoint[1])*(mouseEvent->pos().ry()-KTOPHEIGHTEDGE)/(drawChart.candleChart->height()*12/15-2*KTOPHEIGHTEDGE);
+        drawChart.colPrice->setText(QString::number(price,'f',2));
+    }
+    drawChart.colPrice->adjustSize();
+    drawChart.rowTime->setText(GlobalVar::mCandleChartList.at(n).time);
+    drawChart.colPrice->move(0,mouseEvent->pos().ry()-25);
+    drawChart.rowTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-KWIDTHEDGE)*drawChart.rowTime->width()/(drawChart.candleChart->width()-2*KWIDTHEDGE),drawChart.candleChart->height()*12/15);
+    drawChart.vKLine->setStyleSheet("QLabel{border:2px dotted white;}");
+    drawChart.vKLine->resize(1,drawChart.candleChart->height());
+    drawChart.hKLine->setStyleSheet("QLabel{border:2px dotted white;}");
+    drawChart.hKLine->resize(drawChart.candleChart->width(),1);
     int posX=(2*m+1)*(drawChart.candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
 //    int posY=;
-    vKLine->move(posX+KWIDTHEDGE,0);
-    hKLine->move(0,mouseEvent->pos().ry());
-    vKLine->show();
-    hKLine->show();
+    drawChart.vKLine->move(posX+KWIDTHEDGE,0);
+    drawChart.hKLine->move(0,mouseEvent->pos().ry());
+    drawChart.vKLine->show();
+    drawChart.hKLine->show();
 }
 void MainWindow::toInterFace(QString which)
 {

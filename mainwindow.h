@@ -78,16 +78,6 @@ private:
     ThreadNewsReport *threadNewsReport;
     ThreadCandleChart *threadCandleChart;
 
-    QLabel *colPrice;
-    QLabel *rowTime;
-    QLabel *vKLine=new QLabel(drawChart.candleChart);
-    QLabel *hKLine=new QLabel(drawChart.candleChart);
-    QLabel *timeSharePrice;
-    QLabel *timeShareVol;
-    QLabel *timeShareTime;
-    QLabel vLine=QLabel(drawChart.timeShareChart);
-    QLabel hLine=QLabel(drawChart.timeShareChart);
-
     QThread *thread[6];
     QTimer *tim;
     QLabel *circle;
@@ -101,6 +91,7 @@ private:
     QWidget *rightFundWindow;
     QWidget *searchSmallWindow;
     QWidget *F10SmallWindow;
+    QPointF p;
 
     int timeCount=0;
     bool changeInTurn=true;

@@ -49,6 +49,7 @@ public:
     static QString PEName;
 //    static QStringList tableHeader;
     static float preClose; //昨日收盘价
+    static float hisPreClose;
     static int WhichInterface;  //界面标识
     static bool isKState;     //标识k线界面
     static bool isUsZhStock;  //是否是中概股
@@ -62,6 +63,7 @@ public:
     static QList<IndexInfo> mIndexList;      //全球指数
     static QList<timeShareTickInfo> mTimeShareTickList;   //每笔成交
     static QList<timeShartChartInfo> mTimeShareChartList;  //分时图
+    static QList<timeShartChartInfo> mHisTimeShareChartList;
     static QList<candleChartInfo> mCandleChartList;      //k线图
 //    static QList<QStringList> mFundFlowList;         //资金流
 //    static bool timeOutFlag[10];                 //超时标志

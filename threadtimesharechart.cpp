@@ -51,20 +51,28 @@ void ThreadTimeShareChart::initTimeShareChartList(const QByteArray &allData)
         float h=0.0;
         float l=100000.0;
         GlobalVar::timeShareHighLowPoint[2]=0;
+        float pp=GlobalVar::preClose;
         for (int i = 0; i < data.size(); ++i)
         {
-            QStringList list=data.at(i).toString().split(",");
             timeShartChartInfo info;
-            info.time=list[0];
-            info.price=per(list[2].toFloat());
-            info.vol=list[5].toFloat();
-            info.avePrice=per(list[7].toFloat());
-            if (list[2].toFloat()>list[1].toFloat())
+            QStringList list=data.at(i).toString().split(",");
+            if (pp<list[2].toFloat())
                 info.direct=2;
-            else if (list[2].toFloat()<list[1].toFloat())
+            else if (pp>list[2].toFloat())
                 info.direct=1;
             else
                 info.direct=3;
+            pp=list[2].toFloat();
+            info.time=list[0];
+            info.price=per(pp);
+            info.vol=list[5].toFloat();
+            info.avePrice=per(list[7].toFloat());
+//            if (list[2].toFloat()>list[1].toFloat())
+//                info.direct=2;
+//            else if (list[2].toFloat()<list[1].toFloat())
+//                info.direct=1;
+//            else
+//                info.direct=3;
             if (list[3].toFloat()>h)
                 h=list[3].toFloat();
             if (list[4].toFloat()<l)
@@ -75,7 +83,11 @@ void ThreadTimeShareChart::initTimeShareChartList(const QByteArray &allData)
             GlobalVar::mTimeShareChartList.append(info);
         }
         GlobalVar::timeShareHighLowPoint[0]=per(h);
+        if (GlobalVar::timeShareHighLowPoint[0]<0)
+            GlobalVar::timeShareHighLowPoint[0]=0;
         GlobalVar::timeShareHighLowPoint[1]=per(l);
+        if (GlobalVar::timeShareHighLowPoint[1]>0)
+            GlobalVar::timeShareHighLowPoint[1]=0;
 
         //        for (int i = 0; i < GlobalVar::mTimeShareChartList.size(); ++i)
         //        {

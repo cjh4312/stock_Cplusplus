@@ -14,6 +14,7 @@
 #define per(c) ((c)>=(GlobalVar::preClose))?(int((((c)-(GlobalVar::preClose))*100/(GlobalVar::preClose))*100+0.5)/100.0):(int((((c)-(GlobalVar::preClose))*100/(GlobalVar::preClose))*100-0.5)/100.0)
 #define SPLITMID "/R"
 #define SPLITBACK "////"
+#define TITLEHEIGHT 40
 
 struct StockInfo
 {

@@ -113,11 +113,11 @@ QString GlobalVar::getStockSymbol()
 {
     QString symbol;
     if (GlobalVar::curCode.left(1)=="6")
-        symbol="SH"+GlobalVar::curCode;
+        symbol="sh"+GlobalVar::curCode;
     else if (GlobalVar::curCode.left(1)=="8" or GlobalVar::curCode.left(1)=="4")
-        symbol="BJ"+GlobalVar::curCode;
+        symbol="bj"+GlobalVar::curCode;
     else if (GlobalVar::curCode.left(1)=="3" or GlobalVar::curCode.left(1)=="0")
-        symbol="SZ"+GlobalVar::curCode;
+        symbol="sz"+GlobalVar::curCode;
     return symbol;
 }
 
@@ -381,6 +381,7 @@ QString GlobalVar::EPSReportDate="每股收益";
 QString GlobalVar::PEName="市盈率";
 //QStringList GlobalVar::tableHeader;
 float GlobalVar::preClose=0.00;
+float GlobalVar::hisPreClose=0.00;
 int GlobalVar::WhichInterface = 1;
 bool GlobalVar::isKState=false;
 bool GlobalVar::isUsZhStock=false;
@@ -394,6 +395,7 @@ QList<StockInfo> GlobalVar::mRisingSpeedList;
 QList<StockInfo> GlobalVar::mMyStockList;
 QList<timeShareTickInfo> GlobalVar::mTimeShareTickList;
 QList<timeShartChartInfo> GlobalVar::mTimeShareChartList;
+QList<timeShartChartInfo> GlobalVar::mHisTimeShareChartList;
 QList<candleChartInfo> GlobalVar::mCandleChartList;
 //QList<QStringList> GlobalVar::mFundFlowList;
 //bool GlobalVar::timeOutFlag[10]={false};

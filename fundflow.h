@@ -31,6 +31,7 @@ public:
     void openFundRank(QString ft,QString sc);
     void getRoyalFlushFundFlow();
     void getNotNormalStock();
+    void getTimeShareMin(QString code,QString date);
 };
 
 #endif // FUNDFLOW_H

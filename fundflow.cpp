@@ -719,5 +719,65 @@ void FundFlow::getNotNormalStock()
 //    QByteArray dataArray = doc.toJson(QJsonDocument::Compact);
 //    QByteArray allData1;
 //    GlobalVar::postData(dataArray,allData1,1,QUrl("http://api.waditu.com"));
-//    qDebug()<<QString(allData1);
+    //    qDebug()<<QString(allData1);
+}
+
+void FundFlow::getTimeShareMin(QString code,QString date)
+{
+    QJSEngine myEngine;
+    QString fileName = "/list/sf_sdk.js";
+    QFile scriptFile(GlobalVar::currentPath+fileName);
+    if (!scriptFile.open(QIODevice::ReadOnly))
+        return;
+    QTextStream stream(&scriptFile);
+    QString contents = stream.readAll();
+    scriptFile.close();
+    myEngine.evaluate(contents);
+    QJSValue func;
+    func = myEngine.globalObject().property("decode");
+
+    QByteArray allData;
+    QNetworkAccessManager naManager =QNetworkAccessManager();
+    QString url="https://finance.sina.com.cn/realstock/company/"+code+"/hisdata/"+date.left(4)+"/"+date.mid(5,2)+".js?d="+date;
+    GlobalVar::getData(allData,2,QUrl(url));
+
+    QString s=QString(allData).split(";")[0];
+    int pos=s.indexOf("\"")+1;
+    QString str=s.mid(pos,s.size()-pos-1);
+    QStringList ss=str.split(",");
+    GlobalVar::mHisTimeShareChartList.clear();
+    for (int i=0;i<ss.count();++i)
+    {
+        QJSValueList args;
+        args << ss[i];
+        QJSValue funcValue=func.call(args);
+
+        QString date1=funcValue.property(0).property("date").toString();
+        if (date!=QDateTime::fromString(date1).addSecs(28800).toString("yyyy-MM-dd"))
+            continue;
+        int l=funcValue.property("length").toInt();
+        GlobalVar::hisPreClose=funcValue.property(0).property("prevclose").toNumber();
+//        qDebug()<<date<<preClose;
+        QDateTime curTime=QDateTime::fromString("2023-06-05 09:25", "yyyy-MM-dd hh:mm");
+        QString d=date.left(10);
+        for (int j=1;j<l;++j)
+        {
+            timeShartChartInfo info;
+            info.price=funcValue.property(j).property("price").toNumber();
+            info.vol=funcValue.property(j).property("volume").toNumber()/100;
+            info.avePrice=funcValue.property(j).property("avg_price").toNumber();
+            if (j==1)
+            {
+                info.time=d+" "+curTime.toString("hh:mm");
+            }
+            else if (j<=122)
+                info.time=d+" "+curTime.addSecs(300+(j-2)*60).toString("hh:mm");
+            else
+                info.time=d+" "+curTime.addSecs(5700+(j-2)*60).toString("hh:mm");
+//            qDebug()<<info.time;
+            GlobalVar::mHisTimeShareChartList.append(info);
+        }
+//        for (int i=0;i<GlobalVar::mHisTimeShareChartList.count();++i)
+//            qDebug()<<GlobalVar::mHisTimeShareChartList.at(i).price<<GlobalVar::mHisTimeShareChartList.at(i).vol;
+    }
 }
