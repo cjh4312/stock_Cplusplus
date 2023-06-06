@@ -92,6 +92,7 @@ private:
     QWidget *searchSmallWindow;
     QWidget *F10SmallWindow;
     QPointF p;
+    int hisTimeShareN;
 
     int timeCount=0;
     bool changeInTurn=true;
@@ -126,6 +127,7 @@ private:
     void flashOldCandleInfo(QMouseEvent *mouseEvent);
     void toInterFace(QString which);
     void toFundFlow();
+    void downUpLookStock(QWheelEvent *event);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);//事件过滤器
