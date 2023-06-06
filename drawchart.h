@@ -37,8 +37,8 @@ public:
     QLabel *hisTimeSharePrice;
     QLabel *hisTimeShareVol;
     QLabel *hisTimeShareTime;
-    QLabel vHisLine=QLabel(hisTimeShareChart);
-    QLabel hHisLine=QLabel(hisTimeShareChart);
+    QLabel vHisLine=QLabel(hisTimeShareChartView);
+    QLabel hHisLine=QLabel(hisTimeShareChartView);
 
     void drawTimeShareChart();
     void drawHisTimeShare();

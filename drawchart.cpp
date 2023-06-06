@@ -55,9 +55,9 @@ DrawChart::DrawChart(QWidget *parent)
     timeShareTime->setStyleSheet("color:white;font:bold;font-size:18px");
     timeShareTime->setAlignment(Qt::AlignCenter);
     timeShareTime->resize(50,18);
-    hisTimeSharePrice=new QLabel(hisTimeShareChart);
-    hisTimeShareVol=new QLabel(hisTimeShareChart);
-    hisTimeShareTime=new QLabel(hisTimeShareChart);
+    hisTimeSharePrice=new QLabel(hisTimeShareChartView);
+    hisTimeShareVol=new QLabel(hisTimeShareChartView);
+    hisTimeShareTime=new QLabel(hisTimeShareChartView);
     hisTimeShareChart->setStyleSheet("color:white;font:bold;font-size:14px");
     hisTimeSharePrice->setAlignment(Qt::AlignCenter);
     hisTimeShareVol->setStyleSheet("color:white;font:bold;font-size:18px");
@@ -73,6 +73,11 @@ void DrawChart::drawTimeShareChart()
     if (isTimeShareChartPaint)
         return;
     isTimeShareChartPaint=true;
+    if (GlobalVar::mTimeShareChartList.isEmpty())
+    {
+        isTimeShareChartPaint=false;
+        return;
+    }
     int trendsTotal=GlobalVar::trendsTotal;
     QPainter painter(timeShareChart);
     painter.setPen(Qt::gray);
@@ -107,11 +112,7 @@ void DrawChart::drawTimeShareChart()
     for (int i=1;i<=trendsTotal/30;++i)
         painter.drawLine(QPointF(i*d*aveWidth/2+WIDTHEDGE,0),QPointF(i*d*aveWidth/2+WIDTHEDGE,timeShareChartHeight-BOTTOMHEIGHTEDGE));
 
-    if (GlobalVar::mTimeShareChartList.isEmpty())
-    {
-        isTimeShareChartPaint=false;
-        return;
-    }
+
     //绘制时间
     QRect rect;
     painter.setPen(Qt::white);
@@ -204,6 +205,12 @@ void DrawChart::drawHisTimeShare()
     if (isHisTimeShareChartPaint)
         return;
     isHisTimeShareChartPaint=true;
+    if (GlobalVar::mHisTimeShareChartList.isEmpty())
+    {
+        isHisTimeShareChartPaint=false;
+        return;
+    }
+//    qDebug()<<"ok";
     int trendsTotal=GlobalVar::mHisTimeShareChartList.count();
     QPainter painter(hisTimeShareChartView);
     painter.setPen(Qt::gray);
@@ -215,7 +222,8 @@ void DrawChart::drawHisTimeShare()
     painter.drawLine(0,priceH,timeShareChartWidth,priceH);
     painter.drawLine(0,0,timeShareChartWidth,0);
     painter.drawLine(0,timeShareChartHeight-BOTTOMHEIGHTEDGE,timeShareChartWidth,timeShareChartHeight-BOTTOMHEIGHTEDGE);
-    calcTSHighLowPoint(1,trendsTotal);
+
+    calcTSHighLowPoint(0,trendsTotal);
 
     float high=hisTimeShareHighLowPoint[0];
     float low=hisTimeShareHighLowPoint[1];
@@ -326,6 +334,7 @@ void DrawChart::drawHisTimeShare()
             painter.drawLine(QPointF(WIDTHEDGE+aveWidth*i, timeShareChartHeight-BOTTOMHEIGHTEDGE-vol*volAveHeight), QPointF(WIDTHEDGE+aveWidth*i, timeShareChartHeight-BOTTOMHEIGHTEDGE));
         }
     }
+    painter.end();
     isHisTimeShareChartPaint=false;
 }
 
@@ -334,6 +343,11 @@ void DrawChart::drawCandleChart()
     if (isCandleChartPaint)
         return;
     isCandleChartPaint=true;
+    if (GlobalVar::mCandleChartList.isEmpty())
+    {
+        isCandleChartPaint=false;
+        return;
+    }
     int total=GlobalVar::mCandleChartList.count();
     int begin=total-GlobalVar::offsetLocal;
     if (begin<0)
@@ -352,11 +366,6 @@ void DrawChart::drawCandleChart()
     painter.drawRect(0,0,candleChartWidth,canldeChartHeight);
     painter.drawLine(0,priceH,candleChartWidth,priceH);
 
-    if (GlobalVar::mCandleChartList.isEmpty())
-    {
-        isCandleChartPaint=false;
-        return;
-    }
     calcHighLowPoint(begin,end);
     float highPoint=candleHighLowPoint[0];
     float lowPoint=candleHighLowPoint[1];

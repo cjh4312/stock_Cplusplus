@@ -744,6 +744,7 @@ void FundFlow::getTimeShareMin(QString code,QString date)
     QString s=QString(allData).split(";")[0];
     int pos=s.indexOf("\"")+1;
     QString str=s.mid(pos,s.size()-pos-1);
+
     QStringList ss=str.split(",");
     GlobalVar::mHisTimeShareChartList.clear();
     for (int i=0;i<ss.count();++i)
@@ -753,11 +754,11 @@ void FundFlow::getTimeShareMin(QString code,QString date)
         QJSValue funcValue=func.call(args);
 
         QString date1=funcValue.property(0).property("date").toString();
+//        qDebug()<<date1;
         if (date!=QDateTime::fromString(date1).addSecs(28800).toString("yyyy-MM-dd"))
             continue;
         int l=funcValue.property("length").toInt();
         GlobalVar::hisPreClose=funcValue.property(0).property("prevclose").toNumber();
-//        qDebug()<<date<<preClose;
         QDateTime curTime=QDateTime::fromString("2023-06-05 09:25", "yyyy-MM-dd hh:mm");
         QString d=date.left(10);
         for (int j=1;j<l;++j)

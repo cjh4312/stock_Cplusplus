@@ -797,10 +797,11 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     else if (obj==drawChart.hisTimeShareChartView)
     {
         if (event->type() == QEvent::Paint)
+        {
             drawChart.drawHisTimeShare();
+        }
         else if (event->type()==QEvent::MouseMove)
         {
-
             QMouseEvent *mouseEvent = (QMouseEvent *)event;
             int n=int(mouseEvent->pos().rx()*(GlobalVar::mHisTimeShareChartList.size())/(drawChart.hisTimeShareChartView->width()-2*WIDTHEDGE));
 
@@ -814,7 +815,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 drawChart.hHisLine.hide();
                 return false;
             }
-//            qDebug()<<n;
             drawChart.vHisLine.setStyleSheet("QLabel{border:2px dotted white;}");
             drawChart.vHisLine.resize(1,drawChart.hisTimeShareChartView->height()-BOTTOMHEIGHTEDGE);
             drawChart.hHisLine.setStyleSheet("QLabel{border:2px dotted white;}");
@@ -835,16 +835,16 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             drawChart.hisTimeSharePrice->adjustSize();
             drawChart.hisTimeShareVol->adjustSize();
             drawChart.hisTimeSharePrice->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.hisTimeSharePrice->width()/(drawChart.hisTimeShareChartView->width()-2*WIDTHEDGE),100);
-            drawChart.hisTimeShareVol->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.hisTimeShareVol->width()/(drawChart.hisTimeShareChartView->width()-2*WIDTHEDGE),380);
-            drawChart.hisTimeShareTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.hisTimeShareTime->width()/(drawChart.hisTimeShareChart->width()-2*WIDTHEDGE),350);
-            drawChart.vHisLine.move(x,TITLEHEIGHT);
-            drawChart.hHisLine.move(0,y+TITLEHEIGHT);
+            drawChart.hisTimeShareVol->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.hisTimeShareVol->width()/(drawChart.hisTimeShareChartView->width()-2*WIDTHEDGE),340);
+            drawChart.hisTimeShareTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.hisTimeShareTime->width()/(drawChart.hisTimeShareChart->width()-2*WIDTHEDGE),310);
+            drawChart.vHisLine.move(x,0);
+            drawChart.hHisLine.move(0,y);
             drawChart.hisTimeSharePrice->show();
             drawChart.hisTimeShareVol->show();
             drawChart.hisTimeShareTime->show();
             drawChart.vHisLine.show();
             drawChart.hHisLine.show();
-            drawChart.hisTimeShareChart->update();
+            drawChart.hisTimeShareChartView->update();
         }
         else if (event->type() == QEvent::Wheel)
         {
@@ -853,9 +853,12 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 hisTimeShareN+=1;
             else
                 hisTimeShareN-=1;
-            mFundFlow.getTimeShareMin(GlobalVar::getStockSymbol(),GlobalVar::mCandleChartList.at(hisTimeShareN).time);
-            drawChart.title->setText(GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+GlobalVar::mCandleChartList.at(hisTimeShareN).time+"分时图");
-            drawChart.hisTimeShareChart->update();
+            if (hisTimeShareN>GlobalVar::mCandleChartList.count()-1 or hisTimeShareN<0)
+                return false;
+            QString date=GlobalVar::mCandleChartList.at(hisTimeShareN).time;
+            mFundFlow.getTimeShareMin(GlobalVar::getStockSymbol(),date);
+            drawChart.title->setText(GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+date+"分时图");
+            drawChart.hisTimeShareChartView->update();
         }
         else if (event->type()==QEvent::Leave)
         {
@@ -883,18 +886,17 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             }
             QMouseEvent *mouseEvent = (QMouseEvent *)event;
             int m=(mouseEvent->pos().x()-KWIDTHEDGE)*GlobalVar::KRange/(drawChart.candleChart->width()-2*KWIDTHEDGE);
-            int n;
             if (GlobalVar::mCandleChartList.count()<GlobalVar::KRange)
-                n=m;
+                hisTimeShareN=m;
             else
-                n=GlobalVar::mCandleChartList.count()-GlobalVar::offsetLocal+m;
-            if (n>GlobalVar::mCandleChartList.count()-1 or n<0)
-                return false;
-            hisTimeShareN=n;
-            mFundFlow.getTimeShareMin(GlobalVar::getStockSymbol(),GlobalVar::mCandleChartList.at(n).time);
+                hisTimeShareN=GlobalVar::mCandleChartList.count()-GlobalVar::offsetLocal+m;
+            if (hisTimeShareN>GlobalVar::mCandleChartList.count()-1 or hisTimeShareN<0)
+                return true;
+            QString date=GlobalVar::mCandleChartList.at(hisTimeShareN).time;
+            mFundFlow.getTimeShareMin(GlobalVar::getStockSymbol(),date);
             drawChart.hisTimeShareChart->show();
-            drawChart.title->setText(GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+GlobalVar::mCandleChartList.at(n).time+"分时图");
-            drawChart.hisTimeShareChart->update();
+            drawChart.title->setText(GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+date+"分时图");
+            drawChart.hisTimeShareChartView->update();
         }
         else if (event->type()==QEvent::Paint)
             drawChart.drawCandleChart();
@@ -909,9 +911,12 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                     hisTimeShareN+=1;
                 else
                     hisTimeShareN-=1;
-                mFundFlow.getTimeShareMin(GlobalVar::getStockSymbol(),GlobalVar::mCandleChartList.at(hisTimeShareN).time);
-                drawChart.title->setText(GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+GlobalVar::mCandleChartList.at(hisTimeShareN).time+"分时图");
-                drawChart.hisTimeShareChart->update();
+                if (hisTimeShareN<0 or hisTimeShareN>GlobalVar::mCandleChartList.count()-1)
+                    return false;
+                QString date=GlobalVar::mCandleChartList.at(hisTimeShareN).time;
+                mFundFlow.getTimeShareMin(GlobalVar::getStockSymbol(),date);
+                drawChart.title->setText(GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+date+"分时图");
+                drawChart.hisTimeShareChartView->update();
             }
         }
         else if (event->type()==QEvent::Leave)
