@@ -775,7 +775,6 @@ void FundFlow::getTimeShareMin(QString code,QString date)
                 info.time=d+" "+curTime.addSecs(300+(j-2)*60).toString("hh:mm");
             else
                 info.time=d+" "+curTime.addSecs(5700+(j-2)*60).toString("hh:mm");
-//            qDebug()<<info.time;
             GlobalVar::mHisTimeShareChartList.append(info);
         }
 //        for (int i=0;i<GlobalVar::mHisTimeShareChartList.count();++i)

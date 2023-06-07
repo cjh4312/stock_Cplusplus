@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     setvbuf(stderr, NULL, _IONBF, 0);
 
     MainWindow w;
+    a.installEventFilter(&w);
     w.showMaximized();
 
     return a.exec();

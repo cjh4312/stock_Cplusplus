@@ -3,6 +3,7 @@
 #include "globalvar.h"
 #include "qboxlayout.h"
 #include "qpushbutton.h"
+
 DrawChart::DrawChart(QWidget *parent)
     : QWidget{parent}
 {
@@ -20,7 +21,7 @@ DrawChart::DrawChart(QWidget *parent)
     hisTimeShareChart->setLayout(main);
     main->addWidget(hisTimeShareChartTitle);
     main->addWidget(hisTimeShareChartView);
-    QPushButton *close=new QPushButton();
+    QPushButton *close=new QPushButton(hisTimeShareChartTitle);
     QIcon myicon;
     myicon.addFile(tr(":/new/pictures/close.png"));
     close->setIcon(myicon);
@@ -29,8 +30,8 @@ DrawChart::DrawChart(QWidget *parent)
     titleLayout->addWidget(title);
     titleLayout->addWidget(close);
     hisTimeShareChart->setGeometry(200, 100, 600, 450);
-    hisTimeShareChartView->setMouseTracking(true);
-    hisTimeShareChartTitle->setMouseTracking(true);
+//    hisTimeShareChartView->setMouseTracking(true);
+//    hisTimeShareChartTitle->setMouseTracking(true);
     hisTimeShareChart->hide();
 
     colPrice=new QLabel(candleChart);
@@ -73,11 +74,6 @@ void DrawChart::drawTimeShareChart()
     if (isTimeShareChartPaint)
         return;
     isTimeShareChartPaint=true;
-    if (GlobalVar::mTimeShareChartList.isEmpty())
-    {
-        isTimeShareChartPaint=false;
-        return;
-    }
     int trendsTotal=GlobalVar::trendsTotal;
     QPainter painter(timeShareChart);
     painter.setPen(Qt::gray);
@@ -112,7 +108,11 @@ void DrawChart::drawTimeShareChart()
     for (int i=1;i<=trendsTotal/30;++i)
         painter.drawLine(QPointF(i*d*aveWidth/2+WIDTHEDGE,0),QPointF(i*d*aveWidth/2+WIDTHEDGE,timeShareChartHeight-BOTTOMHEIGHTEDGE));
 
-
+    if (GlobalVar::mTimeShareChartList.isEmpty())
+    {
+        isTimeShareChartPaint=false;
+        return;
+    }
     //绘制时间
     QRect rect;
     painter.setPen(Qt::white);
@@ -197,6 +197,7 @@ void DrawChart::drawTimeShareChart()
         painter.drawLine(QPointF(WIDTHEDGE+aveWidth*i, timeShareChartHeight-BOTTOMHEIGHTEDGE-vol*volAveHeight), QPointF(WIDTHEDGE+aveWidth*i, timeShareChartHeight-BOTTOMHEIGHTEDGE));
 //        qDebug()<<vol<<timeShareChartHeight-BOTTOMHEIGHTEDGE-vol*volAveHeight;
     }
+    painter.end();
     isTimeShareChartPaint=false;
 }
 
@@ -483,6 +484,7 @@ void DrawChart::drawCandleChart()
             }
         }
     }
+    painter.end();
     isCandleChartPaint=false;
 }
 

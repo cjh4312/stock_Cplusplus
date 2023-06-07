@@ -236,17 +236,8 @@ void MainWindow::initInterface()
 }
 void MainWindow::initSettings()
 {
-    mTableStock.stockTableView->verticalScrollBar()->installEventFilter(this);
-    newsData->verticalScrollBar()->installEventFilter(this);
-//    newsData->document()->setMaximumBlockCount(10);
     newsData->setOpenExternalLinks(true);
-    mTableStock.timeShareTickView->verticalScrollBar()->installEventFilter(this);
-    drawChart.timeShareChart->installEventFilter(this);
-    drawChart.candleChart->installEventFilter(this);
-    drawChart.candleChart->setMouseTracking(true);
     drawChart.hisTimeShareChart->setParent(this);
-    drawChart.hisTimeShareChartView->installEventFilter(this);
-    drawChart.hisTimeShareChartTitle->installEventFilter(this);
 
     mTableStock.stockTableView->setContextMenuPolicy(Qt::CustomContextMenu);
     mTableStock.risingSpeedView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -264,14 +255,35 @@ void MainWindow::initSettings()
     searchSmallWindow->setLayout(search);
     search->addWidget(searchStock.searchCodeLine);
     search->addWidget(searchStock.matchCodeText);
-    searchStock.searchCodeLine->installEventFilter(this);
 
     F10SmallWindow=new QWidget(this);
+    QWidget *f10Title=new QWidget(this);
     F10SmallWindow->setWindowFlag(Qt::Popup);
     F10SmallWindow->move(200,100);
+    QVBoxLayout *f10Main=new QVBoxLayout();
+    F10SmallWindow->setLayout(f10Main);
     QHBoxLayout *f10 =new QHBoxLayout();
-    f10->setContentsMargins(2,2,2,2);
-    F10SmallWindow->setLayout(f10);
+    QHBoxLayout *titleLayout=new QHBoxLayout();
+
+    QPushButton *close=new QPushButton();
+    connect(close,&QPushButton::clicked,this,[=](){F10SmallWindow->close();});
+    f10Title->setLayout(titleLayout);
+    f10Title->setMaximumHeight(TITLEHEIGHT);
+//    f10Title->setStyleSheet("background-color:rgb(153, 204, 255);");
+    fTitle->setStyleSheet("QLabel{font:bold 16px;font-family:微软雅黑;color:rgb(255, 0, 127)}");
+
+    f10Main->addWidget(f10Title);
+    f10Main->addLayout(f10);
+    f10Main->setContentsMargins(0,0,0,0);
+
+    QIcon myicon;
+    myicon.addFile(tr(":/new/pictures/close.png"));
+    close->setIcon(myicon);
+    close->setIconSize(QSize(20,20));
+    close->setMaximumSize(QSize(30,30));
+    titleLayout->addWidget(fTitle);
+    titleLayout->addWidget(close);
+
     QWidget *navigation=new QWidget(F10SmallWindow);
     f10->addWidget(navigation);
     f10->addWidget(f10View.stockInfoView);
@@ -854,7 +866,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             else
                 hisTimeShareN-=1;
             if (hisTimeShareN>GlobalVar::mCandleChartList.count()-1 or hisTimeShareN<0)
-                return false;
+                return true;
             QString date=GlobalVar::mCandleChartList.at(hisTimeShareN).time;
             mFundFlow.getTimeShareMin(GlobalVar::getStockSymbol(),date);
             drawChart.title->setText(GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+date+"分时图");
@@ -912,7 +924,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 else
                     hisTimeShareN-=1;
                 if (hisTimeShareN<0 or hisTimeShareN>GlobalVar::mCandleChartList.count()-1)
-                    return false;
+                    return true;
                 QString date=GlobalVar::mCandleChartList.at(hisTimeShareN).time;
                 mFundFlow.getTimeShareMin(GlobalVar::getStockSymbol(),date);
                 drawChart.title->setText(GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+date+"分时图");
@@ -1015,6 +1027,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
                 rightFundWindow->show();
                 rightBaseWindow->hide();
             }
+            drawChart.hisTimeShareChart->close();
             drawChart.candleChart->hide();
             mTableStock.stockTableView->show();
 //            mTableStock.stockTableView->setFocus();
@@ -1683,12 +1696,14 @@ void MainWindow::toInterFace(QString which)
     else if(which=="f3")
     {
         F10SmallWindow->setFixedSize(675,500);
+        fTitle->setText(GlobalVar::curCode+" "+GlobalVar::curName.left(GlobalVar::curName.indexOf("(")));
         F10SmallWindow->show();
         f10View.dealWithHotRank();
     }
     else if(which=="f10")
     {
         F10SmallWindow->setFixedSize(1275,700);
+        fTitle->setText(GlobalVar::curCode+" "+GlobalVar::curName.left(GlobalVar::curName.indexOf("(")));
         F10SmallWindow->show();
         f10View.dealWithMainIndex();
     }
@@ -1794,9 +1809,9 @@ void MainWindow::toFundFlow()
             mTableStock.stockTableView->setColumnWidth(i,90);
     }
 }
-
 void MainWindow::downUpLookStock(QWheelEvent *event)
 {
+    drawChart.hisTimeShareChart->close();
     if (GlobalVar::isKState)
     {
         resetKParameter();

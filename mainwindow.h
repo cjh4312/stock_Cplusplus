@@ -106,6 +106,7 @@ private:
     QString preCode="";
     QLabel *EPSLabel;
     QLabel *PELabel;
+    QLabel *fTitle=new QLabel("标题栏");
     QComboBox *periodBox=new QComboBox(this);
     QDateEdit *dateEdit=new QDateEdit(this);
     QComboBox *northBox=new QComboBox(this);

@@ -101,7 +101,7 @@ void JSPickStock::PickStockInterface()
     mainLayout->addSpacing(10);
     mainLayout->addLayout(layout3);
     QPushButton *button[5];
-    QString buttonName[]={"开始选股","添加根节点","添加","删除","保存"};
+    QString buttonName[]={"开始选股","添加分类","添加","删除","保存"};
     for (int i=0;i<5;++i)
     {
         button[i]=new QPushButton(buttonName[i]);
