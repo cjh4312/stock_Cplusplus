@@ -257,7 +257,7 @@ void MainWindow::initSettings()
     search->addWidget(searchStock.matchCodeText);
 
     F10SmallWindow=new QWidget(this);
-    QWidget *f10Title=new QWidget(this);
+    QWidget *F10Title=new QWidget(this);
     F10SmallWindow->setWindowFlag(Qt::Popup);
     F10SmallWindow->move(200,100);
     QVBoxLayout *f10Main=new QVBoxLayout();
@@ -267,12 +267,12 @@ void MainWindow::initSettings()
 
     QPushButton *close=new QPushButton();
     connect(close,&QPushButton::clicked,this,[=](){F10SmallWindow->close();});
-    f10Title->setLayout(titleLayout);
-    f10Title->setMaximumHeight(TITLEHEIGHT);
+    F10Title->setLayout(titleLayout);
+    F10Title->setMaximumHeight(TITLEHEIGHT);
 //    f10Title->setStyleSheet("background-color:rgb(153, 204, 255);");
     fTitle->setStyleSheet("QLabel{font:bold 16px;font-family:微软雅黑;color:rgb(255, 0, 127)}");
 
-    f10Main->addWidget(f10Title);
+    f10Main->addWidget(F10Title);
     f10Main->addLayout(f10);
     f10Main->setContentsMargins(0,0,0,0);
 
@@ -882,7 +882,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
         return true;
     }
-    else if(obj==drawChart.candleChart)
+    else if (obj==drawChart.candleChart)
     {
         if (event->type()==QEvent::MouseMove)
         {
@@ -941,7 +941,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
         return true;
     }
-    else if(obj==newsData->verticalScrollBar() and event->type() == QEvent::Wheel)
+    else if (obj==newsData->verticalScrollBar() and event->type() == QEvent::Wheel)
     {
         QWheelEvent *event1 = static_cast<QWheelEvent *>(event);
         int para=event1->angleDelta().y();
@@ -954,7 +954,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             newsData->verticalScrollBar()->setSliderPosition(tempStep-163);
         return true;
     }
-    else if(obj==mTableStock.timeShareTickView->verticalScrollBar() and event->type() == QEvent::Wheel)
+    else if (obj==mTableStock.timeShareTickView->verticalScrollBar() and event->type() == QEvent::Wheel)
     {
         QWheelEvent *ev = static_cast<QWheelEvent *>(event);
         int para=ev->angleDelta().y();
