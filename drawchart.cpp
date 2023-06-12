@@ -52,6 +52,8 @@ DrawChart::DrawChart(QWidget *parent)
     timeSharePrice->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     timeShareVol->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     timeShareTime->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    hLine.setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    vLine.setAttribute(Qt::WA_TransparentForMouseEvents, true);
     timeShareChart->setStyleSheet("color:white;font:bold;font-size:14px");
     timeSharePrice->setAlignment(Qt::AlignCenter);
     timeShareVol->setStyleSheet("color:white;font:bold;font-size:18px");
@@ -65,6 +67,8 @@ DrawChart::DrawChart(QWidget *parent)
     hisTimeSharePrice->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     hisTimeShareTime->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     hisTimeShareVol->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    vHisLine.setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    hHisLine.setAttribute(Qt::WA_TransparentForMouseEvents, true);
     hisTimeShareChart->setStyleSheet("color:white;font:bold;font-size:14px");
     hisTimeSharePrice->setAlignment(Qt::AlignCenter);
     hisTimeShareVol->setStyleSheet("color:white;font:bold;font-size:18px");
@@ -257,10 +261,10 @@ void DrawChart::drawHisTimeShare()
         painter->drawLine(QPointF(i*d*aveWidth/2+WIDTHEDGE+2,0),QPointF(i*d*aveWidth/2+WIDTHEDGE+2,timeShareChartHeight-BOTTOMHEIGHTEDGE));
     QRect rect;
     painter->setPen(Qt::white);
-    for (int i=0;i<trendsTotal;i=i+d)
+    for (int i=1;i<trendsTotal;i=i+d)
     {
         int offset=WIDTHEDGE;
-        if (i>0)
+        if (i>1)
             offset=WIDTHEDGE-15;
         //        qDebug()<<offset+aveWidth*(i-1)<<timeShareChartWidth-d/3-1;
         if (i+d>trendsTotal)

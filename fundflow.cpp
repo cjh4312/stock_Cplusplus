@@ -155,7 +155,7 @@ void FundFlow::getBoardStock(QString name)
             info.velocity = ceilMap.value("f22").toFloat();
             info.pe = ceilMap.value("f9").toFloat();
             info.totalValue = ceilMap.value("f20").toFloat();
-            info.CirculatedValue=ceilMap.value("f21").toFloat();
+            info.circulatedValue=ceilMap.value("f21").toFloat();
             info.pctYear=ceilMap.value("f25").toFloat();
             info.pctSixty=ceilMap.value("f24").toFloat();
             info.volume = ceilMap.value("f5").toFloat();
@@ -693,33 +693,41 @@ void FundFlow::getNotNormalStock()
 {
     QByteArray allData;
     QNetworkRequest request;
-    request.setUrl(QUrl("https://ssr1.scrape.center/page/1"));
+    QString url="https://market.finance.sina.com.cn/transHis.php?symbol=sz301205&date=2022-11-28&page=1";
+//    QString url1="https://www.shanghairanking.cn/rankings/bcur/2015";
+    request.setUrl(QUrl(url));
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
-    request.setRawHeader("Host","ssr1.scrape.center");
+//    request.setRawHeader("Host","ssr1.scrape.center");
     GlobalVar::getData(allData,2,request);
     if (allData.isEmpty())
         return;
     QString html=QString(allData);
-    QPair<QString, QString> pair=GlobalVar::cutStr(html,"class=\"el-card item m-t is-hover-shadow\"",
-                        "class=\"el-card item m-t is-hover-shadow\"");
-    html=pair.second;
-    pair=GlobalVar::cutStr(pair.first,"class=\"categories\"","</div>");
+    QString str=GlobalVar::peelStr(html,"<tbody>","-1");
+    QList<QStringList> data;
+    while(1)
+    {
+        if (str.indexOf("<tr")==-1)
+            break;
+        QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
+        QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
 
-    QStringList l;
-    GlobalVar::getAllContent(pair.first,l,"<span");
-    qDebug()<<l;
+    //    qDebug()<<str;
+        QStringList l;
+        GlobalVar::getAllContent(s,l,"<t");
+        qDebug()<<l;
+        data.append(l);
+        str=pair.second;
+    }
+//    QString str=GlobalVar::peelStr(html,"<tbody","-1");
+//    QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
+//    QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
+//    QStringList l;
 
-//    QJsonObject json;
-//    json.insert("api_name", "stock_basic");
-//    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
-//    json.insert("fields", "ts_code,symbol,name,area,industry,list_date,cnspell");
+//    GlobalVar::getAllContent(s,l,"<a");
+//    GlobalVar::getAllContent(s,l,"<p");
+//    GlobalVar::getAllContent(s,l,"<td");
+//    qDebug()<<l;
 
-//    QJsonDocument doc;
-//    doc.setObject(json);
-//    QByteArray dataArray = doc.toJson(QJsonDocument::Compact);
-//    QByteArray allData1;
-//    GlobalVar::postData(dataArray,allData1,1,QUrl("http://api.waditu.com"));
-    //    qDebug()<<QString(allData1);
 }
 
 void FundFlow::getTimeShareMin(QString code,QString date)

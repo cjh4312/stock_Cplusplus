@@ -118,6 +118,10 @@ QString GlobalVar::getStockSymbol()
         symbol="bj"+GlobalVar::curCode;
     else if (GlobalVar::curCode.left(1)=="3" or GlobalVar::curCode.left(1)=="0")
         symbol="sz"+GlobalVar::curCode;
+    else if(GlobalVar::curCode.left(2)=="1.")
+        symbol="sh"+GlobalVar::curCode.split(".")[1];
+    else if(GlobalVar::curCode.left(3)=="399")
+        symbol="sz"+GlobalVar::curCode;
     return symbol;
 }
 
@@ -146,7 +150,7 @@ void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bo
                   case 8:
                       return is_asc?(infoA.totalValue<infoB.totalValue):(infoA.totalValue>infoB.totalValue);
                   case 9:
-                      return is_asc?(infoA.CirculatedValue<infoB.CirculatedValue):(infoA.CirculatedValue>infoB.CirculatedValue);
+                      return is_asc?(infoA.circulatedValue<infoB.circulatedValue):(infoA.circulatedValue>infoB.circulatedValue);
                   case 10:
                       return is_asc?(infoA.pctYear<infoB.pctYear):(infoA.pctYear>infoB.pctYear);
                   case 11:
@@ -304,15 +308,15 @@ QString GlobalVar::format_conversion(float data)
         return QString::number(data,'f',2);
 }
 
-QString GlobalVar::format_conversion(int data)
-{
-    if (data>=100000000 or data<=-100000000)
-        return QString::number(data/100000000.0, 'f', 2)+"亿";
-    else if (data>=10000 or data<=-10000)
-        return QString::number(data/10000.0, 'f', 2)+"万";
-    else
-        return QString::number(data);
-}
+//QString GlobalVar::format_conversion(int data)
+//{
+//    if (data>=100000000 or data<=-100000000)
+//        return QString::number(data/100000000.0, 'f', 2)+"亿";
+//    else if (data>=10000 or data<=-10000)
+//        return QString::number(data/10000.0, 'f', 2)+"万";
+//    else
+//        return QString::number(data);
+//}
 
 QString GlobalVar::peelStr(const QString &s,QString begin,QString end)
 {
@@ -339,6 +343,7 @@ void GlobalVar::getAllContent(QString &content, QStringList &strList, QString be
         if (content.indexOf(begin)==-1)
             break;
         content=GlobalVar::peelStr(content,begin,"-1");
+//        qDebug()<<content;
         int bPos=content.indexOf(">")+1;
         int ePos=content.indexOf("<");
         if (ePos<=bPos)

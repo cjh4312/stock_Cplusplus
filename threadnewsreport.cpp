@@ -23,7 +23,7 @@ void ThreadNewsReport::getNewsData()
     isRunning=true;
     getEastNews();
     QByteArray allData;
-    GlobalVar::getData(allData,1.3,QUrl("https://www.jin10.com/flash_newest.js?t=1667528593473"));
+    GlobalVar::getData(allData,2,QUrl("https://www.jin10.com/flash_newest.js?t=1667528593473"));
     if (not allData.isEmpty() and not eastNewsList.isEmpty())
         initNewsReport(allData);
 //    GlobalVar::timeOutFlag[3]=false;
@@ -34,7 +34,7 @@ void ThreadNewsReport::getNewsData()
 void ThreadNewsReport::getEastNews()
 {
     QByteArray allData;
-    GlobalVar::getData(allData,1.3,QUrl("https://finance.eastmoney.com/yaowen.html"));
+    GlobalVar::getData(allData,2,QUrl("https://finance.eastmoney.com/yaowen.html"));
     if (allData.isEmpty())
         return;
     QString s=GlobalVar::peelStr(QString(allData),"id=\"artitileList1\"","-1");

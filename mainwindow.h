@@ -97,6 +97,7 @@ private:
     int timeCount=0;
     bool changeInTurn=true;
     bool isAsia=true;
+    bool isLookMyStock=false;
     int ifCanClick=1;
     QString freq="101";
     QString adjustFlag="0";

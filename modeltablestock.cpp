@@ -65,7 +65,7 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 6: return m_modelData.at(row).velocity;
         case 7: return m_modelData.at(row).pe;
         case 8: return GlobalVar::format_conversion(m_modelData.at(row).totalValue);
-        case 9: return GlobalVar::format_conversion(m_modelData.at(row).CirculatedValue);
+        case 9: return GlobalVar::format_conversion(m_modelData.at(row).circulatedValue);
         case 10: return m_modelData.at(row).pctYear;
         case 11: return m_modelData.at(row).pctSixty;
         case 12: return GlobalVar::format_conversion(m_modelData.at(row).volume);

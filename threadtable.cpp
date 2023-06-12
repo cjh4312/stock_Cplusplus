@@ -98,7 +98,7 @@ void ThreadTable::initTableList(const QByteArray &allData)
             info.velocity = ceilMap.value("f22").toFloat();
             info.pe = ceilMap.value("f9").toFloat();
             info.totalValue = ceilMap.value("f20").toFloat();
-            info.CirculatedValue=ceilMap.value("f21").toFloat();
+            info.circulatedValue=ceilMap.value("f21").toFloat();
             info.pctYear=ceilMap.value("f25").toFloat();
             info.pctSixty=ceilMap.value("f24").toFloat();
             info.volume = ceilMap.value("f5").toFloat();

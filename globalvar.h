@@ -34,7 +34,7 @@ public:
     static void getData(QByteArray &allData,float timeOut,const QUrl &url);
     static void postData(const QByteArray &postArray,QByteArray &allData, float timeOut, const QUrl &url);
     static QString format_conversion(float data);
-    static QString format_conversion(int data);
+//    static QString format_conversion(int data);
     static QString peelStr(const QString &s,QString begin,QString end);
     static QPair<QString, QString> cutStr(const QString &s,QString begin,QString end);
     static QString getContent(const QString &s);

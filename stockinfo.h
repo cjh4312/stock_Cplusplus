@@ -27,7 +27,7 @@ struct StockInfo
     float velocity;
     float pe;
     float totalValue;
-    float CirculatedValue;
+    float circulatedValue;
     float pctYear;
     float pctSixty;
     float volume;
