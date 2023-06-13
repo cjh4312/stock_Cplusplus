@@ -52,36 +52,60 @@ void ThreadTimeShareChart::initTimeShareChartList(const QByteArray &allData)
         float l=100000.0;
         GlobalVar::timeShareHighLowPoint[2]=0;
         float pp=GlobalVar::preClose;
-        for (int i = 0; i < data.size(); ++i)
-        {
-            timeShartChartInfo info;
-            QStringList list=data.at(i).toString().split(",");
-            if (pp<list[2].toFloat())
-                info.direct=2;
-            else if (pp>list[2].toFloat())
-                info.direct=1;
-            else
-                info.direct=3;
-            pp=list[2].toFloat();
-            info.time=list[0];
-            info.price=per(pp);
-            info.vol=list[5].toFloat();
-            info.avePrice=per(list[7].toFloat());
-//            if (list[2].toFloat()>list[1].toFloat())
-//                info.direct=2;
-//            else if (list[2].toFloat()<list[1].toFloat())
-//                info.direct=1;
-//            else
-//                info.direct=3;
-            if (list[3].toFloat()>h)
-                h=list[3].toFloat();
-            if (list[4].toFloat()<l)
-                l=list[4].toFloat();
-            if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
-                GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
-//            qDebug()<<GlobalVar::timeShareHighLowPoint[2];
-            GlobalVar::mTimeShareChartList.append(info);
-        }
+        if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
+            for (int i = 0; i < data.size(); ++i)
+            {
+                timeShartChartInfo info;
+                QStringList list=data.at(i).toString().split(",");
+                if (pp<list[2].toFloat())
+                    info.direct=2;
+                else if (pp>list[2].toFloat())
+                    info.direct=1;
+                else
+                    info.direct=3;
+                pp=list[2].toFloat();
+                info.time=list[0];
+                info.price=per(pp);
+                info.vol=list[5].toFloat();
+                info.avePrice=per(list[7].toFloat());
+                if (list[3].toFloat()>h)
+                    h=list[3].toFloat();
+                if (list[4].toFloat()<l)
+                    l=list[4].toFloat();
+                if (list[7].toFloat()>h)
+                    h=list[7].toFloat();
+                if (list[7].toFloat()<l)
+                    l=list[7].toFloat();
+
+                if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
+                    GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
+                GlobalVar::mTimeShareChartList.append(info);
+            }
+        else
+            for (int i = 0; i < data.size(); ++i)
+            {
+                timeShartChartInfo info;
+                QStringList list=data.at(i).toString().split(",");
+                if (pp<list[2].toFloat())
+                    info.direct=2;
+                else if (pp>list[2].toFloat())
+                    info.direct=1;
+                else
+                    info.direct=3;
+                pp=list[2].toFloat();
+                info.time=list[0];
+                info.price=per(pp);
+                info.vol=list[5].toFloat();
+                info.avePrice=per(list[7].toFloat());
+                if (list[3].toFloat()>h)
+                    h=list[3].toFloat();
+                if (list[4].toFloat()<l)
+                    l=list[4].toFloat();
+
+                if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
+                    GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
+                GlobalVar::mTimeShareChartList.append(info);
+            }
         GlobalVar::timeShareHighLowPoint[0]=per(h);
         if (GlobalVar::timeShareHighLowPoint[0]<0)
             GlobalVar::timeShareHighLowPoint[0]=0;
