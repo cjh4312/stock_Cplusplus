@@ -32,6 +32,7 @@ public:
     void getRoyalFlushFundFlow();
     void getNotNormalStock();
     void getTimeShareMin(QString code,QString date);
+    void getVacation();
 };
 
 #endif // FUNDFLOW_H

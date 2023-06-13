@@ -115,6 +115,8 @@ void MainWindow::initInterface()
     setWindowIcon(QIcon(":/new/pictures/logo.ico"));
     if (not GlobalVar::isSayNews)
         ui->newsReport->setChecked(true);
+    if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
+        ui->setVacation->setEnabled(false);
     QActionGroup *market = new QActionGroup(this);
     market->addAction(ui->HKMarket);
     market->addAction(ui->USMarket);
@@ -661,6 +663,11 @@ void MainWindow::initSignals()
         formulaDes->show();
         file.close();
     });
+    connect(ui->setVacation,&QAction::triggered,this,[=](){
+        mFundFlow.getVacation();
+        if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
+            ui->setVacation->setEnabled(false);
+    });
 }
 void MainWindow::saveMyStock()
 {
@@ -1041,32 +1048,29 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     QKeySequence key=event->key();
-    if (key==Qt::Key_Escape)
+    if (key==Qt::Key_Escape and GlobalVar::isKState)
     {
-        resetKParameter();
-        if (GlobalVar::isKState)
+        if (drawChart.hisTimeShareChart->isHidden())
         {
-            if (drawChart.hisTimeShareChart->isHidden())
+            GlobalVar::isKState=false;
+            isLookMyStock=false;
+            if (GlobalVar::WhichInterface==1)
             {
-                GlobalVar::isKState=false;
-                isLookMyStock=false;
-                if (GlobalVar::WhichInterface==1)
-                {
-                    mTableStock.risingSpeedView->show();
-                    mTableStock.myStockView->show();
-                }
-                else if(GlobalVar::WhichInterface==4)
-                {
-                    rightFundWindow->show();
-                    rightBaseWindow->hide();
-                }
-                drawChart.candleChart->hide();
-                mTableStock.stockTableView->show();
+                mTableStock.risingSpeedView->show();
+                mTableStock.myStockView->show();
             }
-            else
+            else if(GlobalVar::WhichInterface==4)
             {
-                drawChart.hisTimeShareChart->close();
+                rightFundWindow->show();
+                rightBaseWindow->hide();
             }
+            drawChart.candleChart->hide();
+            mTableStock.stockTableView->show();
+            resetKParameter();
+        }
+        else
+        {
+            drawChart.hisTimeShareChart->close();
         }
     }
     else if (key==Qt::Key_PageDown)

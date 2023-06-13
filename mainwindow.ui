@@ -101,6 +101,7 @@
     <addaction name="actionF10"/>
     <addaction name="actionF3"/>
     <addaction name="formula"/>
+    <addaction name="setVacation"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -219,6 +220,11 @@
   <action name="formula">
    <property name="text">
     <string>公式编写说明</string>
+   </property>
+  </action>
+  <action name="setVacation">
+   <property name="text">
+    <string>设置A股假期</string>
    </property>
   </action>
  </widget>

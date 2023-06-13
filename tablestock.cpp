@@ -84,19 +84,12 @@ void TableStock::initTableView()
     //拖拽交换行
     header->setSectionsMovable(true);
     connect(header,&QHeaderView::sectionMoved,this,[=](int /*logicIndex*/,int oldIndex,int newIndex){
-//        QStringList s=GlobalVar::settings->value("myStock").toStringList();
-//        QString str=s[oldIndex];
-//        s.removeAt(oldIndex);
-//        s.insert(newIndex,str);
-//        GlobalVar::settings->setValue("myStock",s);
         StockInfo info=GlobalVar::mMyStockList.at(oldIndex);
         GlobalVar::mMyStockList.remove(oldIndex);
         GlobalVar::mMyStockList.insert(newIndex,info);
         QStringList s;
         for (int i=0;i<GlobalVar::mMyStockList.count();++i)
-        {
             s<<GlobalVar::mMyStockList.at(i).code;
-        }
         GlobalVar::settings->setValue("myStock",s);
         QList<StockInfo> t;
         m_myStockModel->setModelData(t);
@@ -104,6 +97,7 @@ void TableStock::initTableView()
         myStockView->setModel(m_myStockModel);
         myStockView->setCurrentIndex(m_myStockModel->index(newIndex,0));
     });
+
     QTableView *tl[3]={stockTableView,risingSpeedView,myStockView};
     for (int i=0;i<3;++i)
     {
