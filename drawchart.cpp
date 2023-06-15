@@ -88,6 +88,7 @@ DrawChart::DrawChart(QWidget *parent)
     annTitle->setStyleSheet("QListView::item{height:60px;}");
     annTitle->setWordWrap(true);
     annTitle->setAlternatingRowColors(true);
+    annText->setOpenExternalLinks(true);
     annLayout->addWidget(annTitle);
     annLayout->addWidget(annText);
 //    annoucementWindow
