@@ -922,6 +922,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 return false;
             }
             QMouseEvent *mouseEvent = (QMouseEvent *)event;
+            if (mouseEvent->pos().y()<30)
+                return false;
             int m=(mouseEvent->pos().x()-KWIDTHEDGE)*GlobalVar::KRange/(drawChart.candleChart->width()-2*KWIDTHEDGE);
             if (GlobalVar::mCandleChartList.count()<GlobalVar::KRange)
                 hisTimeShareN=m;
@@ -1036,6 +1038,33 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         searchStock.matchCodeText->mergeCurrentCharFormat(charFmt);
         searchStock.matchCodeText->textCursor().insertText(">>> ");
     }
+    else
+    {
+        for (int i=0;i<50;++i)
+            if (obj==drawChart.annLabel[i] and event->type()==QEvent::MouseButtonDblClick)
+            {
+                QString date=drawChart.annLabel[i]->toolTip().left(10);
+                int curItem=0;
+                QStringList l;
+                for(int j = 0; j < GlobalVar::annoucementList.count(); j++)
+                {
+                    if (GlobalVar::annoucementList.at(j).size()<3)
+                        continue;
+                    if (date==GlobalVar::annoucementList.at(j)[2])
+                        curItem=j-1;
+                    l<<GlobalVar::annoucementList.at(j)[2]+"\n"+GlobalVar::annoucementList.at(j)[1];
+                }
+                drawChart.model->setStringList(l);
+                drawChart.annTitle->setModel(drawChart.model);
+                QModelIndex qindex = drawChart.model->index(curItem,0);
+                drawChart.annTitle->setCurrentIndex(qindex);
+                drawChart.annoucementWindow->setWindowTitle(GlobalVar::curCode+" "+
+                             GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+"公告");
+                drawChart.annClicked(qindex);
+                drawChart.annoucementWindow->show();
+                return true;
+            }
+    }
     //其它事件交基类处理
     return QMainWindow::eventFilter(obj, event);
 }
@@ -1050,7 +1079,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     QKeySequence key=event->key();
     if (key==Qt::Key_Escape and GlobalVar::isKState)
     {
-        if (drawChart.hisTimeShareChart->isHidden())
+        if (not drawChart.annoucementWindow->isHidden())
+            drawChart.annoucementWindow->close();
+        else if (not drawChart.hisTimeShareChart->isHidden())
+            drawChart.hisTimeShareChart->close();
+        else
         {
             GlobalVar::isKState=false;
             isLookMyStock=false;
@@ -1068,10 +1101,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             mTableStock.stockTableView->show();
             resetKParameter();
         }
-        else
-        {
-            drawChart.hisTimeShareChart->close();
-        }
+
     }
     else if (key==Qt::Key_PageDown)
     {
@@ -1097,6 +1127,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
+            mFundFlow.getAnnoucement();
         }
     }
     else if (key==Qt::Key_PageUp)
@@ -1123,6 +1154,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
+            mFundFlow.getAnnoucement();
         }
     }
     else if (key==Qt::Key_Enter or key==Qt::Key_Return)
@@ -1716,6 +1748,7 @@ void MainWindow::toInterFace(QString which)
     else if (which=="k")
     {
         GlobalVar::isKState=true;
+        mFundFlow.getAnnoucement();
         mTableStock.stockTableView->hide();
         mTableStock.risingSpeedView->hide();
         mTableStock.myStockView->hide();
@@ -1910,5 +1943,6 @@ void MainWindow::downUpLookStock(QWheelEvent *event)
         emit startThreadCandleChart(freq,adjustFlag,true);
         emit startThreadTimeShareChart();
         emit startThreadTimeShareTick();
+        mFundFlow.getAnnoucement();
     }
 }

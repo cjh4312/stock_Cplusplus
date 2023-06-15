@@ -29,6 +29,7 @@
 #include <QComboBox>
 #include <QDateEdit>
 #include <QMessageBox>
+#include <QListWidgetItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

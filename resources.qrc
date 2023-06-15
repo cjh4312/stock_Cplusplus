@@ -3,5 +3,6 @@
         <file>logo.ico</file>
         <file>des.jpg</file>
         <file>close.png</file>
+        <file>annoucement.png</file>
     </qresource>
 </RCC>

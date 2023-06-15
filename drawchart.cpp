@@ -1,8 +1,10 @@
 
 #include "drawchart.h"
+#include "commondelegate.h"
 #include "globalvar.h"
 #include "qboxlayout.h"
 #include "qpushbutton.h"
+#include "qtextcodec.h"
 
 DrawChart::DrawChart(QWidget *parent)
     : QWidget{parent}
@@ -76,7 +78,31 @@ DrawChart::DrawChart(QWidget *parent)
     hisTimeShareTime->setStyleSheet("color:white;font:bold;font-size:18px");
     hisTimeShareTime->setAlignment(Qt::AlignCenter);
     hisTimeShareTime->resize(50,18);
+
+    annoucementWindow->setWindowFlag(Qt::Popup);
+    annoucementWindow->resize(1000,600);
+    annTitle->setMaximumWidth(300);
+    annTitle->setItemDelegate(new CommonDelegate());
+    QHBoxLayout *annLayout=new QHBoxLayout();
+    annoucementWindow->setLayout(annLayout);
+    annTitle->setStyleSheet("QListView::item{height:60px;}");
+    annTitle->setWordWrap(true);
+    annTitle->setAlternatingRowColors(true);
+    annLayout->addWidget(annTitle);
+    annLayout->addWidget(annText);
+//    annoucementWindow
+    QPixmap *pixmap = new QPixmap(":/new/pictures/annoucement.png");
+    for (int i=0;i<50;++i)
+    {
+        annLabel[i]=new QLabel(candleChart);
+        annLabel[i]->resize(15,15);
+        pixmap->scaled(annLabel[i]->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        annLabel[i]->setScaledContents(true);
+        annLabel[i]->setPixmap(*pixmap);
+        annLabel[i]->hide();
+    }
     connect(close,&QPushButton::clicked,this,[=](){hisTimeShareChart->close();});
+    connect(annTitle, SIGNAL(clicked(const QModelIndex)),this, SLOT(annClicked(const QModelIndex)));
 }
 
 void DrawChart::drawTimeShareChart()
@@ -470,12 +496,12 @@ void DrawChart::drawCandleChart()
         {
             if (candleHighLowPoint[3]>=GlobalVar::KRange/2)
             {
-                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]-95,10,100,30);
+                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]-95,30,100,30);
                 painter.drawText(rect,Qt::AlignRight,QString::number(highPoint));
             }
             else
             {
-                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]-5,10,100,30);
+                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]-5,30,100,30);
                 painter.drawText(rect,Qt::AlignLeft,QString::number(highPoint));
             }
         }
@@ -494,6 +520,7 @@ void DrawChart::drawCandleChart()
             }
         }
     }
+    appendAnnoucement(begin,end,aveWidth);
     painter.end();
     isCandleChartPaint=false;
 }
@@ -550,5 +577,92 @@ void DrawChart::calcTSHighLowPoint(int begin, int end)
         hisTimeShareHighLowPoint[0]=GlobalVar::hisPreClose;
     if (hisTimeShareHighLowPoint[1]>GlobalVar::hisPreClose)
         hisTimeShareHighLowPoint[1]=GlobalVar::hisPreClose;
+}
+
+void DrawChart::appendAnnoucement(int b, int e,int aveWidth)
+{
+    int m=0;
+    QString backCode="";
+    QString content;
+    for (int i=0;i<GlobalVar::annoucementList.count();++i)
+    {
+        if (GlobalVar::annoucementList.at(i).size()<3)
+            continue;
+//        qDebug()<<GlobalVar::annoucementList.at(i)[1]<<GlobalVar::annoucementList.at(i)[2];
+
+        int n=GlobalVar::KRange;
+        if (GlobalVar::mCandleChartList.count()<n)
+            n=GlobalVar::mCandleChartList.count();
+        for (int j=e;j>=b;--j)
+        {
+            if (backCode==GlobalVar::annoucementList.at(i)[2])
+            {
+                QString str=GlobalVar::annoucementList.at(i)[1];
+                content=content+"\n"+GlobalVar::annoucementList.at(i)[2]+"\n"+autoWordWrap(str,20);
+                annLabel[m-1]->setToolTip(content);
+                break;
+            }
+            content="";
+            if (GlobalVar::mCandleChartList.at(j).time==GlobalVar::annoucementList.at(i)[2])
+            {
+                annLabel[m]->show();
+                content=GlobalVar::annoucementList.at(i)[1];
+                content=GlobalVar::annoucementList.at(i)[2]+"\n"+autoWordWrap(content,20);
+                annLabel[m]->setToolTip(content);
+                annLabel[m]->move(KWIDTHEDGE+aveWidth/2+aveWidth*n,10);
+                ++m;
+                backCode=GlobalVar::annoucementList.at(i)[2];
+                if (m>49)
+                    return;
+                break;
+            }
+            --n;
+        }
+    }
+    for (int i=m;i<49;++i)
+        annLabel[i]->hide();
+}
+
+QString DrawChart::autoWordWrap(QString str, int width)
+{
+    int curPost=0;
+    QString s;
+    while(1)
+    {
+        QString temp =str.mid(curPost,width);
+        s=s+temp;
+        curPost=curPost+width;
+        if (curPost > str.size())
+        {
+            s=s+str.mid(curPost,width);
+            break;
+        }
+        else
+            s=s+"\n";
+    }
+    return s;
+}
+
+void DrawChart::annClicked(const QModelIndex index)
+{
+    int i;
+    for (i=0;i<GlobalVar::annoucementList.count();++i)
+    {
+        if (GlobalVar::annoucementList.at(i).size()<3)
+            continue;
+        else
+            break;
+    }
+    QByteArray allData;
+    QNetworkRequest request;
+    QString url=GlobalVar::annoucementList.at(index.row()+i)[3];
+    request.setUrl(QUrl(url));
+    request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    //    request.setRawHeader("Host","ssr1.scrape.center");
+    GlobalVar::getData(allData,2,request);
+
+    QTextCodec *codec = QTextCodec::codecForName("GBK");
+    QString html=codec->toUnicode(allData);
+    annText->setText(html);
 }
 

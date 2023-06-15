@@ -9,7 +9,7 @@
 #define BOTTOMHEIGHTEDGE 20
 #define TOPHEIGHTEDGE 4.0
 #define KWIDTHEDGE 4.0
-#define KTOPHEIGHTEDGE 40.0
+#define KTOPHEIGHTEDGE 60.0
 #define KBOTTOMHEIGHTEDGE 5
 #define per(c) ((c)>=(GlobalVar::preClose))?(int((((c)-(GlobalVar::preClose))*100/(GlobalVar::preClose))*100+0.5)/100.0):(int((((c)-(GlobalVar::preClose))*100/(GlobalVar::preClose))*100-0.5)/100.0)
 #define SPLITMID "/R"

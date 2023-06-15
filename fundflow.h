@@ -33,6 +33,7 @@ public:
     void getNotNormalStock();
     void getTimeShareMin(QString code,QString date);
     void getVacation();
+    void getAnnoucement();
 };
 
 #endif // FUNDFLOW_H

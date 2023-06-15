@@ -38,6 +38,7 @@ public:
     static QString peelStr(const QString &s,QString begin,QString end);
     static QPair<QString, QString> cutStr(const QString &s,QString begin,QString end);
     static QString getContent(const QString &s);
+    static QString getLabelContent(const QString &s,QString label);
     static void getAllContent(QString &content,QStringList &strList,QString begin);
     static bool isInt(QString s);
 
@@ -93,6 +94,7 @@ public:
     static int mTableListNum;
     static QString mCandleListCode;
     static QList<QStringList> formula;
+    static QList<QStringList> annoucementList;
 
 signals:
     void timeOutReport(QString s);

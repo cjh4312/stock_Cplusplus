@@ -2,10 +2,14 @@
 #ifndef DRAWCHART_H
 #define DRAWCHART_H
 
+#include "qdialog.h"
 #include "qlabel.h"
+#include "qtextbrowser.h"
 #include <QWidget>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QListView>
+#include <QStringListModel>
 
 class DrawChart : public QWidget
 {
@@ -39,14 +43,22 @@ public:
     QLabel *hisTimeShareTime;
     QLabel vHisLine=QLabel(hisTimeShareChartView);
     QLabel hHisLine=QLabel(hisTimeShareChartView);
+    QLabel *annLabel[50];
+    QDialog *annoucementWindow=new QDialog(candleChart);
+    QListView *annTitle=new QListView(annoucementWindow);
+    QStringListModel *model=new QStringListModel(annoucementWindow);
+    QTextBrowser *annText=new QTextBrowser(annoucementWindow);
 
     void drawTimeShareChart();
     void drawHisTimeShare();
     void drawCandleChart();
     void calcHighLowPoint(int begin,int end);
     void calcTSHighLowPoint(int begin,int end);
+    void appendAnnoucement(int b,int e,int aveWidth);
+    QString autoWordWrap(QString str,int width);
 
-signals:
+public slots:
+    void annClicked(const QModelIndex index);
 
 };
 

@@ -694,14 +694,14 @@ void FundFlow::getNotNormalStock()
     QByteArray allData;
     QNetworkRequest request;
     QString url="https://market.finance.sina.com.cn/transHis.php?symbol=sz301205&date=2022-11-28&page=1";
-//    QString url1="http://ddx.gubit.cn/holiday/hk/";
     request.setUrl(QUrl(url));
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
 //    request.setRawHeader("Host","ssr1.scrape.center");
     GlobalVar::getData(allData,2,request);
     if (allData.isEmpty())
         return;
-    QString html=QString(allData);
+    QTextCodec *codec = QTextCodec::codecForName("GBK");
+    QString html=codec->toUnicode(allData);
     QString str=GlobalVar::peelStr(html,"<tbody>","-1");
     QList<QStringList> data;
     while(1)
@@ -878,4 +878,35 @@ void FundFlow::getVacation()
         GlobalVar::settings->setValue("Vacation_"+area[i].toUpper(),s);
     }
     GlobalVar::settings->setValue("isSetVacation",QDateTime::currentDateTime().toString("yyyy"));
+}
+
+void FundFlow::getAnnoucement()
+{
+    QByteArray allData;
+    QNetworkRequest request;
+    QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
+    request.setUrl(QUrl(url));
+    request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    //    request.setRawHeader("Host","ssr1.scrape.center");
+    GlobalVar::getData(allData,2,request);
+    if (allData.isEmpty())
+        return;
+    QTextCodec *codec = QTextCodec::codecForName("GBK");
+    QString html=codec->toUnicode(allData);
+    QString str=GlobalVar::peelStr(html,"<tbody>","-1");
+    GlobalVar::annoucementList.clear();
+    while(1)
+    {
+        if (str.indexOf("<tr")==-1)
+            break;
+        QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
+        QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
+        QStringList l;
+        QString href=url+GlobalVar::getLabelContent(s,"href").mid(1,-1);
+        GlobalVar::getAllContent(s,l,"<td");
+        l<<href;
+//        qDebug()<<l;
+        GlobalVar::annoucementList.append(l);
+        str=pair.second;
+    }
 }

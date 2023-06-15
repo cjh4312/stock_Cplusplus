@@ -336,6 +336,13 @@ QString GlobalVar::getContent(const QString &s)
     return s.mid(bPos,ePos-bPos);
 }
 
+QString GlobalVar::getLabelContent(const QString &s, QString label)
+{
+    int b=s.indexOf(label)+label.length()+2;
+    int e=s.indexOf("\"",b);
+    return s.mid(b,e-b);
+}
+
 void GlobalVar::getAllContent(QString &content, QStringList &strList, QString begin)
 {
     while(1)
@@ -430,3 +437,4 @@ QString GlobalVar::formulaContent;
 int GlobalVar::mTableListNum;
 QString GlobalVar::mCandleListCode;
 QList<QStringList> GlobalVar::formula;
+QList<QStringList> GlobalVar::annoucementList;
