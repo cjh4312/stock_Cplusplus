@@ -1046,12 +1046,16 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 QString date=drawChart.annLabel[i]->toolTip().left(10);
                 int curItem=0;
                 QStringList l;
+                bool f=true;
                 for(int j = 0; j < GlobalVar::annoucementList.count(); j++)
                 {
                     if (GlobalVar::annoucementList.at(j).size()<3)
                         continue;
-                    if (date==GlobalVar::annoucementList.at(j)[2])
+                    if (f and date==GlobalVar::annoucementList.at(j)[2])
+                    {
                         curItem=j-1;
+                        f=false;
+                    }
                     l<<GlobalVar::annoucementList.at(j)[2]+"\n"+GlobalVar::annoucementList.at(j)[1];
                 }
                 drawChart.model->setStringList(l);
