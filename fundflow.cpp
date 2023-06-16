@@ -884,16 +884,19 @@ void FundFlow::getAnnoucement()
 {
     QByteArray allData;
     QNetworkRequest request;
+//    QString url="https://xinpi.cnstock.com/Search.aspx?stockcode="+GlobalVar::curCode;
+
+    if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399")
+        return;
     QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
     request.setUrl(QUrl(url));
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     //    request.setRawHeader("Host","ssr1.scrape.center");
     GlobalVar::getData(allData,2,request);
-    if (allData.isEmpty())
-        return;
     QTextCodec *codec = QTextCodec::codecForName("GBK");
     QString html=codec->toUnicode(allData);
     QString str=GlobalVar::peelStr(html,"<tbody>","-1");
+//    QPair<QString, QString> str=GlobalVar::cutStr(html,"<ul class=\"gg-list\"","</ul");
     GlobalVar::annoucementList.clear();
     while(1)
     {
@@ -901,12 +904,63 @@ void FundFlow::getAnnoucement()
             break;
         QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
         QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
+        QStringList list;
         QStringList l;
-        QString href=url+GlobalVar::getLabelContent(s,"href").mid(1,-1);
+        QString href=GlobalVar::getLabelContent(s,"href","\"");
         GlobalVar::getAllContent(s,l,"<td");
-        l<<href;
-//        qDebug()<<l;
-        GlobalVar::annoucementList.append(l);
+        if (l.size()>2)
+        {
+            list<<l[1]<<"[公告]"<<"("+l[2]+")"<<url+href.mid(1,-1);
+//            qDebug()<<list;
+            GlobalVar::annoucementList.append(list);
+        }
         str=pair.second;
     }
+    getNews();
+}
+
+void FundFlow::getNews()
+{
+    QByteArray allData;
+    QNetworkRequest request;
+    request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    request.setRawHeader("Host","search.cnstock.com");
+    for (int i=1;i<3;++i)
+    {
+        QString url="https://search.cnstock.com/search/result/"+QString::number(i)+"?t=1&k="+GlobalVar::curName.left(GlobalVar::curName.indexOf("("));
+        request.setUrl(QUrl(url));
+        GlobalVar::getData(allData,3,request);
+
+        QString html=QString(allData);
+        QString str=GlobalVar::peelStr(html,"<div class=\"result-left\"","-1");
+    //    GlobalVar::annoucementList.clear();
+
+        while(1)
+        {
+            if (str.indexOf("<div class=\"result-article\"")==-1)
+                break;
+            QPair<QString, QString> pair=GlobalVar::cutStr(str,"<div","</div");
+            QString s=GlobalVar::peelStr(pair.first,"<div","-1");
+            QStringList list;
+            QStringList l;
+    //        QString href=url+GlobalVar::getLabelContent(s,"href").mid(1,-1);
+            GlobalVar::getAllContent(s,l,"<a");
+    //        l<<href;
+            GlobalVar::getAllContent(s,l,"<span");
+            list<<l[0]<<l[1];
+            QStringList s1=l[2].split(";");
+            list<<"("+s1[1]+")";
+            list<<s1[0].split("&")[0];
+//            qDebug()<<list;
+            GlobalVar::annoucementList.append(list);
+            str=pair.second;
+        }
+    }
+//    qDebug()<<GlobalVar::annoucementList.count();
+    std::sort(GlobalVar::annoucementList.begin(),GlobalVar::annoucementList.end(),[](QStringList a,QStringList b){
+        return a[2]>b[2];
+    });
+//    for (int i=0;i<GlobalVar::annoucementList.count();++i)
+//        qDebug()<<GlobalVar::annoucementList.at(i)[0]<<GlobalVar::annoucementList.at(i)[1]
+//            <<GlobalVar::annoucementList.at(i)[2]<<GlobalVar::annoucementList.at(i)[3];
 }

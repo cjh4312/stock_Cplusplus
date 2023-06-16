@@ -88,9 +88,12 @@ DrawChart::DrawChart(QWidget *parent)
     annTitle->setStyleSheet("QListView::item{height:60px;}");
     annTitle->setWordWrap(true);
     annTitle->setAlternatingRowColors(true);
+    annTitle->setSpacing(4);
     annText->setOpenExternalLinks(true);
+    annText->setStyleSheet("QTextBrowser{font:20px}");
     annLayout->addWidget(annTitle);
     annLayout->addWidget(annText);
+
 //    annoucementWindow
     QPixmap *pixmap = new QPixmap(":/new/pictures/annoucement.png");
     for (int i=0;i<50;++i)
@@ -587,32 +590,28 @@ void DrawChart::appendAnnoucement(int b, int e,int aveWidth)
     QString content;
     for (int i=0;i<GlobalVar::annoucementList.count();++i)
     {
-        if (GlobalVar::annoucementList.at(i).size()<3)
-            continue;
-//        qDebug()<<GlobalVar::annoucementList.at(i)[1]<<GlobalVar::annoucementList.at(i)[2];
-
         int n=GlobalVar::KRange;
         if (GlobalVar::mCandleChartList.count()<n)
             n=GlobalVar::mCandleChartList.count();
         for (int j=e;j>=b;--j)
         {
-            if (backCode==GlobalVar::annoucementList.at(i)[2])
+            if (backCode==GlobalVar::annoucementList.at(i)[2].mid(1,10))
             {
-                QString str=GlobalVar::annoucementList.at(i)[1];
-                content=content+"\n"+GlobalVar::annoucementList.at(i)[2]+"\n"+autoWordWrap(str,20);
+                QString str=GlobalVar::annoucementList.at(i)[0];
+                content=content+"\n"+GlobalVar::annoucementList.at(i)[2]+GlobalVar::annoucementList.at(i)[1]+"\n"+autoWordWrap(str,20);
                 annLabel[m-1]->setToolTip(content);
                 break;
             }
             content="";
-            if (GlobalVar::mCandleChartList.at(j).time==GlobalVar::annoucementList.at(i)[2])
+            if (GlobalVar::mCandleChartList.at(j).time==GlobalVar::annoucementList.at(i)[2].mid(1,10))
             {
                 annLabel[m]->show();
-                content=GlobalVar::annoucementList.at(i)[1];
-                content=GlobalVar::annoucementList.at(i)[2]+"\n"+autoWordWrap(content,20);
+                content=GlobalVar::annoucementList.at(i)[0];
+                content=GlobalVar::annoucementList.at(i)[2]+GlobalVar::annoucementList.at(i)[1]+"\n"+autoWordWrap(content,20);
                 annLabel[m]->setToolTip(content);
                 annLabel[m]->move(KWIDTHEDGE+aveWidth/2+aveWidth*n,10);
                 ++m;
-                backCode=GlobalVar::annoucementList.at(i)[2];
+                backCode=GlobalVar::annoucementList.at(i)[2].mid(1,10);
                 if (m>49)
                     return;
                 break;
@@ -644,19 +643,55 @@ QString DrawChart::autoWordWrap(QString str, int width)
     return s;
 }
 
-void DrawChart::annClicked(const QModelIndex index)
+QString retain(QString s,QString b,QString e)
 {
-    int i;
-    for (i=0;i<GlobalVar::annoucementList.count();++i)
+    QString Hlabel="<"+e;
+    QString Elabel="</"+e+">";
+    int headPos=s.indexOf(b);
+    int curPos=headPos;
+//    QString head=s.mid(0,headPos);
+    int endPos=s.indexOf(Elabel,headPos);
+    while(1)
     {
-        if (GlobalVar::annoucementList.at(i).size()<3)
-            continue;
+        if ((curPos=s.indexOf(Hlabel,curPos+1))!=-1)
+        {
+            if (curPos>endPos)
+                break;
+            endPos=s.indexOf(Elabel,endPos+1);
+        }
         else
             break;
     }
+    return s.mid(headPos,endPos+6-headPos);
+}
+
+QString peer(QString s,QString b,QString e)
+{
+    QString Hlabel="<"+e;
+    QString Elabel="</"+e+">";
+    int headPos=s.indexOf(b);
+    int curPos=headPos;
+    QString head=s.mid(0,headPos);
+    int endPos=s.indexOf(Elabel,headPos);
+    while(1)
+    {
+        if ((curPos=s.indexOf(Hlabel,curPos+1))!=-1)
+        {
+            if (curPos>endPos)
+                break;
+            endPos=s.indexOf(Elabel,endPos+1);
+        }
+        else
+            break;
+    }
+    return head+s.mid(endPos+6,-1);
+}
+
+void DrawChart::annClicked(const QModelIndex index)
+{
     QByteArray allData;
     QNetworkRequest request;
-    QString url=GlobalVar::annoucementList.at(index.row()+i)[3];
+    QString url=GlobalVar::annoucementList.at(index.row())[3];
     request.setUrl(QUrl(url));
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     //    request.setRawHeader("Host","ssr1.scrape.center");
@@ -664,6 +699,20 @@ void DrawChart::annClicked(const QModelIndex index)
 
     QTextCodec *codec = QTextCodec::codecForName("GBK");
     QString html=codec->toUnicode(allData);
+    if (GlobalVar::annoucementList.at(index.row())[1]=="[新闻]")
+    {
+        html=retain(html,"<div class=\"main-content text-large\"","div");
+        html=peer(html,"<div class=\"bullet\"","div");
+        html=peer(html,"<div class=\"bullet\"","div");
+    }
+    else
+    {
+        html=peer(html,"<div class=\"head\"","div");
+        html=peer(html,"<div class=\"search\"","div");
+        html=peer(html,"<div class=\"w1200 center\"","div");
+        html=peer(html,"<div class=\"footer mg0\"","div");
+    }
+//    qDebug()<<html;
     annText->setText(html);
 }
 

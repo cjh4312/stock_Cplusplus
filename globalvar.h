@@ -38,7 +38,7 @@ public:
     static QString peelStr(const QString &s,QString begin,QString end);
     static QPair<QString, QString> cutStr(const QString &s,QString begin,QString end);
     static QString getContent(const QString &s);
-    static QString getLabelContent(const QString &s,QString label);
+    static QString getLabelContent(const QString &s,QString label,QString symbol);
     static void getAllContent(QString &content,QStringList &strList,QString begin);
     static bool isInt(QString s);
 

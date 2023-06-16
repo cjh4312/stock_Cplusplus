@@ -34,6 +34,7 @@ public:
     void getTimeShareMin(QString code,QString date);
     void getVacation();
     void getAnnoucement();
+    void getNews();
 };
 
 #endif // FUNDFLOW_H

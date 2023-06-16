@@ -10,6 +10,8 @@
 #include <QMouseEvent>
 #include <QListView>
 #include <QStringListModel>
+//#include <QWebEngineView>
+//#include <QPdfView>
 
 class DrawChart : public QWidget
 {

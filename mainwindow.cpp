@@ -1043,27 +1043,25 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         for (int i=0;i<50;++i)
             if (obj==drawChart.annLabel[i] and event->type()==QEvent::MouseButtonDblClick)
             {
-                QString date=drawChart.annLabel[i]->toolTip().left(10);
+                QString date=drawChart.annLabel[i]->toolTip().left(11);
                 int curItem=0;
                 QStringList l;
                 bool f=true;
                 for(int j = 0; j < GlobalVar::annoucementList.count(); j++)
                 {
-                    if (GlobalVar::annoucementList.at(j).size()<3)
-                        continue;
-                    if (f and date==GlobalVar::annoucementList.at(j)[2])
+                    if (f and date==GlobalVar::annoucementList.at(j)[2].left(11))
                     {
-                        curItem=j-1;
+                        curItem=j;
                         f=false;
                     }
-                    l<<GlobalVar::annoucementList.at(j)[2]+"\n"+GlobalVar::annoucementList.at(j)[1];
+                    l<<GlobalVar::annoucementList.at(j)[2]+GlobalVar::annoucementList.at(j)[1]+"\n"+GlobalVar::annoucementList.at(j)[0];
                 }
                 drawChart.model->setStringList(l);
                 drawChart.annTitle->setModel(drawChart.model);
                 QModelIndex qindex = drawChart.model->index(curItem,0);
                 drawChart.annTitle->setCurrentIndex(qindex);
                 drawChart.annoucementWindow->setWindowTitle(GlobalVar::curCode+" "+
-                             GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+"公告");
+                             GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+"消息");
                 drawChart.annClicked(qindex);
                 drawChart.annoucementWindow->show();
                 return true;
@@ -1131,7 +1129,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
-            mFundFlow.getAnnoucement();
+            if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
+            {
+                mFundFlow.getAnnoucement();
+                drawChart.candleChart->update();
+            }
         }
     }
     else if (key==Qt::Key_PageUp)
@@ -1158,7 +1160,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
-            mFundFlow.getAnnoucement();
+            if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
+            {
+                mFundFlow.getAnnoucement();
+                drawChart.candleChart->update();
+            }
         }
     }
     else if (key==Qt::Key_Enter or key==Qt::Key_Return)
@@ -1752,7 +1758,6 @@ void MainWindow::toInterFace(QString which)
     else if (which=="k")
     {
         GlobalVar::isKState=true;
-        mFundFlow.getAnnoucement();
         mTableStock.stockTableView->hide();
         mTableStock.risingSpeedView->hide();
         mTableStock.myStockView->hide();
@@ -1760,6 +1765,11 @@ void MainWindow::toInterFace(QString which)
         drawChart.candleChart->show();
         rightBaseWindow->show();
         rightBaseWindow->setFocus();
+        if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
+        {
+            mFundFlow.getAnnoucement();
+            drawChart.candleChart->update();
+        }
     }
     else if (which=="fund")
     {
@@ -1947,6 +1957,10 @@ void MainWindow::downUpLookStock(QWheelEvent *event)
         emit startThreadCandleChart(freq,adjustFlag,true);
         emit startThreadTimeShareChart();
         emit startThreadTimeShareTick();
-        mFundFlow.getAnnoucement();
+        if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
+        {
+            mFundFlow.getAnnoucement();
+            drawChart.candleChart->update();
+        }
     }
 }
