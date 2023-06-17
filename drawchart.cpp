@@ -1,6 +1,5 @@
 
 #include "drawchart.h"
-#include "commondelegate.h"
 #include "globalvar.h"
 #include "qboxlayout.h"
 #include "qpushbutton.h"
@@ -614,7 +613,8 @@ void DrawChart::appendAnnoucement(int b, int e,int aveWidth)
                 annLabel[m]->show();
                 content=t+l+"\n"+autoWordWrap(c,20);
                 annLabel[m]->setToolTip(content);
-                annLabel[m]->move(KWIDTHEDGE+aveWidth/2+aveWidth*n,10);
+                int posX=(2*n+1)*(candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
+                annLabel[m]->move(posX+KWIDTHEDGE-7,10);
                 ++m;
                 backCode=time;
                 if (m>49)
