@@ -82,13 +82,16 @@ DrawChart::DrawChart(QWidget *parent)
     annoucementWindow->setWindowFlag(Qt::Popup);
     annoucementWindow->resize(1000,600);
     annTitle->setMaximumWidth(300);
-    annTitle->setItemDelegate(new CommonDelegate());
     QHBoxLayout *annLayout=new QHBoxLayout();
     annoucementWindow->setLayout(annLayout);
-    annTitle->setStyleSheet("QListView::item{height:60px;}");
+//    annTitle->setStyleSheet("QListView::item{height:60px}");
+    QFont list_font;
+    list_font.setPointSize(14);
+    annTitle->setFont(list_font);
+    annTitle->setStyleSheet("QListView::item::selected{border:1px solid blue;color:red}");
     annTitle->setWordWrap(true);
     annTitle->setAlternatingRowColors(true);
-    annTitle->setSpacing(4);
+    annTitle->setSpacing(6);
     annText->setOpenExternalLinks(true);
     annText->setStyleSheet("QTextBrowser{font:20px}");
     annLayout->addWidget(annTitle);
@@ -419,10 +422,10 @@ void DrawChart::drawCandleChart()
     float aveHeightVol=0;
     if (candleHighLowPoint[2]!=0)
         aveHeightVol=(canldeChartHeight*3/15-2*KBOTTOMHEIGHTEDGE)/candleHighLowPoint[2];
-    int j=0;
+    float curXPos=KWIDTHEDGE+aveWidth/2;
+    float preXPos=KWIDTHEDGE-aveWidth/2;
     for (int n=begin;n<end;++n)
     {
-//        int n=GlobalVar::mCandleChartList.count()-KRange+i;
         float open=GlobalVar::mCandleChartList.at(n).open;
         float close=GlobalVar::mCandleChartList.at(n).close;
         float high=GlobalVar::mCandleChartList.at(n).high;
@@ -441,53 +444,54 @@ void DrawChart::drawCandleChart()
         }
 //        qDebug()<<(highPoint-high)*aveHeight+KTOPHEIGHTEDGE<<(highPoint-low)*aveHeight+KTOPHEIGHTEDGE<<Y+KTOPHEIGHTEDGE;
 //        if (high!=low)
-        painter.drawLine(QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,(highPoint-high)*aveHeight+KTOPHEIGHTEDGE),
-                QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,(highPoint-low)*aveHeight+KTOPHEIGHTEDGE));
-        painter.drawRect(KWIDTHEDGE+aveWidth/2+aveWidth*j-w,Y+KTOPHEIGHTEDGE,2*w,height);
+        painter.drawLine(QPointF(curXPos,(highPoint-high)*aveHeight+KTOPHEIGHTEDGE),
+                QPointF(curXPos,(highPoint-low)*aveHeight+KTOPHEIGHTEDGE));
+        painter.drawRect(curXPos-w,Y+KTOPHEIGHTEDGE,2*w,height);
 //        qDebug()<<aveHeightVol<<candleHighLowPoint[2];
-        painter.drawRect(KWIDTHEDGE+aveWidth/2+aveWidth*j-w,canldeChartHeight-vol*aveHeightVol-KBOTTOMHEIGHTEDGE,
+        painter.drawRect(curXPos-w,canldeChartHeight-vol*aveHeightVol-KBOTTOMHEIGHTEDGE,
                          2*w,vol*aveHeightVol);
-        if (n!=0)
+        if (n>0)
         {
             float preMA=GlobalVar::mCandleChartList.at(n-1).MA5;
             float MA=GlobalVar::mCandleChartList.at(n).MA5;
             painter.setPen(QColor(255, 255, 255));
             if (preMA>0)
-                painter.drawLine(QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*(j-1),(highPoint-preMA)*aveHeight+KTOPHEIGHTEDGE),
-                                 QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,(highPoint-MA)*aveHeight+KTOPHEIGHTEDGE));
+                painter.drawLine(QPointF(preXPos,(highPoint-preMA)*aveHeight+KTOPHEIGHTEDGE),
+                                 QPointF(curXPos,(highPoint-MA)*aveHeight+KTOPHEIGHTEDGE));
             preMA=GlobalVar::mCandleChartList.at(n-1).MA10;
             MA=GlobalVar::mCandleChartList.at(n).MA10;
             painter.setPen(QColor(255, 255, 0));
             if (preMA>0)
-                painter.drawLine(QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*(j-1),(highPoint-preMA)*aveHeight+KTOPHEIGHTEDGE),
-                                 QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,(highPoint-MA)*aveHeight+KTOPHEIGHTEDGE));
+                painter.drawLine(QPointF(preXPos,(highPoint-preMA)*aveHeight+KTOPHEIGHTEDGE),
+                                 QPointF(curXPos,(highPoint-MA)*aveHeight+KTOPHEIGHTEDGE));
             preMA=GlobalVar::mCandleChartList.at(n-1).MA20;
             MA=GlobalVar::mCandleChartList.at(n).MA20;
             painter.setPen(QColor(0, 255, 0));
             if (preMA>0)
-                painter.drawLine(QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*(j-1),(highPoint-preMA)*aveHeight+KTOPHEIGHTEDGE),
-                                 QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,(highPoint-MA)*aveHeight+KTOPHEIGHTEDGE));
+                painter.drawLine(QPointF(preXPos,(highPoint-preMA)*aveHeight+KTOPHEIGHTEDGE),
+                                 QPointF(curXPos,(highPoint-MA)*aveHeight+KTOPHEIGHTEDGE));
             preMA=GlobalVar::mCandleChartList.at(n-1).MA60;
             MA=GlobalVar::mCandleChartList.at(n).MA60;
             painter.setPen(QColor(205,0,0));
             if (preMA>0)
-                painter.drawLine(QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*(j-1),(highPoint-preMA)*aveHeight+KTOPHEIGHTEDGE),
-                                 QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,(highPoint-MA)*aveHeight+KTOPHEIGHTEDGE));
+                painter.drawLine(QPointF(preXPos,(highPoint-preMA)*aveHeight+KTOPHEIGHTEDGE),
+                                 QPointF(curXPos,(highPoint-MA)*aveHeight+KTOPHEIGHTEDGE));
 
             preMA=GlobalVar::mCandleChartList.at(n-1).VMA5;
             MA=GlobalVar::mCandleChartList.at(n).VMA5;
             painter.setPen(QColor(255, 255, 0));
             if (preMA>0)
-                painter.drawLine(QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*(j-1),canldeChartHeight-preMA*aveHeightVol-KBOTTOMHEIGHTEDGE),
-                                 QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,canldeChartHeight-MA*aveHeightVol-KBOTTOMHEIGHTEDGE));
+                painter.drawLine(QPointF(preXPos,canldeChartHeight-preMA*aveHeightVol-KBOTTOMHEIGHTEDGE),
+                                 QPointF(curXPos,canldeChartHeight-MA*aveHeightVol-KBOTTOMHEIGHTEDGE));
             preMA=GlobalVar::mCandleChartList.at(n-1).VMA10;
             MA=GlobalVar::mCandleChartList.at(n).VMA10;
             painter.setPen(QColor(0, 255, 0));
             if (preMA>0)
-                painter.drawLine(QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*(j-1),canldeChartHeight-preMA*aveHeightVol-KBOTTOMHEIGHTEDGE),
-                                 QPointF(KWIDTHEDGE+aveWidth/2+aveWidth*j,canldeChartHeight-MA*aveHeightVol-KBOTTOMHEIGHTEDGE));
+                painter.drawLine(QPointF(preXPos,canldeChartHeight-preMA*aveHeightVol-KBOTTOMHEIGHTEDGE),
+                                 QPointF(curXPos,canldeChartHeight-MA*aveHeightVol-KBOTTOMHEIGHTEDGE));
         }
-        j+=1;
+        curXPos+=aveWidth;
+        preXPos+=aveWidth;
     }
 //    qDebug()<<candleHighLowPoint[3]<<candleHighLowPoint[4];
     painter.setPen(Qt::red);
@@ -593,25 +597,26 @@ void DrawChart::appendAnnoucement(int b, int e,int aveWidth)
         int n=GlobalVar::KRange;
         if (GlobalVar::mCandleChartList.count()<n)
             n=GlobalVar::mCandleChartList.count();
+        QString c=GlobalVar::annoucementList.at(i)[0];
+        QString l=GlobalVar::annoucementList.at(i)[1];
+        QString t=GlobalVar::annoucementList.at(i)[2];
+        QString time=t.mid(1,10);
         for (int j=e;j>=b;--j)
         {
-            if (backCode==GlobalVar::annoucementList.at(i)[2].mid(1,10))
+            if (backCode==time)
             {
-                QString str=GlobalVar::annoucementList.at(i)[0];
-                content=content+"\n"+GlobalVar::annoucementList.at(i)[2]+GlobalVar::annoucementList.at(i)[1]+"\n"+autoWordWrap(str,20);
+                content=content+"\n"+t+l+"\n"+autoWordWrap(c,20);
                 annLabel[m-1]->setToolTip(content);
                 break;
             }
-            content="";
-            if (GlobalVar::mCandleChartList.at(j).time==GlobalVar::annoucementList.at(i)[2].mid(1,10))
+            if (GlobalVar::mCandleChartList.at(j).time==time)
             {
                 annLabel[m]->show();
-                content=GlobalVar::annoucementList.at(i)[0];
-                content=GlobalVar::annoucementList.at(i)[2]+GlobalVar::annoucementList.at(i)[1]+"\n"+autoWordWrap(content,20);
+                content=t+l+"\n"+autoWordWrap(c,20);
                 annLabel[m]->setToolTip(content);
                 annLabel[m]->move(KWIDTHEDGE+aveWidth/2+aveWidth*n,10);
                 ++m;
-                backCode=GlobalVar::annoucementList.at(i)[2].mid(1,10);
+                backCode=time;
                 if (m>49)
                     return;
                 break;
@@ -662,7 +667,7 @@ QString retain(QString s,QString b,QString e)
         else
             break;
     }
-    return s.mid(headPos,endPos+6-headPos);
+    return s.mid(headPos,endPos+Elabel.length()-headPos);
 }
 
 QString peer(QString s,QString b,QString e)
@@ -684,7 +689,7 @@ QString peer(QString s,QString b,QString e)
         else
             break;
     }
-    return head+s.mid(endPos+6,-1);
+    return head+s.mid(endPos+Elabel.length(),-1);
 }
 
 void DrawChart::annClicked(const QModelIndex index)
@@ -694,7 +699,6 @@ void DrawChart::annClicked(const QModelIndex index)
     QString url=GlobalVar::annoucementList.at(index.row())[3];
     request.setUrl(QUrl(url));
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
-    //    request.setRawHeader("Host","ssr1.scrape.center");
     GlobalVar::getData(allData,2,request);
 
     QTextCodec *codec = QTextCodec::codecForName("GBK");

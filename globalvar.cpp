@@ -336,9 +336,9 @@ QString GlobalVar::getContent(const QString &s)
     return s.mid(bPos,ePos-bPos);
 }
 
-QString GlobalVar::getLabelContent(const QString &s, QString label,QString symbol)
+QString GlobalVar::getAttributeContent(const QString &s, QString attribute,QString symbol)
 {
-    int b=s.indexOf(label)+label.length()+2;
+    int b=s.indexOf(attribute)+attribute.length()+2;
     int e=s.indexOf(symbol,b);
     return s.mid(b,e-b);
 }

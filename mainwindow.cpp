@@ -1054,14 +1054,15 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                         curItem=j;
                         f=false;
                     }
-                    l<<GlobalVar::annoucementList.at(j)[2]+GlobalVar::annoucementList.at(j)[1]+"\n"+GlobalVar::annoucementList.at(j)[0];
+                    l<<GlobalVar::annoucementList.at(j)[2]+GlobalVar::annoucementList.at(j)[1]+
+                            "\n"+GlobalVar::annoucementList.at(j)[0];
                 }
                 drawChart.model->setStringList(l);
                 drawChart.annTitle->setModel(drawChart.model);
                 QModelIndex qindex = drawChart.model->index(curItem,0);
                 drawChart.annTitle->setCurrentIndex(qindex);
                 drawChart.annoucementWindow->setWindowTitle(GlobalVar::curCode+" "+
-                             GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+"消息");
+                            GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+"消息");
                 drawChart.annClicked(qindex);
                 drawChart.annoucementWindow->show();
                 return true;
