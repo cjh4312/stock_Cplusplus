@@ -101,7 +101,7 @@ DrawChart::DrawChart(QWidget *parent)
     for (int i=0;i<50;++i)
     {
         annLabel[i]=new QLabel(candleChart);
-        annLabel[i]->resize(15,15);
+        annLabel[i]->resize(TIPWIDTH,TIPWIDTH);
         pixmap->scaled(annLabel[i]->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         annLabel[i]->setScaledContents(true);
         annLabel[i]->setPixmap(*pixmap);
@@ -527,7 +527,7 @@ void DrawChart::drawCandleChart()
             }
         }
     }
-    appendAnnoucement(begin,end,aveWidth);
+    appendAnnoucement(begin,end);
     painter.end();
     isCandleChartPaint=false;
 }
@@ -586,21 +586,22 @@ void DrawChart::calcTSHighLowPoint(int begin, int end)
         hisTimeShareHighLowPoint[1]=GlobalVar::hisPreClose;
 }
 
-void DrawChart::appendAnnoucement(int b, int e,int aveWidth)
+void DrawChart::appendAnnoucement(int b, int e)
 {
     int m=0;
     QString backCode="";
-    QString content;
+    QString content="";
+
     for (int i=0;i<GlobalVar::annoucementList.count();++i)
     {
-        int n=GlobalVar::KRange;
-        if (GlobalVar::mCandleChartList.count()<n)
-            n=GlobalVar::mCandleChartList.count();
+        int n=GlobalVar::KRange-1;
+        if (GlobalVar::mCandleChartList.count()-1<n)
+            n=GlobalVar::mCandleChartList.count()-1;
         QString c=GlobalVar::annoucementList.at(i)[0];
         QString l=GlobalVar::annoucementList.at(i)[1];
         QString t=GlobalVar::annoucementList.at(i)[2];
         QString time=t.mid(1,10);
-        for (int j=e;j>=b;--j)
+        for (int j=e-1;j>=b;--j)
         {
             if (backCode==time)
             {
@@ -608,13 +609,14 @@ void DrawChart::appendAnnoucement(int b, int e,int aveWidth)
                 annLabel[m-1]->setToolTip(content);
                 break;
             }
-            if (GlobalVar::mCandleChartList.at(j).time==time)
+            int result=QString::compare(GlobalVar::mCandleChartList.at(j).time,time);
+            if (result<=0)
             {
                 annLabel[m]->show();
                 content=t+l+"\n"+autoWordWrap(c,20);
                 annLabel[m]->setToolTip(content);
                 int posX=(2*n+1)*(candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
-                annLabel[m]->move(posX+KWIDTHEDGE-7,10);
+                annLabel[m]->move(posX+KWIDTHEDGE-TIPWIDTH/2,10);
                 ++m;
                 backCode=time;
                 if (m>49)
@@ -701,16 +703,24 @@ void DrawChart::annClicked(const QModelIndex index)
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     GlobalVar::getData(allData,2,request);
 
-    QTextCodec *codec = QTextCodec::codecForName("GBK");
-    QString html=codec->toUnicode(allData);
+    QString html;
     if (GlobalVar::annoucementList.at(index.row())[1]=="[新闻]")
     {
-        html=retain(html,"<div class=\"main-content text-large\"","div");
-        html=peer(html,"<div class=\"bullet\"","div");
-        html=peer(html,"<div class=\"bullet\"","div");
+        QTextCodec *codec = QTextCodec::codecForName("utf-8");
+        html=codec->toUnicode(allData);
+        html=retain(html,"<div class=\"detail-info\"","div")+retain(html,"<div class=\"detail-content\"","div");
+        html=peer(html,"<div class=\"fenlei1\"","div");
+        html=peer(html,"<div class=\"fenlei2\"","div");
+
+//        html=peer(html,"<div class=\"social-bar\"","div");
+//        html=retain(html,"<div class=\"main-content text-large\"","div");
+//        html=peer(html,"<div class=\"bullet\"","div");
+//        html=peer(html,"<div class=\"bullet\"","div");
     }
     else
     {
+        QTextCodec *codec = QTextCodec::codecForName("gbk");
+        html=codec->toUnicode(allData);
         html=peer(html,"<div class=\"head\"","div");
         html=peer(html,"<div class=\"search\"","div");
         html=peer(html,"<div class=\"w1200 center\"","div");

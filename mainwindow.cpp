@@ -1130,11 +1130,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
-            if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
-            {
-                mFundFlow.getAnnoucement();
-                drawChart.candleChart->update();
-            }
+            mFundFlow.getAnnoucement();
+            drawChart.candleChart->update();
         }
     }
     else if (key==Qt::Key_PageUp)
@@ -1161,11 +1158,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
-            if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
-            {
-                mFundFlow.getAnnoucement();
-                drawChart.candleChart->update();
-            }
+            mFundFlow.getAnnoucement();
+            drawChart.candleChart->update();
         }
     }
     else if (key==Qt::Key_Enter or key==Qt::Key_Return)
@@ -1766,11 +1760,8 @@ void MainWindow::toInterFace(QString which)
         drawChart.candleChart->show();
         rightBaseWindow->show();
         rightBaseWindow->setFocus();
-        if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
-        {
-            mFundFlow.getAnnoucement();
-            drawChart.candleChart->update();
-        }
+        mFundFlow.getAnnoucement();
+        drawChart.candleChart->update();
     }
     else if (which=="fund")
     {
@@ -1958,10 +1949,7 @@ void MainWindow::downUpLookStock(QWheelEvent *event)
         emit startThreadCandleChart(freq,adjustFlag,true);
         emit startThreadTimeShareChart();
         emit startThreadTimeShareTick();
-        if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
-        {
-            mFundFlow.getAnnoucement();
-            drawChart.candleChart->update();
-        }
+        mFundFlow.getAnnoucement();
+        drawChart.candleChart->update();
     }
 }

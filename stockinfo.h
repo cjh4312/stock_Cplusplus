@@ -15,6 +15,7 @@
 #define SPLITMID "/R"
 #define SPLITBACK "////"
 #define TITLEHEIGHT 40
+#define TIPWIDTH 15
 
 struct StockInfo
 {

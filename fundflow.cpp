@@ -695,8 +695,8 @@ void FundFlow::getNotNormalStock()
     QNetworkRequest request;
     QString url="https://market.finance.sina.com.cn/transHis.php?symbol=sz301205&date=2022-11-28&page=1";
     request.setUrl(QUrl(url));
-    request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
-//    request.setRawHeader("Host","ssr1.scrape.center");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+
     GlobalVar::getData(allData,2,request);
     if (allData.isEmpty())
         return;
@@ -856,7 +856,7 @@ void FundFlow::getVacation()
     for (int i=0;i<3;++i)
     {
         request.setUrl(QUrl(url1+area[i]));
-        request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+        request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
         GlobalVar::getData(allData,2,request);
         if (allData.isEmpty())
             return;
@@ -884,13 +884,33 @@ void FundFlow::getAnnoucement()
 {
     QByteArray allData;
     QNetworkRequest request;
-    if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399")
+    if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.length()==5)
+    {
+        GlobalVar::annoucementList.clear();
         return;
+    }
+//    QString url="https://search-api-web.eastmoney.com/search/jsonp?cb=&param=%7B%22uid%22%3A%227111416627128474%22%2C%22keyword%22%3A%22"+GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+"%22%2C%22type%22%3A%5B%22noticeWeb%22%5D%2C%22client%22%3A%22web%22%2C%22clientVersion%22%3A%22curr%22%2C%22clientType%22%3A%22web%22%2C%22param%22%3A%7B%22noticeWeb%22%3A%7B%22preTag%22%3A%22%3Cem%20class%3D%5C%22red%5C%22%3E%22%2C%22postTag%22%3A%22%3C%2Fem%3E%22%2C%22pageSize%22%3A30%2C%22pageIndex%22%3A1%7D%7D%7D&_=1686978800179";
     QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
     request.setUrl(QUrl(url));
-    request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
-    //    request.setRawHeader("Host","ssr1.scrape.center");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     GlobalVar::getData(allData,2,request);
+//    QJsonParseError jsonError;
+//    QJsonDocument doc = QJsonDocument::fromJson(allData.mid(1,allData.size()-2), &jsonError);
+//    if (jsonError.error == QJsonParseError::NoError)
+//    {
+//        QJsonObject jsonObject = doc.object();
+//        QJsonArray data=jsonObject.value("result").toObject().value("noticeWeb").toArray();
+//        for (int i = 0; i < data.size(); ++i)
+//        {
+//            QStringList l;
+//            QJsonValue value = data.at(i);
+//            QVariantMap ceilMap = value.toVariant().toMap();
+//            l<<ceilMap.value("title").toString().split(":")[1]<<"[公告]"
+//            <<"("+ceilMap.value("date").toString().left(10)+")"<<ceilMap.value("url").toString();
+//            GlobalVar::annoucementList.append(l);
+//        }
+//    }
+
     QTextCodec *codec = QTextCodec::codecForName("GBK");
     QString html=codec->toUnicode(allData);
     QString str=GlobalVar::peelStr(html,"<tbody>","-1");
@@ -908,6 +928,7 @@ void FundFlow::getAnnoucement()
         if (l.size()>2)
         {
             list<<l[1]<<"[公告]"<<"("+l[2]+")"<<url+href.mid(1,-1);
+//            qDebug()<<list;
             GlobalVar::annoucementList.append(list);
         }
         str=pair.second;
@@ -919,35 +940,75 @@ void FundFlow::getNews()
 {
     QByteArray allData;
     QNetworkRequest request;
-    request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
-    request.setRawHeader("Host","search.cnstock.com");
-    for (int i=1;i<3;++i)
-    {
-        QString url="https://search.cnstock.com/search/result/"+QString::number(i)+"?t=1&k="+GlobalVar::curName.left(GlobalVar::curName.indexOf("("));
+    request.setRawHeader("x-requested-with","XMLHttpRequest");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    QList<QNetworkCookie> Web_cookies;
+    Web_cookies.push_back(QNetworkCookie("acw_tc","0b3c7d9e16871494395575757ec972565a7f82362c89f67d8c96a7cd17d261"));
+    Web_cookies.push_back(QNetworkCookie("advanced-stcn_web","leuu6t4lpu0ca16hjjl9rta800"));
+    Web_cookies.push_back(QNetworkCookie("UM_distinctid","188cd895abd42-05580fb186e5f6-26031d51-144000-188cd895abeb2"));
+    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281180682","1428593457-1687082914-%7C1687082914"));
+    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281265105","673110341-1687082914-%7C1687082914"));
+    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281191046","1756280746-1687073617-%7C1687131164"));
+    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281265122","1969714911-1687073618-%7C1687131164"));
+    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281169049","632865403-1687072068-%7C1687146553"));
+    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281264856","648593066-1687075160-%7C1687147310"));
+    QVariant var;
+    var.setValue(Web_cookies);
+    request.setHeader(QNetworkRequest::CookieHeader,var);
+
+//    QString url1="https://search-api-web.eastmoney.com/search/jsonp?cb=&param=%7B%22uid%22%3A%227111416627128474%22%2C%22keyword%22%3A%22%E4%B8%AD%E9%99%85%E6%97%AD%E5%88%9B%22%2C%22type%22%3A%5B%22cmsArticleWebOld%22%5D%2C%22client%22%3A%22web%22%2C%22clientType%22%3A%22web%22%2C%22clientVersion%22%3A%22curr%22%2C%22param%22%3A%7B%22cmsArticleWebOld%22%3A%7B%22searchScope%22%3A%22default%22%2C%22sort%22%3A%22default%22%2C%22pageIndex%22%3A1%2C%22pageSize%22%3A50%2C%22preTag%22%3A%22%3Cem%3E%22%2C%22postTag%22%3A%22%3C%2Fem%3E%22%7D%7D%7D&_=1686979606619";
+//    for (int i=1;i<2;++i)
+//    {
+//        QString url="https://search.cnstock.com/search/result/"+QString::number(i)+"?t=0&k="+GlobalVar::curName.left(GlobalVar::curName.indexOf("("));
+        QString url="http://www.stcn.com/article/search.html?search_type=news&keyword="+GlobalVar::curCode+"&page_time=1";
         request.setUrl(QUrl(url));
         GlobalVar::getData(allData,3,request);
-
         QString html=QString(allData);
-        QString str=GlobalVar::peelStr(html,"<div class=\"result-left\"","-1");
 
+//        qDebug()<<html;
+        QString str=GlobalVar::peelStr(html,"<ul class=\"list infinite-list\"","-1");
         while(1)
         {
-            if (str.indexOf("<div class=\"result-article\"")==-1)
+            if (str.indexOf("<li class=")==-1)
                 break;
-            QPair<QString, QString> pair=GlobalVar::cutStr(str,"<div","</div");
-            QString s=GlobalVar::peelStr(pair.first,"<div","-1");
+            QPair<QString, QString> pair=GlobalVar::cutStr(str,"<li","</li");
+            QString s=GlobalVar::peelStr(pair.first,"<li","-1");
             QStringList list;
             QStringList l;
+            QString href=GlobalVar::getAttributeContent(s,"href","\\\"");
             GlobalVar::getAllContent(s,l,"<a");
             GlobalVar::getAllContent(s,l,"<span");
-            list<<l[0]<<l[1];
-            QStringList s1=l[2].split(";");
-            list<<"("+s1[1]+")";
-            list<<s1[0].split("&")[0];
+//            qDebug()<<l;
+            QString t;
+            if (l[l.count()-1].contains("\\n"))
+                t=GlobalVar::annoucementList.back()[2];
+            else
+                t="(2023-"+l[l.count()-1]+")";
+            list<<l[0].replace("\\n","").replace(" ","")<<"[新闻]"<<t<<href.replace("\"","https://www.stcn.com");
+//            qDebug()<<list;
             GlobalVar::annoucementList.append(list);
             str=pair.second;
         }
-    }
+
+//        QString str=GlobalVar::peelStr(html,"<div class=\"result-left\"","-1");
+//        while(1)
+//        {
+//            if (str.indexOf("<div class=\"result-article\"")==-1)
+//                break;
+//            QPair<QString, QString> pair=GlobalVar::cutStr(str,"<div","</div");
+//            QString s=GlobalVar::peelStr(pair.first,"<div","-1");
+//            QStringList list;
+//            QStringList l;
+//            GlobalVar::getAllContent(s,l,"<a");
+//            GlobalVar::getAllContent(s,l,"<span");
+//            list<<l[0]<<l[1];
+//            QStringList s1=l[2].split(";");
+//            list<<"("+s1[1]+")";
+//            list<<s1[0].split("&")[0];
+//            GlobalVar::annoucementList.append(list);
+//            str=pair.second;
+//        }
+//    }
     std::sort(GlobalVar::annoucementList.begin(),GlobalVar::annoucementList.end(),[](QStringList a,QStringList b){
         return a[2]>b[2];
     });

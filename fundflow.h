@@ -11,6 +11,7 @@
 #include <QTextCodec>
 //#include <QStringRef>
 #include <QJSEngine>
+#include <QNetworkCookie>
 
 class FundFlow : public QTableView
 {
