@@ -934,24 +934,15 @@ void FundFlow::getAnnoucement()
 
 void FundFlow::getNews()
 {
-    QNetworkRequest request;
-
-    QNetworkAccessManager naManager =QNetworkAccessManager();
-    request.setUrl(QUrl("http://www.stcn.com/article/search.html"));
-    QNetworkReply *reply = naManager.get(request);
-    QEventLoop loop;
-    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-//    QTimer timer;
-//    timer.singleShot(1000, &loop, SLOT(quit()));
-//    timer.start();
-    loop.exec();
-    QString s=QString(QString(reply->rawHeader("Set-Cookie")));
+    QString s=GlobalVar::getCookies("http://www.stcn.com/article/search.html");
     QString name1="acw_tc=";
     QString name2="advanced-stcn_web=";
     int BPos1=s.indexOf(name1)+name1.length();
     int BPos2=s.indexOf(name2)+name2.length();
     QString acw=s.mid(BPos1,s.indexOf(";")-BPos1);
     QString advanced=s.mid(BPos2,s.indexOf(";",BPos2)-BPos2);
+
+    QNetworkRequest request;
     QByteArray allData;
     request.setRawHeader("x-requested-with","XMLHttpRequest");
     QList<QNetworkCookie> Web_cookies;
@@ -984,11 +975,13 @@ void FundFlow::getNews()
             GlobalVar::getAllContent(s,l,"<a");
             GlobalVar::getAllContent(s,l,"<span");
 //            qDebug()<<l;
-            QString t;
-            if (l[l.count()-1].contains("\\n"))
+            QString t=l[l.count()-1];
+            if (t.contains("\\n"))
                 t=GlobalVar::annoucementList.back()[2];
+            else if (t.length()<13)
+                t="("+QDateTime::currentDateTime().toString("yyyy")+"-"+t+")";
             else
-                t="(2023-"+l[l.count()-1]+")";
+                t="("+t+")";
             list<<l[0].replace("\\n","").replace(" ","")<<"[新闻]"<<t<<href.replace("\"","https://www.stcn.com");
 //            qDebug()<<list;
             GlobalVar::annoucementList.append(list);
@@ -1018,6 +1011,5 @@ void FundFlow::getNews()
         return a[2]>b[2];
     });
 //    for (int i=0;i<GlobalVar::annoucementList.count();++i)
-//        qDebug()<<GlobalVar::annoucementList.at(i)[0]<<GlobalVar::annoucementList.at(i)[1]
-//            <<GlobalVar::annoucementList.at(i)[2]<<GlobalVar::annoucementList.at(i)[3];
+//        qDebug()<<GlobalVar::annoucementList.at(i)[2];
 }

@@ -30,6 +30,7 @@ public:
     static QString getComCode();
     static QString getStockSymbol();
     static void sortByColumn(QList<StockInfo> *mList,int column,bool is_asc);
+    static QString getCookies(QString url);
     static void getData(QByteArray &allData,float timeOut,QNetworkRequest requests);
     static void getData(QByteArray &allData,float timeOut,const QUrl &url);
     static void postData(const QByteArray &postArray,QByteArray &allData, float timeOut, const QUrl &url);

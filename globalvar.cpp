@@ -169,7 +169,28 @@ void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bo
                   default:
                       return is_asc?(infoA.pctChg<infoB.pctChg):(infoA.pctChg>infoB.pctChg);
                   }
-              });
+    });
+}
+
+QString GlobalVar::getCookies(QString url)
+{
+    QNetworkRequest request;
+    QNetworkAccessManager naManager =QNetworkAccessManager();
+    request.setUrl(QUrl(url));
+    QNetworkReply *reply = naManager.get(request);
+    QEventLoop loop;
+    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    QTimer timer;
+    timer.singleShot(1000, &loop, SLOT(quit()));
+    timer.start();
+    loop.exec();
+    QByteArray array=reply->rawHeader("Set-Cookie");
+    if (reply!=nullptr)
+    {
+        reply->deleteLater();
+        reply = nullptr;
+    }
+    return QString(array);
 }
 
 void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
