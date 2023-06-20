@@ -695,8 +695,6 @@ void FundFlow::getNotNormalStock()
     QNetworkRequest request;
     QString url="https://market.finance.sina.com.cn/transHis.php?symbol=sz301205&date=2022-11-28&page=1";
     request.setUrl(QUrl(url));
-    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
-
     GlobalVar::getData(allData,2,request);
     if (allData.isEmpty())
         return;
@@ -856,7 +854,6 @@ void FundFlow::getVacation()
     for (int i=0;i<3;++i)
     {
         request.setUrl(QUrl(url1+area[i]));
-        request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
         GlobalVar::getData(allData,2,request);
         if (allData.isEmpty())
             return;
@@ -892,7 +889,6 @@ void FundFlow::getAnnoucement()
 //    QString url="https://search-api-web.eastmoney.com/search/jsonp?cb=&param=%7B%22uid%22%3A%227111416627128474%22%2C%22keyword%22%3A%22"+GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+"%22%2C%22type%22%3A%5B%22noticeWeb%22%5D%2C%22client%22%3A%22web%22%2C%22clientVersion%22%3A%22curr%22%2C%22clientType%22%3A%22web%22%2C%22param%22%3A%7B%22noticeWeb%22%3A%7B%22preTag%22%3A%22%3Cem%20class%3D%5C%22red%5C%22%3E%22%2C%22postTag%22%3A%22%3C%2Fem%3E%22%2C%22pageSize%22%3A30%2C%22pageIndex%22%3A1%7D%7D%7D&_=1686978800179";
     QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
     request.setUrl(QUrl(url));
-    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     GlobalVar::getData(allData,2,request);
 //    QJsonParseError jsonError;
 //    QJsonDocument doc = QJsonDocument::fromJson(allData.mid(1,allData.size()-2), &jsonError);
@@ -938,20 +934,29 @@ void FundFlow::getAnnoucement()
 
 void FundFlow::getNews()
 {
-    QByteArray allData;
     QNetworkRequest request;
+
+    QNetworkAccessManager naManager =QNetworkAccessManager();
+    request.setUrl(QUrl("http://www.stcn.com/article/search.html"));
+    QNetworkReply *reply = naManager.get(request);
+    QEventLoop loop;
+    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+//    QTimer timer;
+//    timer.singleShot(1000, &loop, SLOT(quit()));
+//    timer.start();
+    loop.exec();
+    QString s=QString(QString(reply->rawHeader("Set-Cookie")));
+    QString name1="acw_tc=";
+    QString name2="advanced-stcn_web=";
+    int BPos1=s.indexOf(name1)+name1.length();
+    int BPos2=s.indexOf(name2)+name2.length();
+    QString acw=s.mid(BPos1,s.indexOf(";")-BPos1);
+    QString advanced=s.mid(BPos2,s.indexOf(";",BPos2)-BPos2);
+    QByteArray allData;
     request.setRawHeader("x-requested-with","XMLHttpRequest");
-    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     QList<QNetworkCookie> Web_cookies;
-    Web_cookies.push_back(QNetworkCookie("acw_tc","0b3c7d9e16871494395575757ec972565a7f82362c89f67d8c96a7cd17d261"));
-    Web_cookies.push_back(QNetworkCookie("advanced-stcn_web","leuu6t4lpu0ca16hjjl9rta800"));
-    Web_cookies.push_back(QNetworkCookie("UM_distinctid","188cd895abd42-05580fb186e5f6-26031d51-144000-188cd895abeb2"));
-    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281180682","1428593457-1687082914-%7C1687082914"));
-    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281265105","673110341-1687082914-%7C1687082914"));
-    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281191046","1756280746-1687073617-%7C1687131164"));
-    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281265122","1969714911-1687073618-%7C1687131164"));
-    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281169049","632865403-1687072068-%7C1687146553"));
-    Web_cookies.push_back(QNetworkCookie("CNZZDATA1281264856","648593066-1687075160-%7C1687147310"));
+    Web_cookies.push_back(QNetworkCookie("acw_tc",acw.toLocal8Bit()));
+    Web_cookies.push_back(QNetworkCookie("advanced-stcn_web",advanced.toLocal8Bit()));
     QVariant var;
     var.setValue(Web_cookies);
     request.setHeader(QNetworkRequest::CookieHeader,var);

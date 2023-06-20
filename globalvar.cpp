@@ -1,5 +1,6 @@
 
 #include "globalvar.h"
+#include "qnetworkcookie.h"
 #include <QCoreApplication>
 
 GlobalVar::GlobalVar()
@@ -174,6 +175,7 @@ void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bo
 void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
 {
     QNetworkRequest request;
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(url);
     QNetworkAccessManager naManager =QNetworkAccessManager();
     QEventLoop loop;
@@ -239,6 +241,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest reques
 {
     QNetworkAccessManager naManager =QNetworkAccessManager();
     QEventLoop loop;
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     QNetworkReply *reply = naManager.get(request);
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QTimer timer;
@@ -270,6 +273,7 @@ void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float t
     QNetworkRequest request;
     QNetworkAccessManager naManager=QNetworkAccessManager();
     request.setUrl(url);
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QEventLoop loop;
     QNetworkReply *reply = naManager.post(request,postArray);
