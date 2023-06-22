@@ -877,6 +877,18 @@ void FundFlow::getVacation()
     GlobalVar::settings->setValue("isSetVacation",QDateTime::currentDateTime().toString("yyyy"));
 }
 
+void FundFlow::initAllNews()
+{
+    getAnnoucement();
+    getNews();
+    getEastNews();
+    std::sort(GlobalVar::annoucementList.begin(),GlobalVar::annoucementList.end(),[](QStringList a,QStringList b){
+        return a[2]>b[2];
+    });
+    //    for (int i=0;i<GlobalVar::annoucementList.count();++i)
+    //        qDebug()<<GlobalVar::annoucementList.at(i)[2];
+}
+
 void FundFlow::getAnnoucement()
 {
     QByteArray allData;
@@ -929,7 +941,6 @@ void FundFlow::getAnnoucement()
         }
         str=pair.second;
     }
-    getNews();
 }
 
 void FundFlow::getNews()
@@ -953,15 +964,13 @@ void FundFlow::getNews()
     request.setHeader(QNetworkRequest::CookieHeader,var);
 
 //    QString url1="https://search-api-web.eastmoney.com/search/jsonp?cb=&param=%7B%22uid%22%3A%227111416627128474%22%2C%22keyword%22%3A%22%E4%B8%AD%E9%99%85%E6%97%AD%E5%88%9B%22%2C%22type%22%3A%5B%22cmsArticleWebOld%22%5D%2C%22client%22%3A%22web%22%2C%22clientType%22%3A%22web%22%2C%22clientVersion%22%3A%22curr%22%2C%22param%22%3A%7B%22cmsArticleWebOld%22%3A%7B%22searchScope%22%3A%22default%22%2C%22sort%22%3A%22default%22%2C%22pageIndex%22%3A1%2C%22pageSize%22%3A50%2C%22preTag%22%3A%22%3Cem%3E%22%2C%22postTag%22%3A%22%3C%2Fem%3E%22%7D%7D%7D&_=1686979606619";
-//    for (int i=1;i<2;++i)
-//    {
+    for (int i=1;i<2;++i)
+    {
 //        QString url="https://search.cnstock.com/search/result/"+QString::number(i)+"?t=0&k="+GlobalVar::curName.left(GlobalVar::curName.indexOf("("));
-        QString url="http://www.stcn.com/article/search.html?search_type=news&keyword="+GlobalVar::curCode+"&page_time=1";
+        QString url="http://www.stcn.com/article/search.html?search_type=news&keyword="+GlobalVar::curCode+"&page_time="+QString::number(i);
         request.setUrl(QUrl(url));
         GlobalVar::getData(allData,3,request);
         QString html=QString(allData);
-
-//        qDebug()<<html;
         QString str=GlobalVar::peelStr(html,"<ul class=\"list infinite-list\"","-1");
         while(1)
         {
@@ -974,7 +983,6 @@ void FundFlow::getNews()
             QString href=GlobalVar::getAttributeContent(s,"href","\\\"");
             GlobalVar::getAllContent(s,l,"<a");
             GlobalVar::getAllContent(s,l,"<span");
-//            qDebug()<<l;
             QString t=l[l.count()-1];
             if (t.contains("\\n"))
                 t=GlobalVar::annoucementList.back()[2];
@@ -982,8 +990,7 @@ void FundFlow::getNews()
                 t="("+QDateTime::currentDateTime().toString("yyyy")+"-"+t+")";
             else
                 t="("+t+")";
-            list<<l[0].replace("\\n","").replace(" ","")<<"[新闻]"<<t<<href.replace("\"","https://www.stcn.com");
-//            qDebug()<<list;
+            list<<l[0].replace("\\n","").replace(" ","")<<"[证券时报]"<<t<<href.replace("\"","https://www.stcn.com");
             GlobalVar::annoucementList.append(list);
             str=pair.second;
         }
@@ -1006,10 +1013,31 @@ void FundFlow::getNews()
 //            GlobalVar::annoucementList.append(list);
 //            str=pair.second;
 //        }
-//    }
-    std::sort(GlobalVar::annoucementList.begin(),GlobalVar::annoucementList.end(),[](QStringList a,QStringList b){
-        return a[2]>b[2];
-    });
-//    for (int i=0;i<GlobalVar::annoucementList.count();++i)
-//        qDebug()<<GlobalVar::annoucementList.at(i)[2];
+    }
+}
+
+void FundFlow::getEastNews()
+{
+    QString url="https://search-api-web.eastmoney.com/search/jsonp?cb=&param=%7B%22uid%22%3A%227111416627128474%22%2C%22keyword%22%3A%22"+GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+"%22%2C%22type%22%3A%5B%22cmsArticleWebOld%22%5D%2C%22client%22%3A%22web%22%2C%22clientType%22%3A%22web%22%2C%22clientVersion%22%3A%22curr%22%2C%22param%22%3A%7B%22cmsArticleWebOld%22%3A%7B%22searchScope%22%3A%22default%22%2C%22sort%22%3A%22default%22%2C%22pageIndex%22%3A1%2C%22pageSize%22%3A10%2C%22preTag%22%3A%22%3Cem%3E%22%2C%22postTag%22%3A%22%3C%2Fem%3E%22%7D%7D%7D&_=1687393368973";
+    QByteArray allData;
+    GlobalVar::getData(allData,2,QUrl(url));
+    QJsonParseError jsonError;
+    QJsonDocument doc = QJsonDocument::fromJson(allData.mid(1,allData.size()-2), &jsonError);
+
+    if (jsonError.error == QJsonParseError::NoError)
+    {
+        QJsonObject jsonObject = doc.object();
+        QJsonArray data=jsonObject.value("result").toObject().value("cmsArticleWebOld").toArray();
+        for (int i=0;i<data.count();++i)
+        {
+            QJsonValue value = data.at(i);
+            QVariantMap ceilMap = value.toVariant().toMap();
+            QStringList l;
+            l<<ceilMap.value("title").toString().replace("<em>","").replace("</em>","")<<"[东方]"
+                <<"("+ceilMap.value("date").toString()+")"<<ceilMap.value("url").toString()
+                <<ceilMap.value("mediaName").toString()
+                <<ceilMap.value("content").toString().replace("<em>","").replace("</em>","");
+            GlobalVar::annoucementList.append(l);
+        }
+    }
 }

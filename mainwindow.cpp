@@ -1130,7 +1130,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
-            mFundFlow.getAnnoucement();
+            mFundFlow.initAllNews();
             drawChart.candleChart->update();
         }
     }
@@ -1158,7 +1158,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
-            mFundFlow.getAnnoucement();
+            mFundFlow.initAllNews();
             drawChart.candleChart->update();
         }
     }
@@ -1760,7 +1760,7 @@ void MainWindow::toInterFace(QString which)
         drawChart.candleChart->show();
         rightBaseWindow->show();
         rightBaseWindow->setFocus();
-        mFundFlow.getAnnoucement();
+        mFundFlow.initAllNews();
         drawChart.candleChart->update();
     }
     else if (which=="fund")
@@ -1949,7 +1949,7 @@ void MainWindow::downUpLookStock(QWheelEvent *event)
         emit startThreadCandleChart(freq,adjustFlag,true);
         emit startThreadTimeShareChart();
         emit startThreadTimeShareTick();
-        mFundFlow.getAnnoucement();
+        mFundFlow.initAllNews();
         drawChart.candleChart->update();
     }
 }
