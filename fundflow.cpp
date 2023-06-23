@@ -879,8 +879,12 @@ void FundFlow::getVacation()
 
 void FundFlow::initAllNews()
 {
-    getAnnoucement();
-    getNews();
+    GlobalVar::annoucementList.clear();
+    if (GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399" and GlobalVar::curCode.length()!=5)
+    {
+        getAnnoucement();
+        getNews();
+    }
     getEastNews();
     std::sort(GlobalVar::annoucementList.begin(),GlobalVar::annoucementList.end(),[](QStringList a,QStringList b){
         return a[2]>b[2];
@@ -893,11 +897,6 @@ void FundFlow::getAnnoucement()
 {
     QByteArray allData;
     QNetworkRequest request;
-    if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.length()==5)
-    {
-        GlobalVar::annoucementList.clear();
-        return;
-    }
 //    QString url="https://search-api-web.eastmoney.com/search/jsonp?cb=&param=%7B%22uid%22%3A%227111416627128474%22%2C%22keyword%22%3A%22"+GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+"%22%2C%22type%22%3A%5B%22noticeWeb%22%5D%2C%22client%22%3A%22web%22%2C%22clientVersion%22%3A%22curr%22%2C%22clientType%22%3A%22web%22%2C%22param%22%3A%7B%22noticeWeb%22%3A%7B%22preTag%22%3A%22%3Cem%20class%3D%5C%22red%5C%22%3E%22%2C%22postTag%22%3A%22%3C%2Fem%3E%22%2C%22pageSize%22%3A30%2C%22pageIndex%22%3A1%7D%7D%7D&_=1686978800179";
     QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
     request.setUrl(QUrl(url));
@@ -922,7 +921,6 @@ void FundFlow::getAnnoucement()
     QTextCodec *codec = QTextCodec::codecForName("GBK");
     QString html=codec->toUnicode(allData);
     QString str=GlobalVar::peelStr(html,"<tbody>","-1");
-    GlobalVar::annoucementList.clear();
     while(1)
     {
         if (str.indexOf("<tr")==-1)

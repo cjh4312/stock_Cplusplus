@@ -527,7 +527,7 @@ void DrawChart::drawCandleChart()
             }
         }
     }
-    appendAnnoucement(begin,end);
+    appendAnnNews(begin,end);
     painter.end();
     isCandleChartPaint=false;
 }
@@ -586,12 +586,12 @@ void DrawChart::calcTSHighLowPoint(int begin, int end)
         hisTimeShareHighLowPoint[1]=GlobalVar::hisPreClose;
 }
 
-void DrawChart::appendAnnoucement(int b, int e)
+void DrawChart::appendAnnNews(int b, int e)
 {
     int m=0;
     QString backCode="";
     QString content="";
-
+    int isContinue=false;
     for (int i=0;i<GlobalVar::annoucementList.count();++i)
     {
         int n=GlobalVar::KRange-1;
@@ -613,12 +613,29 @@ void DrawChart::appendAnnoucement(int b, int e)
             if (result<=0)
             {
                 annLabel[m]->show();
-                content=t+l+"\n"+autoWordWrap(c,20);
+                if (isContinue)
+                {
+                    content=content+"\n"+t+l+"\n"+autoWordWrap(c,20);
+                }
+                else
+                {
+                    content=t+l+"\n"+autoWordWrap(c,20);
+                }
                 annLabel[m]->setToolTip(content);
                 int posX=(2*n+1)*(candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
                 annLabel[m]->move(posX+KWIDTHEDGE-TIPWIDTH/2,10);
                 ++m;
                 backCode=time;
+                if (result<0)
+                {
+                    isContinue=true;
+
+                }
+                else
+                {
+                    isContinue=false;
+
+                }
                 if (m>49)
                     return;
                 break;
