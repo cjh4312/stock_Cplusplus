@@ -66,8 +66,8 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 7: return m_modelData.at(row).pe;
         case 8: return GlobalVar::format_conversion(m_modelData.at(row).totalValue);
         case 9: return GlobalVar::format_conversion(m_modelData.at(row).circulatedValue);
-        case 10: return m_modelData.at(row).pctYear;
-        case 11: return m_modelData.at(row).pctSixty;
+        case 10: return QString::number(m_modelData.at(row).pctYear)+"%";
+        case 11: return QString::number(m_modelData.at(row).pctSixty)+"%";
         case 12: return GlobalVar::format_conversion(m_modelData.at(row).volume);
         case 13: return m_modelData.at(row).high;
         case 14: return m_modelData.at(row).low;
@@ -113,7 +113,7 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 10:
             if (m_modelData.at(row).pctYear >= 100)
                 return QColor(153, 0, 153);
-            else if (m_modelData.at(row).pctYear < 100)
+            else if (m_modelData.at(row).pctYear < 100 and m_modelData.at(row).pctYear >0)
                 return QColor(255, 155, 153);
             else if (m_modelData.at(row).pctYear < 0)
                 return QColor(0, 191, 0);
@@ -121,7 +121,7 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 11:
             if (m_modelData.at(row).pctSixty >= 100)
                 return QColor(153, 0, 153);
-            else if (m_modelData.at(row).pctSixty < 100)
+            else if (m_modelData.at(row).pctSixty < 100 and m_modelData.at(row).pctSixty >0)
                 return QColor(255, 155, 153);
             else if (m_modelData.at(row).pctSixty < 0)
                 return QColor(0, 191, 0);

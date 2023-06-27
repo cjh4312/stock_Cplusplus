@@ -32,6 +32,7 @@ public:
     void openFundRank(QString ft,QString sc);
     void getRoyalFlushFundFlow();
     void getNotNormalStock();
+    void getHisTimeShareTick();
     void getTimeShareMin(QString code,QString date);
     void getVacation();
     void initAllNews();

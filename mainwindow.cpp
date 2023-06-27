@@ -1895,6 +1895,7 @@ void MainWindow::toFundFlow()
 void MainWindow::downUpLookStock(QWheelEvent *event)
 {
     drawChart.hisTimeShareChart->close();
+    drawChart.annoucementWindow->close();
     if (GlobalVar::isKState)
     {
         resetKParameter();

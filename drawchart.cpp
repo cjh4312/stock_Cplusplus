@@ -153,6 +153,7 @@ void DrawChart::drawTimeShareChart()
     if (GlobalVar::mTimeShareChartList.isEmpty())
     {
         isTimeShareChartPaint=false;
+        painter.end();
         return;
     }
     //绘制时间
@@ -386,11 +387,7 @@ void DrawChart::drawCandleChart()
     if (isCandleChartPaint)
         return;
     isCandleChartPaint=true;
-    if (GlobalVar::mCandleChartList.isEmpty())
-    {
-        isCandleChartPaint=false;
-        return;
-    }
+
     int total=GlobalVar::mCandleChartList.count();
     int begin=total-GlobalVar::offsetLocal;
     if (begin<0)
@@ -408,6 +405,12 @@ void DrawChart::drawCandleChart()
     int priceH=canldeChartHeight*12/15;
     painter.drawRect(0,0,candleChartWidth,canldeChartHeight);
     painter.drawLine(0,priceH,candleChartWidth,priceH);
+    if (GlobalVar::mCandleChartList.isEmpty())
+    {
+        isCandleChartPaint=false;
+        painter.end();
+        return;
+    }
 
     calcHighLowPoint(begin,end);
     float highPoint=candleHighLowPoint[0];
@@ -589,9 +592,11 @@ void DrawChart::calcTSHighLowPoint(int begin, int end)
 void DrawChart::appendAnnNews(int b, int e)
 {
     int m=0;
+    int curPos=e-1;
     QString backCode="";
     QString content="";
     int isContinue=false;
+    QString bTime;
     for (int i=0;i<GlobalVar::annoucementList.count();++i)
     {
         int n=GlobalVar::KRange-1;
@@ -601,7 +606,7 @@ void DrawChart::appendAnnNews(int b, int e)
         QString l=GlobalVar::annoucementList.at(i)[1];
         QString t=GlobalVar::annoucementList.at(i)[2];
         QString time=t.mid(1,10);
-        for (int j=e-1;j>=b;--j)
+        for (int j=curPos;j>=b;--j)
         {
             if (backCode==time)
             {
@@ -618,26 +623,24 @@ void DrawChart::appendAnnNews(int b, int e)
                     content=content+"\n"+t+l+"\n"+autoWordWrap(c,20);
                 }
                 else
-                {
                     content=t+l+"\n"+autoWordWrap(c,20);
-                }
                 annLabel[m]->setToolTip(content);
                 int posX=(2*n+1)*(candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
                 annLabel[m]->move(posX+KWIDTHEDGE-TIPWIDTH/2,10);
                 ++m;
                 backCode=time;
+                bTime=GlobalVar::mCandleChartList.at(j).time;
                 if (result<0)
                 {
                     isContinue=true;
-
                 }
                 else
                 {
                     isContinue=false;
-
                 }
                 if (m>49)
                     return;
+
                 break;
             }
             --n;
@@ -716,12 +719,12 @@ void DrawChart::annClicked(const QModelIndex index)
 
     if (GlobalVar::annoucementList.at(index.row())[1]=="[东方]")
     {
-        QString s="<font size=\"4\" color=red>"+GlobalVar::annoucementList.at(index.row())[4]+"\r\n"+"</font>"+
-                    "<font size=\"3\">"+GlobalVar::annoucementList.at(index.row())[5]+"\r\n"+"</font>"+
-                    "<span> <a href="+GlobalVar::annoucementList.at(index.row())[3]+">"+
-                    +"原文"+"</a></span>";
+        QString s="<font size=\"4\" color=blue>"+GlobalVar::annoucementList.at(index.row())[4]
+                +/*GlobalVar::annoucementList.at(index.row())[2]+*/"\r\n"+"</font>"
+                +"<font size=\"3\">"+GlobalVar::annoucementList.at(index.row())[5]+"\r\n"+"</font>"
+                +"<span> <a href="+GlobalVar::annoucementList.at(index.row())[3]+">"+
+                +"原文"+"</a></span>";
         annText->setText(s);
-
     }
     else
     {

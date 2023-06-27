@@ -1,6 +1,5 @@
 
 #include "globalvar.h"
-#include "qnetworkcookie.h"
 #include <QCoreApplication>
 
 GlobalVar::GlobalVar()

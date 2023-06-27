@@ -691,42 +691,48 @@ void FundFlow::getRoyalFlushFundFlow()
 
 void FundFlow::getNotNormalStock()
 {
-    QByteArray allData;
+    getHisTimeShareTick();
+}
+
+void FundFlow::getHisTimeShareTick()
+{
     QNetworkRequest request;
-    QString url="https://market.finance.sina.com.cn/transHis.php?symbol=sz301205&date=2022-11-28&page=1";
-    request.setUrl(QUrl(url));
-    GlobalVar::getData(allData,2,request);
-    if (allData.isEmpty())
-        return;
-    QTextCodec *codec = QTextCodec::codecForName("GBK");
-    QString html=codec->toUnicode(allData);
-    QString str=GlobalVar::peelStr(html,"<tbody>","-1");
+    int page=1;
     QList<QStringList> data;
+    QTextCodec *codec = QTextCodec::codecForName("GBK");
     while(1)
     {
-        if (str.indexOf("<tr")==-1)
+        QByteArray allData;
+        QString url="https://market.finance.sina.com.cn/transHis.php?symbol=sz301205&date=2022-11-28&page="+QString::number(page);
+        request.setUrl(QUrl(url));
+        GlobalVar::getData(allData,2,request);
+        if (allData.isEmpty())
             break;
-        QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
-        QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
-
-    //    qDebug()<<str;
-        QStringList l;
-        GlobalVar::getAllContent(s,l,"<t");
-        qDebug()<<l;
-        data.append(l);
-        str=pair.second;
+        QString html=codec->toUnicode(allData);
+        QString str=GlobalVar::peelStr(html,"<tbody>","-1");
+        while(1)
+        {
+            if (str.indexOf("<tr")==-1)
+                break;
+            QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
+            QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
+            QStringList l;
+            QStringList list;
+            GlobalVar::getAllContent(s,l,"<t");
+            QString d;
+            if (l[5]=="卖盘")
+                d="-1";
+            else if (l[5]=="买盘")
+                d="1";
+            else
+                d="0";
+            list<<l[0]<<l[1]<<l[3]<<d;
+            qDebug()<<list;
+            data.append(list);
+            str=pair.second;
+        }
+        page+=1;
     }
-
-//    QString str=GlobalVar::peelStr(html,"<tbody","-1");
-//    QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
-//    QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
-//    QStringList l;
-
-//    GlobalVar::getAllContent(s,l,"<a");
-//    GlobalVar::getAllContent(s,l,"<p");
-//    GlobalVar::getAllContent(s,l,"<td");
-//    qDebug()<<l;
-
 }
 
 void FundFlow::getTimeShareMin(QString code,QString date)
@@ -897,7 +903,7 @@ void FundFlow::getAnnoucement()
 {
     QByteArray allData;
     QNetworkRequest request;
-//    QString url="https://search-api-web.eastmoney.com/search/jsonp?cb=&param=%7B%22uid%22%3A%227111416627128474%22%2C%22keyword%22%3A%22"+GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+"%22%2C%22type%22%3A%5B%22noticeWeb%22%5D%2C%22client%22%3A%22web%22%2C%22clientVersion%22%3A%22curr%22%2C%22clientType%22%3A%22web%22%2C%22param%22%3A%7B%22noticeWeb%22%3A%7B%22preTag%22%3A%22%3Cem%20class%3D%5C%22red%5C%22%3E%22%2C%22postTag%22%3A%22%3C%2Fem%3E%22%2C%22pageSize%22%3A30%2C%22pageIndex%22%3A1%7D%7D%7D&_=1686978800179";
+//    QString url="https://search-api-web.eastmoney.com/search/jsonp?cb=&param=%7B%22uid%22%3A%227111416627128474%22%2C%22keyword%22%3A%22"+GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+"%22%2C%22type%22%3A%5B%22noticeWeb%22%5D%2C%22client%22%3A%22web%22%2C%22clientVersion%22%3A%22curr%22%2C%22clientType%22%3A%22web%22%2C%22param%22%3A%7B%22noticeWeb%22%3A%7B%22preTag%22%3A%22%3Cem%20class%3D%5C%22red%5C%22%3E%22%2C%22postTag%22%3A%22%3C%2Fem%3E%22%2C%22pageSize%22%3A20%2C%22pageIndex%22%3A1%7D%7D%7D&_=1687659060958";
     QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
     request.setUrl(QUrl(url));
     GlobalVar::getData(allData,2,request);
