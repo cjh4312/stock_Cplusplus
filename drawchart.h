@@ -26,9 +26,6 @@ public:
     QLabel *title=new QLabel("标题栏");
     float candleHighLowPoint[5];
     float hisTimeShareHighLowPoint[3];
-    bool isTimeShareChartPaint=false;
-    bool isCandleChartPaint=false;
-    bool isHisTimeShareChartPaint=false;
     bool isMoveHisTimeShareChart=false;
 
     QLabel *colPrice;
@@ -51,9 +48,9 @@ public:
     QStringListModel *model=new QStringListModel(annoucementWindow);
     QTextBrowser *annText=new QTextBrowser(annoucementWindow);
 
-    void drawTimeShareChart();
-    void drawHisTimeShare();
-    void drawCandleChart();
+    void drawTimeShareChart(QPainter &painter);
+    void drawHisTimeShare(QPainter &painter);
+    void drawCandleChart(QPainter &painter);
     void calcHighLowPoint(int begin,int end);
     void calcTSHighLowPoint(int begin,int end);
     void appendAnnNews(int b,int e);

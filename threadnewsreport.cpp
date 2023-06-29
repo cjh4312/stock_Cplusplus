@@ -18,7 +18,7 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
 
 void ThreadNewsReport::getNewsData()
 {
-    if (isRunning)
+    if (isRunning or tts->state() != QTextToSpeech::Ready)
         return;
     isRunning=true;
     getEastNews();
@@ -135,25 +135,22 @@ void ThreadNewsReport::sayJsNews(QJsonObject object)
         return;
     if (object.value("data").toObject().contains("content"))
     {
-        if (tts->state() == QTextToSpeech::Ready)
-        {
-            QString newsText=object.value("data").toObject().value("content").toString();
-            if (newsText.contains("<a") or newsText.contains("点击查看") or newsText.contains("金十图示") or
-                newsText.contains("＞＞") or newsText.contains("...") or newsText.contains("......") or
-                newsText.contains(">>") or newsText.contains("……"))
-                return;
-            if (newsText=="" or newsText=="-")
-                return;
-            QString dt=QDateTime::fromString(object.value("time").toString().mid(0,19), "yyyy-MM-ddThh:mm:ss").addSecs(28800).toString("yyyy-MM-dd hh:mm:ss");
-            if (jinShiNewsReportCurTime>=dt)
-                return;
-            if (GlobalVar::isSayNews and tts->state()==QTextToSpeech::Ready)
-                tts->say(newsText);
-            id=newId;
-            emit getNewsFinished("<font size=\"4\" color=red>"+dt+"</font>"+"<font size=\"4\">"+
-                                 newsText+"</font>");
-            GlobalVar::settings->setValue("jinShiNewsReportCurTime",dt);
-        }
+        QString newsText=object.value("data").toObject().value("content").toString();
+        if (newsText.contains("<a") or newsText.contains("点击查看") or newsText.contains("金十图示") or
+            newsText.contains("＞＞") or newsText.contains("...") or newsText.contains("......") or
+            newsText.contains(">>") or newsText.contains("……"))
+            return;
+        if (newsText=="" or newsText=="-")
+            return;
+        QString dt=QDateTime::fromString(object.value("time").toString().mid(0,19), "yyyy-MM-ddThh:mm:ss").addSecs(28800).toString("yyyy-MM-dd hh:mm:ss");
+        if (jinShiNewsReportCurTime>=dt)
+            return;
+        if (GlobalVar::isSayNews)
+            tts->say(newsText);
+        id=newId;
+        emit getNewsFinished("<font size=\"4\" color=red>"+dt+"</font>"+"<font size=\"4\">"+
+                            newsText+"</font>");
+        GlobalVar::settings->setValue("jinShiNewsReportCurTime",dt);
     }
 }
 
@@ -162,10 +159,10 @@ void ThreadNewsReport::sayEastNews(QStringList l, int time)
     if (eastNewsReportCurTime>=time)
         return;
     QString newsText=l[1];
-    if (GlobalVar::isSayNews and tts->state()==QTextToSpeech::Ready)
+    if (GlobalVar::isSayNews)
         tts->say("东方财经:"+newsText);
     emit getNewsFinished("<font size=\"4\" color=red>"+l[2]+"</font>"+"<span> <a href="+l[0]+">"+
-                         "<font size=\"4\">"+newsText+"</font>"+"</a> </span>");
+                        "<font size=\"4\">"+newsText+"</font>"+"</a> </span>");
     eastNewsReportCurTime=time;
     GlobalVar::settings->setValue("eastNewsReportCurTime",time);
 }

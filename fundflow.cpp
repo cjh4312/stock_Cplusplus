@@ -889,7 +889,7 @@ void FundFlow::initAllNews()
     if (GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399" and GlobalVar::curCode.length()!=5)
     {
         getAnnoucement();
-        getNews();
+//        getNews();
     }
     getEastNews();
     std::sort(GlobalVar::annoucementList.begin(),GlobalVar::annoucementList.end(),[](QStringList a,QStringList b){

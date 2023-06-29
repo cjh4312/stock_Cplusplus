@@ -740,7 +740,11 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     else if (obj==drawChart.timeShareChart)
     {
         if (event->type() == QEvent::Paint)
-            drawChart.drawTimeShareChart();
+        {
+            QPainter painter(drawChart.timeShareChart);
+            drawChart.drawTimeShareChart(painter);
+            painter.end();
+        }
         else if(event->type()==QEvent::MouseMove)
         {
             QMouseEvent *mouseEvent = (QMouseEvent *)event;
@@ -821,7 +825,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::Paint)
         {
-            drawChart.drawHisTimeShare();
+            QPainter painter(drawChart.hisTimeShareChartView);
+            drawChart.drawHisTimeShare(painter);
+            painter.end();
         }
         else if (event->type()==QEvent::MouseMove)
         {
@@ -938,7 +944,11 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             drawChart.hisTimeShareChartView->update();
         }
         else if (event->type()==QEvent::Paint)
-            drawChart.drawCandleChart();
+        {
+            QPainter painter(drawChart.candleChart);
+            drawChart.drawCandleChart(painter);
+            painter.end();
+        }
         else if (event->type() == QEvent::Wheel)
         {
             QWheelEvent *ev = static_cast<QWheelEvent *>(event);
@@ -1486,8 +1496,8 @@ void MainWindow::tradingTimeRunThread()
 //                mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
             }
             //A股交易时段实时刷新k线图
-            if (GlobalVar::isKState)
-                emit startThreadCandleChart(freq,adjustFlag,true);
+//            if (GlobalVar::isKState)
+//                emit startThreadCandleChart(freq,adjustFlag,true);
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
                 emit startThreadTimeShareTick();
             emit startThreadTable();
@@ -1499,8 +1509,8 @@ void MainWindow::tradingTimeRunThread()
                  (GlobalVar::WhichInterface==2 and GlobalVar::isHKMarketDay(curTime)))
         {
             circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
-            if (GlobalVar::isKState)
-                emit startThreadCandleChart(freq,adjustFlag,true);
+//            if (GlobalVar::isKState)
+//                emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTable();
             emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
