@@ -11,10 +11,6 @@ ThreadTable::ThreadTable(QObject *parent)
 
 void ThreadTable::getTableData()
 {
-    if (isRunning)
-        return;
-    isRunning=true;
-//    bool timeOut=GlobalVar::timeOutFlag[5];
     QByteArray allData;
     if (GlobalVar::WhichInterface==1)
     {
@@ -51,8 +47,6 @@ void ThreadTable::getTableData()
             emit getTableDataFinished();
         }
     }
-//    GlobalVar::timeOutFlag[5]=false;
-    isRunning=false;
 }
 
 void ThreadTable::initTableList(const QByteArray &allData)

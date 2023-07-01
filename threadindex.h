@@ -13,8 +13,6 @@ public:
     explicit ThreadIndex(QObject *parent = nullptr);
     void getAllIndex();
 private:
-//    QNetworkAccessManager *naManager;
-    bool isRunning=false;
     void initIndexList(const QByteArray &allData);
     void initFuturesList(const QByteArray &allData);
 

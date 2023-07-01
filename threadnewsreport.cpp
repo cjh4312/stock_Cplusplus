@@ -18,17 +18,13 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
 
 void ThreadNewsReport::getNewsData()
 {
-    if (isRunning or tts->state() != QTextToSpeech::Ready)
+    if (tts->state() != QTextToSpeech::Ready)
         return;
-    isRunning=true;
     getEastNews();
     QByteArray allData;
     GlobalVar::getData(allData,2,QUrl("https://www.jin10.com/flash_newest.js?t=1667528593473"));
     if (not allData.isEmpty() and not eastNewsList.isEmpty())
         initNewsReport(allData);
-//    GlobalVar::timeOutFlag[3]=false;
-//    GlobalVar::timeOutFlag[4]=false;
-    isRunning=false;
 }
 
 void ThreadNewsReport::getEastNews()

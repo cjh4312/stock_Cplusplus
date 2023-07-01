@@ -10,9 +10,6 @@ ThreadCandleChart::ThreadCandleChart(QObject *parent)
 
 void ThreadCandleChart::getAllCandleChart(QString freq, QString adjustFlag,bool isFirst)
 {
-    if (isRunning)
-        return;
-    isRunning=true;
     QString startDate;
     if (isFirst and freq=="101")
         startDate=QDateTime::currentDateTime().addDays(-KRANGE*7/3).toString("yyyyMMdd");
@@ -25,8 +22,6 @@ void ThreadCandleChart::getAllCandleChart(QString freq, QString adjustFlag,bool 
         initCandleChartList(allData);
         emit getCandleChartFinished();
     }
-//    GlobalVar::timeOutFlag[0]=false;
-    isRunning=false;
 }
 
 void ThreadCandleChart::initCandleChartList(const QByteArray &allData)

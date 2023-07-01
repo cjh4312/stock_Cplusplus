@@ -61,12 +61,13 @@ void TableStock::setTableView()
 void TableStock::setTimeShareTickView()
 {
     m_timeShareTickModel->setModelData(GlobalVar::mTimeShareTickList);
+    timeShareTickView->horizontalHeader()->setMinimumSectionSize(1);
     timeShareTickView->setModel(m_timeShareTickModel);
-    timeShareTickView->setColumnWidth(0,65);
-    timeShareTickView->setColumnWidth(1,68);
-    timeShareTickView->setColumnWidth(2,55);
-    timeShareTickView->setColumnWidth(3,20);
-    timeShareTickView->setColumnWidth(4,20);
+    timeShareTickView->setColumnWidth(0,60);
+    timeShareTickView->setColumnWidth(1,85);
+    timeShareTickView->setColumnWidth(2,75);
+    timeShareTickView->setColumnWidth(3,12);
+    timeShareTickView->setColumnWidth(4,48);
 //    timeShareTickView->resizeColumnsToContents();
     timeShareTickView->scrollToBottom();
     timeShareTickView->setFrameStyle(0);

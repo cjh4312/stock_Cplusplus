@@ -26,7 +26,6 @@ private:
 //    bool isInitSpeech=false;
     int count=0;
     QString id;
-    bool isRunning=false;
     void initNewsReport(const QByteArray &allData);
     void sayJsNews(QJsonObject object);
     void sayEastNews(QStringList l,int time);

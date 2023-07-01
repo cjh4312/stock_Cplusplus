@@ -1118,6 +1118,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
     else if (key==Qt::Key_PageDown)
     {
+        if (isThreadRunning)
+            return;
+        isThreadRunning=true;
         if (GlobalVar::isKState)
         {
             resetKParameter();
@@ -1143,9 +1146,13 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             mFundFlow.initAllNews();
             drawChart.candleChart->update();
         }
+        isThreadRunning=false;
     }
     else if (key==Qt::Key_PageUp)
     {
+        if (isThreadRunning)
+            return;
+        isThreadRunning=true;
         if (GlobalVar::isKState)
         {
             resetKParameter();
@@ -1171,6 +1178,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             mFundFlow.initAllNews();
             drawChart.candleChart->update();
         }
+        isThreadRunning=false;
     }
     else if (key==Qt::Key_Enter or key==Qt::Key_Return)
     {
@@ -1904,6 +1912,9 @@ void MainWindow::toFundFlow()
 }
 void MainWindow::downUpLookStock(QWheelEvent *event)
 {
+    if (isThreadRunning)
+        return;
+    isThreadRunning=true;
     drawChart.hisTimeShareChart->close();
     drawChart.annoucementWindow->close();
     if (GlobalVar::isKState)
@@ -1963,4 +1974,5 @@ void MainWindow::downUpLookStock(QWheelEvent *event)
         mFundFlow.initAllNews();
         drawChart.candleChart->update();
     }
+    isThreadRunning=false;
 }

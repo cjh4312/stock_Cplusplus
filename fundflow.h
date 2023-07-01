@@ -39,6 +39,7 @@ public:
     void getAnnoucement();
     void getNews();
     void getEastNews();
+    bool isGetNews=false;
 };
 
 #endif // FUNDFLOW_H

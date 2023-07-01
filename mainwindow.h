@@ -78,6 +78,7 @@ private:
     ThreadTimeShareChart *threadTimeShareChart;
     ThreadNewsReport *threadNewsReport;
     ThreadCandleChart *threadCandleChart;
+    bool isThreadRunning=false;
 
     QThread *thread[6];
     QTimer *tim;

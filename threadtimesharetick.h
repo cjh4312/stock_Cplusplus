@@ -16,8 +16,6 @@ public:
     void getBuySellTimeShareTick();
 
 private:
-//    QNetworkAccessManager *naManager;
-    bool isRunning=false;
     void initBuySellList(const QByteArray &allData);
     void initTimeShareTickList(const QByteArray &allData);
     void findStockArea();

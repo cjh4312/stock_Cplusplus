@@ -13,8 +13,6 @@ public:
     explicit ThreadTimeShareChart(QObject *parent = nullptr);
     void getAllTimeShareChart();
 private:
-//    QNetworkAccessManager *naManager;
-    bool isRunning=false;
     void initTimeShareChartList(const QByteArray &allData);
 signals:
     void getTimeShareChartFinished();

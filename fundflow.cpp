@@ -885,6 +885,9 @@ void FundFlow::getVacation()
 
 void FundFlow::initAllNews()
 {
+    if (isGetNews)
+        return;
+    isGetNews=true;
     GlobalVar::annoucementList.clear();
     if (GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399" and GlobalVar::curCode.length()!=5)
     {
@@ -895,6 +898,7 @@ void FundFlow::initAllNews()
     std::sort(GlobalVar::annoucementList.begin(),GlobalVar::annoucementList.end(),[](QStringList a,QStringList b){
         return a[2]>b[2];
     });
+    isGetNews=false;
     //    for (int i=0;i<GlobalVar::annoucementList.count();++i)
     //        qDebug()<<GlobalVar::annoucementList.at(i)[2];
 }
