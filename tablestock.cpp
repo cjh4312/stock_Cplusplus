@@ -110,6 +110,7 @@ void TableStock::initTableView()
         tl[i]->setAlternatingRowColors(true);
         tl[i]->setShowGrid(false);
         tl[i]->setSelectionBehavior(QAbstractItemView::SelectRows);
+        tl[i]->setSelectionMode(QAbstractItemView::SingleSelection);
         tl[i]->setEditTriggers(QAbstractItemView::NoEditTriggers);
         tl[i]->setStyleSheet("QTableView{selection-background-color:lightgray}");
         if (i==0)

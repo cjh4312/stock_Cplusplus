@@ -27,6 +27,7 @@ public:
     float candleHighLowPoint[5];
     float hisTimeShareHighLowPoint[3];
     bool isMoveHisTimeShareChart=false;
+    int moveUnit=1;
 
     QLabel *colPrice;
     QLabel *rowTime;

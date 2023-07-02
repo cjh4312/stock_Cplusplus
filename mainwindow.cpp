@@ -394,9 +394,15 @@ void MainWindow::initSignals()
         if (GlobalVar::WhichInterface==4)
         {
             if(ifCanClick==1)
+            {
                 GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
+                GlobalVar::curName=GlobalVar::mTableList.at(curRow).name;
+            }
             else if(ifCanClick==2)
+            {
                 GlobalVar::curCode=mFundFlow.model->item(curRow,0)->text();
+                GlobalVar::curName=mFundFlow.model->item(curRow,1)->text();
+            }
         }
         else
         {
@@ -435,23 +441,9 @@ void MainWindow::initSignals()
                     mTableStock.stockTableView->setColumnWidth(i,90);
                 ifCanClick=1;
             }
-            else if(ifCanClick==1)
+            else if(ifCanClick==1 or ifCanClick==2)
             {
                 GlobalVar::isKState=true;
-                int curRow=index.row();
-                GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
-                mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curRow,0));
-                emit startThreadCandleChart(freq,adjustFlag,true);
-                emit startThreadTimeShareTick();
-                emit startThreadTimeShareChart();
-                toInterFace("k");
-            }
-            else if(ifCanClick==2)
-            {
-                GlobalVar::isKState=true;
-                int curRow=index.row();
-                GlobalVar::curCode=mFundFlow.model->item(curRow,0)->text();
-                mTableStock.stockTableView->setCurrentIndex(mFundFlow.model->index(curRow,0));
                 emit startThreadCandleChart(freq,adjustFlag,true);
                 emit startThreadTimeShareTick();
                 emit startThreadTimeShareChart();
@@ -988,6 +980,21 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             drawChart.hKLine->hide();
             reFlashBuySellBaseInfo();
         }
+        else if (event->type()==QEvent::ContextMenu)
+        {
+            QMenu *menu=new QMenu();
+            QAction *moveOne=new QAction("左右移动一格");
+            QAction *moveFast=new QAction("快速左右移动");
+            menu->addAction(moveFast);
+            menu->addAction(moveOne);
+            menu->popup(QCursor::pos());
+            connect(moveOne,&QAction::triggered,this,[=](){
+                drawChart.moveUnit=1;
+            });
+            connect(moveFast,&QAction::triggered,this,[=](){
+                drawChart.moveUnit=GlobalVar::KRange*0.2;
+            });
+        }
         return true;
     }
     else if (obj==newsData->verticalScrollBar() and event->type() == QEvent::Wheel)
@@ -1240,8 +1247,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
         if (GlobalVar::isKState)
         {
-
-            GlobalVar::offsetLocal=GlobalVar::offsetLocal+GlobalVar::KRange*0.2;
+            GlobalVar::offsetLocal=GlobalVar::offsetLocal+drawChart.moveUnit;
             if (GlobalVar::mCandleChartList.count()<GlobalVar::offsetLocal)
                 GlobalVar::offsetLocal=GlobalVar::mCandleChartList.count();
             if (preCode!=GlobalVar::curCode)
@@ -1256,7 +1262,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
         if (GlobalVar::isKState)
         {
-            GlobalVar::offsetLocal=GlobalVar::offsetLocal-GlobalVar::KRange*0.2;
+            GlobalVar::offsetLocal=GlobalVar::offsetLocal-drawChart.moveUnit;
             if (GlobalVar::offsetLocal<GlobalVar::KRange)
                 GlobalVar::offsetLocal=GlobalVar::KRange;
             GlobalVar::offsetEnd=0;
@@ -1796,6 +1802,11 @@ void MainWindow::toInterFace(QString which)
     }
     else if(which=="f3")
     {
+        if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5)
+        {
+            QMessageBox::information(this,"提示", "只能查看A股", QMessageBox::Ok);
+            return;
+        }
         F10SmallWindow->setFixedSize(675,500);
         fTitle->setText(GlobalVar::curCode+" "+GlobalVar::curName.left(GlobalVar::curName.indexOf("(")));
         F10SmallWindow->show();
@@ -1803,6 +1814,11 @@ void MainWindow::toInterFace(QString which)
     }
     else if(which=="f10")
     {
+        if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5)
+        {
+            QMessageBox::information(this,"提示", "只能查看A股", QMessageBox::Ok);
+            return;
+        }
         F10SmallWindow->setFixedSize(1275,700);
         fTitle->setText(GlobalVar::curCode+" "+GlobalVar::curName.left(GlobalVar::curName.indexOf("(")));
         F10SmallWindow->show();
