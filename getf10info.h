@@ -22,7 +22,7 @@ public:
     void getIncome();
     void getCashFlow();
     void getData(const QByteArray &allData,QStringList key,QStringList value,QStringList &col,QList<QStringList> &l);
-    void getAllData(QStringList key,QStringList value,QStringList &col,QList<QStringList> &l,QString url);
+    void getAllData(QStringList key,QStringList value,QString url);
     void calcPeriod();
 };
 

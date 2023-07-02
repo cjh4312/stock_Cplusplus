@@ -129,7 +129,6 @@ void GetF10Info::mainBusinessComposition()
 
 void GetF10Info::assetLiability()
 {
-    f10QList.clear();
     QStringList lableList={"MONETARYFUNDS","LEND_FUND", "NOTE_ACCOUNTS_RECE","ACCOUNTS_RECE",
                         "NOTE_RECE", "PREPAYMENT", "TOTAL_OTHER_RECE",
                         "CURRENT_ASSET_BALANCE", "NONCURRENT_ASSET_BALANCE",
@@ -160,12 +159,11 @@ void GetF10Info::assetLiability()
             "长期应付职工薪酬","一般风险准备", "未分配利润","归属于母公司股东权益总计","少数股东权益",
             "股东权益合计",  "负债和股东权益总计"};
     QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/zcfzbAjaxNew?companyType=4&reportDateType=0&reportType=1&dates=";
-    getAllData(lableList,nameList,colList,f10QList,url);
+    getAllData(lableList,nameList,url);
 }
 
 void GetF10Info::getIncome()
 {
-    f10QList.clear();
     QStringList lableList={"TOTAL_OPERATE_INCOME", "OPERATE_INCOME","FEE_COMMISSION_INCOME",
             "INTEREST_INCOME", "TOTAL_OPERATE_COST","OPERATE_COST", "ASSET_IMPAIRMENT_INCOME",
             "INTEREST_EXPENSE", "FEE_COMMISSION_EXPENSE","OPERATE_TAX_ADD", "SALE_EXPENSE", "MANAGE_EXPENSE",
@@ -218,12 +216,11 @@ void GetF10Info::getIncome()
             "同比综合收益总额","同比归属于少数股东的综合收益总额","同比归属于母公司股东的综合收益总额"};
 
     QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/lrbAjaxNew?companyType=4&reportDateType=0&reportType=1&dates=";
-    getAllData(lableList,nameList,colList,f10QList,url);
+    getAllData(lableList,nameList,url);
 }
 
 void GetF10Info::getCashFlow()
 {
-    f10QList.clear();
     QStringList lableList={"SALES_SERVICES","DEPOSIT_INTERBANK_ADD","RECEIVE_INTEREST_COMMISSION",
                 "RECEIVE_OTHER_OPERATE","TOTAL_OPERATE_INFLOW","BUY_SERVICES",
                 "OBTAIN_SUBSIDIARY_OTHER","ACCEPT_INVEST_CASH","SUBSIDIARY_ACCEPT_INVEST",
@@ -263,7 +260,7 @@ void GetF10Info::getCashFlow()
             "现金及现金等价物的净增加额"};
 
     QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/xjllbAjaxNew?companyType=4&reportDateType=0&reportType=1&dates=";
-    getAllData(lableList,nameList,colList,f10QList,url);
+    getAllData(lableList,nameList,url);
 }
 
 void GetF10Info::getData(const QByteArray &allData,QStringList key,QStringList value,QStringList &col,QList<QStringList> &l)
@@ -275,10 +272,10 @@ void GetF10Info::getData(const QByteArray &allData,QStringList key,QStringList v
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toArray();
         int len=key.count();
-        QStringList cowList[len];
+        QStringList cowList[100];
         col={"基本指标"};
         for (int i=0;i<len;++i)
-            cowList[i].append(value[i]);
+            cowList[i]<<value[i];
         for (int i = 0; i < data.size(); ++i)
         {
             QJsonValue value = data.at(i);
@@ -297,13 +294,14 @@ void GetF10Info::getData(const QByteArray &allData,QStringList key,QStringList v
     }
 }
 
-void GetF10Info::getAllData(QStringList key, QStringList value, QStringList &col, QList<QStringList> &l, QString url)
+void GetF10Info::getAllData(QStringList key, QStringList value,QString url)
 {
-    QStringList t[value.count()];
+    f10QList.clear();
+    QStringList t[100];
     for (int i=0;i<value.count();++i)
         t[i]<<value[i];
     QStringList c;
-    col={"基本指标"};
+    colList={"基本指标"};
     for (int k=0;k<period.count();++k)
     {
         QList<QStringList> temp;
@@ -311,7 +309,7 @@ void GetF10Info::getAllData(QStringList key, QStringList value, QStringList &col
         GlobalVar::getData(allData,1,QUrl(url+period[k]+"&code="+GlobalVar::getStockSymbol()));
         getData(allData,key,value,c,temp);
         c.remove(0);
-        col<<c;
+        colList<<c;
         for (int i=0;i<temp.count();++i)
         {
             for (int j=1;j<temp.at(i).count();++j)
@@ -319,7 +317,7 @@ void GetF10Info::getAllData(QStringList key, QStringList value, QStringList &col
         }
     }
     for (int i=0;i<value.count();++i)
-        l.append(t[i]);
+        f10QList.append(t[i]);
 }
 
 void GetF10Info::calcPeriod()
