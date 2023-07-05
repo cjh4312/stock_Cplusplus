@@ -429,6 +429,7 @@ QList<StockInfo> GlobalVar::mTableListCopy;
 QList<IndexInfo> GlobalVar::mIndexList;
 QList<StockInfo> GlobalVar::mRisingSpeedList;
 QList<StockInfo> GlobalVar::mMyStockList;
+QStringList GlobalVar::mMyStockCode;
 QList<timeShareTickInfo> GlobalVar::mTimeShareTickList;
 QList<timeShartChartInfo> GlobalVar::mTimeShareChartList;
 QList<timeShartChartInfo> GlobalVar::mHisTimeShareChartList;

@@ -62,6 +62,7 @@ public:
     static QList<StockInfo> mTableListCopy;  //复制所有股票 按代码排序
     static QList<StockInfo> mRisingSpeedList;  //涨速
     static QList<StockInfo> mMyStockList;     //自选股
+    static QStringList mMyStockCode;
     static QList<IndexInfo> mIndexList;      //全球指数
     static QList<timeShareTickInfo> mTimeShareTickList;   //每笔成交
     static QList<timeShartChartInfo> mTimeShareChartList;  //分时图

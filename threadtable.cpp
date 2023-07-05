@@ -120,11 +120,11 @@ void ThreadTable::initTableList(const QByteArray &allData)
 
 void ThreadTable::readMyStock()
 {
-    QStringList code=GlobalVar::settings->value("myStock").toStringList();
-    for(int i=0;i<code.count();++i)
+    GlobalVar::mMyStockCode=GlobalVar::settings->value("myStock").toStringList();
+    for(int i=0;i<GlobalVar::mMyStockCode.count();++i)
     {
         StockInfo info;
-        info.code=code[i];
+        info.code=GlobalVar::mMyStockCode[i];
         GlobalVar::mMyStockList.append(info);
     }
 }

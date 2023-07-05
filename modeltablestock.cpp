@@ -58,16 +58,16 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         {
         case 0: return m_modelData.at(row).code;
         case 1: return m_modelData.at(row).name;
-        case 2: return m_modelData.at(row).close;
+        case 2: return QString::number(m_modelData.at(row).close,'f',2);
         case 3: return GlobalVar::format_conversion(m_modelData.at(row).pctChg)+"%";
         case 4: return m_modelData.at(row).turn;
         case 5: return GlobalVar::format_conversion(m_modelData.at(row).amount);
-        case 6: return m_modelData.at(row).velocity;
-        case 7: return m_modelData.at(row).pe;
+        case 6: return QString::number(m_modelData.at(row).velocity,'f',2);
+        case 7: return QString::number(m_modelData.at(row).pe,'f',2);
         case 8: return GlobalVar::format_conversion(m_modelData.at(row).totalValue);
         case 9: return GlobalVar::format_conversion(m_modelData.at(row).circulatedValue);
-        case 10: return QString::number(m_modelData.at(row).pctYear)+"%";
-        case 11: return QString::number(m_modelData.at(row).pctSixty)+"%";
+        case 10: return QString::number(m_modelData.at(row).pctYear,'f',2)+"%";
+        case 11: return QString::number(m_modelData.at(row).pctSixty,'f',2)+"%";
         case 12: return GlobalVar::format_conversion(m_modelData.at(row).volume);
         case 13: return m_modelData.at(row).high;
         case 14: return m_modelData.at(row).low;
@@ -80,6 +80,28 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         const int row = index.row();
         switch(index.column())
         {
+        case 0:
+            return QColor(128,128,0);
+        case 1:
+            for (int i=0;i<GlobalVar::mMyStockCode.count();++i)
+            {
+                if (m_modelData.at(row).code==GlobalVar::mMyStockCode[i])
+                {
+                    if (m_modelData.count()!=GlobalVar::mMyStockCode.count())
+                        return QColor(255,140,0);
+                    else
+                    {
+                        if (m_modelData.at(0).code!=GlobalVar::mMyStockCode[0])
+                            return QColor(255,140,0);
+                        else if(m_modelData.at(1).code!=GlobalVar::mMyStockCode[1])
+                            return QColor(255,140,0);
+                        else if(m_modelData.at(2).code!=GlobalVar::mMyStockCode[2])
+                            return QColor(255,140,0);
+                    }
+                }
+            }
+            return QColor(112,128,144);
+
         case 2:
             if (m_modelData.at(row).close>m_modelData.at(row).open)
                 return QColor(255, 0, 255);
@@ -109,6 +131,18 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
                 return QColor(Qt::red);
             else if (m_modelData.at(row).velocity < 0)
                 return QColor(0, 191, 0);
+            break;
+        case 7:
+            if (m_modelData.at(row).pe<0)
+                return QColor(0, 191, 0);
+            break;
+        case 8:
+            if (m_modelData.at(row).totalValue/100>100000000)
+                return QColor(32,178,170);
+            break;
+        case 9:
+            if (m_modelData.at(row).circulatedValue/100>100000000)
+                return QColor(32,178,170);
             break;
         case 10:
             if (m_modelData.at(row).pctYear >= 100)
@@ -156,6 +190,20 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
             boldFont.setBold(true);
             boldFont.setPixelSize(16);
             return boldFont;
+        }
+    }
+    else if (role == Qt::TextAlignmentRole)
+    {
+        switch(index.column())
+        {
+        case 2:return Qt::AlignRight;
+        case 3:return Qt::AlignRight;
+        case 4:return Qt::AlignRight;
+        case 5:return Qt::AlignRight;
+        case 6:return Qt::AlignCenter;
+        case 7:return Qt::AlignRight;
+        case 8:return Qt::AlignRight;
+        case 9:return Qt::AlignRight;
         }
     }
     return QVariant();

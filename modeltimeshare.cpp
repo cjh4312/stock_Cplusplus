@@ -65,6 +65,8 @@ QVariant ModelTimeShare::data(const QModelIndex &index, int role) const
             else if (m_modelData.at(row).price<GlobalVar::preClose)
                 return QColor(0, 191, 0);
             else return QColor(Qt::black);
+        case 2:
+            return QColor(255,165,0);
         case 3:
             if (m_modelData.at(row).d==2)
                 return QColor(Qt::red);

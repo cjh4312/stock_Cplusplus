@@ -272,7 +272,7 @@ void MainWindow::initSettings()
     F10Title->setLayout(titleLayout);
     F10Title->setMaximumHeight(TITLEHEIGHT);
 //    f10Title->setStyleSheet("background-color:rgb(153, 204, 255);");
-    fTitle->setStyleSheet("QLabel{font:bold 18px;font-family:微软雅黑;color:blue}");
+    fTitle->setStyleSheet("QLabel{font:bold 18px;font-family:微软雅黑}");
 
     f10Main->addWidget(F10Title);
     f10Main->addLayout(f10);
@@ -314,7 +314,7 @@ void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
     {
         QLabel *name=new QLabel(lName[i]);
         baseInfoData[i]=new QLabel();
-        name->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑}");
+        name->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(47,79,79)}");
         if ((i >= 2 and i <= 6) or (i >= 11 and i <= 14))
             baseInfoData[i]->setStyleSheet("QLabel{font:bold 14px;color:blue}");
         else if (i == 7)
@@ -341,9 +341,9 @@ void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
         }
     }
     EPSLabel=new QLabel();
-    EPSLabel->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑}");
+    EPSLabel->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(47,79,79)}");
     PELabel=new QLabel();
-    PELabel->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑}");
+    PELabel->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(47,79,79)}");
     baseInfoLayout->addWidget(EPSLabel,7,2);
     baseInfoLayout->addWidget(PELabel,8,2);
 }
@@ -357,9 +357,9 @@ void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
         buySellPrice[i]=new QLabel();
         buySellNum[i]=new QLabel();
         buySellNum[i]->setAlignment(Qt::AlignRight);
-        buySellName[i]->setStyleSheet("QLabel{font:bold 16px;font-family:微软雅黑}");
+        buySellName[i]->setStyleSheet("QLabel{font:bold 16px;font-family:微软雅黑;color:rgb(47,79,79)}");
         buySellPrice[i]->setStyleSheet("QLabel{font:16px;font-family:微软雅黑}");
-        buySellNum[i]->setStyleSheet("QLabel{font:16px;color:blue;font-family:微软雅黑}");
+        buySellNum[i]->setStyleSheet("QLabel{font:bold 16px;color:rgb(255,165,0);font-family:微软雅黑}");
         BuySellLayout->addWidget(buySellName[i],i,0);
         BuySellLayout->addWidget(buySellPrice[i],i,1);
         BuySellLayout->addWidget(buySellNum[i],i,2);
@@ -368,9 +368,9 @@ void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
         buySellPrice[5+i]=new QLabel();
         buySellNum[5+i]=new QLabel();
         buySellNum[5+i]->setAlignment(Qt::AlignRight);
-        buySellName[i+5]->setStyleSheet("QLabel{font:bold 16px;font-family:微软雅黑;color:blue}");
+        buySellName[i+5]->setStyleSheet("QLabel{font:bold 16px;font-family:微软雅黑;color:rgb(47,79,79)}");
         buySellPrice[i+5]->setStyleSheet("QLabel{font:16px;font-family:微软雅黑}");
-        buySellNum[i+5]->setStyleSheet("QLabel{font:16px;color:blue;font-family:微软雅黑}");
+        buySellNum[i+5]->setStyleSheet("QLabel{font:bold 16px;color:rgb(255,165,0);font-family:微软雅黑}");
         BuySellLayout->addWidget(buySellName[i+5],i+6,0);
         BuySellLayout->addWidget(buySellPrice[5+i],i+6,1);
         BuySellLayout->addWidget(buySellNum[5+i],i+6,2);
@@ -379,7 +379,7 @@ void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
     buySellPrice[0]->setMinimumWidth(45);
     buySellNum[0]->setMinimumWidth(40);
     QFrame *line=new QFrame(this);
-    line->setStyleSheet("QFrame{background:yellow;min-height:2px;border-top:2px dotted}");
+    line->setStyleSheet("QFrame{/*background:yellow;*/min-height:2px;border-top:2px dotted gray}");
 //    line->setFrameShape(QFrame::HLine);
 //    line->setFrameShadow(QFrame::Sunken);
     BuySellLayout->addWidget(line,5,0,1,3);
@@ -669,6 +669,7 @@ void MainWindow::saveMyStock()
         s<<GlobalVar::mMyStockList.at(i).code;
     }
     GlobalVar::settings->setValue("myStock",s);
+    GlobalVar::mMyStockCode=s;
 }
 void MainWindow::saveCode()
 {
@@ -1407,6 +1408,14 @@ void MainWindow::addRightMenu(int num)
         mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
         mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
         saveMyStock();
+        curIndex=mTableStock.risingSpeedView->currentIndex().row();
+        mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
+        mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
+        mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
+        curIndex=mTableStock.stockTableView->currentIndex().row();
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
     });
 
 }
@@ -1421,6 +1430,14 @@ void MainWindow::delRightMenu()
         mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList);
         mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
         saveMyStock();
+        int curIndex=mTableStock.risingSpeedView->currentIndex().row();
+        mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
+        mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
+        mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
+        curIndex=mTableStock.stockTableView->currentIndex().row();
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
     });
 }
 void MainWindow::showSearchResult()
