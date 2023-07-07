@@ -105,6 +105,7 @@ DrawChart::DrawChart(QWidget *parent)
         pixmap->scaled(annLabel[i]->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         annLabel[i]->setScaledContents(true);
         annLabel[i]->setPixmap(*pixmap);
+        annLabel[i]->setStyleSheet("QToolTip{border:2px solid darkkhaki;padding:5px;border-radius:3px;opacity:200;}");
         annLabel[i]->hide();
     }
     connect(close,&QPushButton::clicked,this,[=](){hisTimeShareChart->close();});
@@ -562,60 +563,103 @@ void DrawChart::appendAnnNews(int b, int e)
 {
     int m=0;
     int curPos=e-1;
-    QString backCode="";
+//    QString backCode="";
     QString content="";
-    int isContinue=false;
-    QString bTime;
-    for (int i=0;i<GlobalVar::annoucementList.count();++i)
+//    int isContinue=false;
+//    QString bTime;
+    int pos=0;
+    int n=GlobalVar::KRange-1;
+    if (GlobalVar::mCandleChartList.count()-1<n)
+        n=GlobalVar::mCandleChartList.count()-1;
+    for (int j=curPos;j>=b;--j)
     {
-        int n=GlobalVar::KRange-1;
-        if (GlobalVar::mCandleChartList.count()-1<n)
-            n=GlobalVar::mCandleChartList.count()-1;
-        QString c=GlobalVar::annoucementList.at(i)[0];
-        QString l=GlobalVar::annoucementList.at(i)[1];
-        QString t=GlobalVar::annoucementList.at(i)[2];
-        QString time=t.mid(1,10);
-        for (int j=curPos;j>=b;--j)
+        for (int i=pos;i<GlobalVar::annoucementList.count();++i)
         {
-            if (backCode==time)
-            {
-                content=content+"\n"+t+l+"\n"+autoWordWrap(c,20);
-                annLabel[m-1]->setToolTip(content);
-                break;
-            }
-            int result=QString::compare(GlobalVar::mCandleChartList.at(j).time,time);
-            if (result<=0)
-            {
-                annLabel[m]->show();
-                if (isContinue)
-                {
-                    content=content+"\n"+t+l+"\n"+autoWordWrap(c,20);
-                }
-                else
-                    content=t+l+"\n"+autoWordWrap(c,20);
-                annLabel[m]->setToolTip(content);
-                int posX=(2*n+1)*(candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
-                annLabel[m]->move(posX+KWIDTHEDGE-TIPWIDTH/2,10);
-                ++m;
-                backCode=time;
-                bTime=GlobalVar::mCandleChartList.at(j).time;
-                if (result<0)
-                {
-                    isContinue=true;
-                }
-                else
-                {
-                    isContinue=false;
-                }
-                if (m>49)
-                    return;
 
-                break;
+            QString c=GlobalVar::annoucementList.at(i)[0];
+            QString l=GlobalVar::annoucementList.at(i)[1];
+            QString t=GlobalVar::annoucementList.at(i)[2];
+            QString time=t.mid(1,10);
+            int result=QString::compare(GlobalVar::mCandleChartList.at(j).time,time);
+            if (result>0)
+            {
+                if (not content.isEmpty())
+                {
+                    annLabel[m]->show();
+                    annLabel[m]->setToolTip(content);
+                    int posX=(2*n+1)*(candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
+                    annLabel[m]->move(posX+KWIDTHEDGE-TIPWIDTH/2,10);
+                    ++m;
+                    pos=i;
+                    content="";
+                    if (m>49)
+                        return;
+                    break;
+                }
             }
-            --n;
+            else
+            {
+                if (content.isEmpty())
+                    content=t+l+"\n"+autoWordWrap(c,20);
+                else
+                    content=content+"\n"+t+l+"\n"+autoWordWrap(c,20);
+            }
         }
+        --n;
     }
-    for (int i=m;i<49;++i)
+//    for (int i=0;i<GlobalVar::annoucementList.count();++i)
+//    {
+//        int n=GlobalVar::KRange-1;
+//        if (GlobalVar::mCandleChartList.count()-1<n)
+//            n=GlobalVar::mCandleChartList.count()-1;
+//        QString c=GlobalVar::annoucementList.at(i)[0];
+//        QString l=GlobalVar::annoucementList.at(i)[1];
+//        QString t=GlobalVar::annoucementList.at(i)[2];
+//        QString time=t.mid(1,10);
+//        for (int j=curPos;j>=b;--j)
+//        {
+//            if (backCode==time)
+//            {
+//                content=content+"\n"+t+l+"\n"+autoWordWrap(c,20);
+//                annLabel[m-1]->setToolTip(content);
+//                break;
+//            }
+//            int result=QString::compare(GlobalVar::mCandleChartList.at(j).time,time);
+//            if (result<=0)
+//            {
+//                annLabel[m]->show();
+//                if (isContinue)
+//                {
+//                    content=content+"\n"+t+l+"\n"+autoWordWrap(c,20);
+//                }
+//                else
+//                {
+//                    content=t+l+"\n"+autoWordWrap(c,20);
+//                }
+//                annLabel[m]->setToolTip(content);
+//                annLabel[m]->setStyleSheet("QToolTip{border:2px solid darkkhaki;padding:5px;border-radius:3px;opacity:200;}");
+//                int posX=(2*n+1)*(candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
+//                annLabel[m]->move(posX+KWIDTHEDGE-TIPWIDTH/2,10);
+//                ++m;
+//                backCode=time;
+//                bTime=GlobalVar::mCandleChartList.at(j).time;
+//                if (result<0)
+//                {
+//                    isContinue=true;
+//                }
+//                else
+//                {
+//                    isContinue=false;
+//                }
+//                if (m>49)
+//                    return;
+
+//                break;
+//            }
+//            --n;
+//        }
+//    }
+    for (int i=m;i<50;++i)
         annLabel[i]->hide();
 }
 
@@ -693,6 +737,13 @@ void DrawChart::annClicked(const QModelIndex index)
                 +"<font size=\"3\">"+GlobalVar::annoucementList.at(index.row())[5]+"\r\n"+"</font>"
                 +"<span> <a href="+GlobalVar::annoucementList.at(index.row())[3]+">"+
                 +"原文"+"</a></span>";
+        annText->setText(s);
+    }
+    else if(GlobalVar::annoucementList.at(index.row())[1]=="[大事提醒]")
+    {
+        QString s="<font size=\"4\" color=blue>"+GlobalVar::annoucementList.at(index.row())[0]
+                    +"\r\n"+"</font>"
+                    +"<font size=\"3\">"+GlobalVar::annoucementList.at(index.row())[3]+"\r\n"+"</font>";
         annText->setText(s);
     }
     else

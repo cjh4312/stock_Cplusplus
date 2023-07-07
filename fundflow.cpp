@@ -895,6 +895,7 @@ void FundFlow::initAllNews()
 //        getNews();
     }
     getEastNews();
+    getGreatEvent();
     std::sort(GlobalVar::annoucementList.begin(),GlobalVar::annoucementList.end(),[](QStringList a,QStringList b){
         return a[2]>b[2];
     });
@@ -1046,6 +1047,33 @@ void FundFlow::getEastNews()
                 <<"("+ceilMap.value("date").toString()+")"<<ceilMap.value("url").toString()
                 <<ceilMap.value("mediaName").toString()
                 <<ceilMap.value("content").toString().replace("<em>","").replace("</em>","");
+
+            GlobalVar::annoucementList.append(l);
+        }
+    }
+}
+
+void FundFlow::getGreatEvent()
+{
+    QString url="http://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_STOCKCALENDAR&columns=SECUCODE%2CSECURITY_CODE%2CSECURITY_INNER_CODE%2CORG_CODE%2CNOTICE_DATE%2CINFO_CODE%2CEVENT_TYPE%2CEVENT_TYPE_CODE%2CLEVEL1_CONTENT%2CCHANGE_RATE%2CCLOSE_PRICE&quoteColumns=&filter=(SECURITY_CODE%3D%22"+GlobalVar::curCode+"%22)(EVENT_TYPE_CODE%20in%20(%22023%22%2C%22012%22%2C%22002%22%2C%22019%22%2C%22020%22%2C%22005%22%2C%22016%22%2C%22017%22%2C%22026%22%2C%22011%22%2C%22006%22%2C%22025%22%2C%22010%22%2C%22007%22%2C%22003%22%2C%22024%22%2C%22004%22%2C%22021%22%2C%22009%22%2C%22013%22%2C%22008%22%2C%22001%22%2C%22014%22%2C%22015%22%2C%22022%22%2C%22018%22))(NOTICE_DATE%3C%3D%272023-10-04%27)&pageNumber=&pageSize=10&sortTypes=-1&sortColumns=NOTICE_DATE%20&source=QuoteWeb&client=WEB&_=1688597948026";
+    QByteArray allData;
+    GlobalVar::getData(allData,2,QUrl(url));
+    QJsonParseError jsonError;
+    QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
+
+    if (jsonError.error == QJsonParseError::NoError)
+    {
+        QJsonObject jsonObject = doc.object();
+        QJsonArray data=jsonObject.value("result").toObject().value("data").toArray();
+        for (int i=0;i<data.count();++i)
+        {
+            QJsonValue value = data.at(i);
+            QVariantMap ceilMap = value.toVariant().toMap();
+            QStringList l;
+            l<<ceilMap.value("EVENT_TYPE").toString()<<"[大事提醒]"
+              <<"("+ceilMap.value("NOTICE_DATE").toString()+")"
+              <<ceilMap.value("LEVEL1_CONTENT").toString();
+//            qDebug()<<l;
             GlobalVar::annoucementList.append(l);
         }
     }

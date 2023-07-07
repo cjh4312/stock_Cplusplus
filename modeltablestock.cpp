@@ -100,7 +100,7 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
                     }
                 }
             }
-            return QColor(112,128,144);
+            return QColor(72,61,139);
 
         case 2:
             if (m_modelData.at(row).close>m_modelData.at(row).open)

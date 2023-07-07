@@ -1693,6 +1693,8 @@ void MainWindow::reFlashBuySellBaseInfo()
             else
                 baseInfoData[i]->setPalette(GlobalVar::pBlack);
         }
+        else if(i==13)
+            baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i-1],'f',3));
         else
             baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i-1]));
     stockCode->setText(GlobalVar::curCode);

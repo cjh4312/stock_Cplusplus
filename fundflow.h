@@ -39,6 +39,7 @@ public:
     void getAnnoucement();
     void getNews();
     void getEastNews();
+    void getGreatEvent();
     bool isGetNews=false;
 };
 
