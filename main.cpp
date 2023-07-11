@@ -1,6 +1,4 @@
 #include "mainwindow.h"
-#include <DbgHelp.h>
-#include <QMessageBox>
 #include <QApplication>
 #include <QSharedMemory>
 
