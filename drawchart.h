@@ -54,7 +54,7 @@ public:
     void drawCandleChart(QPainter &painter);
     void calcHighLowPoint(int begin,int end);
     void calcTSHighLowPoint(int begin,int end);
-    void appendAnnNews(int b,int e);
+    void appendAnnNews(int end);
     QString autoWordWrap(QString str,int width);
 
 public slots:

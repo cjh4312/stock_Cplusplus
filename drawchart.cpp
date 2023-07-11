@@ -502,7 +502,7 @@ void DrawChart::drawCandleChart(QPainter &painter)
             }
         }
     }
-    appendAnnNews(begin,end);
+    appendAnnNews(end);
 }
 
 void DrawChart::calcHighLowPoint(int begin,int end)
@@ -559,23 +559,21 @@ void DrawChart::calcTSHighLowPoint(int begin, int end)
         hisTimeShareHighLowPoint[1]=GlobalVar::hisPreClose;
 }
 
-void DrawChart::appendAnnNews(int b, int e)
+void DrawChart::appendAnnNews(int end)
 {
     int m=0;
-    int curPos=e-1;
-//    QString backCode="";
     QString content="";
-//    int isContinue=false;
-//    QString bTime;
     int pos=0;
     int n=GlobalVar::KRange-1;
     if (GlobalVar::mCandleChartList.count()-1<n)
         n=GlobalVar::mCandleChartList.count()-1;
-    for (int j=curPos;j>=b;--j)
+    int b=end-KRANGE;
+    if (b<0)
+        b=0;
+    for (int j=end-1;j>=b;--j)
     {
         for (int i=pos;i<GlobalVar::annoucementList.count();++i)
         {
-
             QString c=GlobalVar::annoucementList.at(i)[0];
             QString l=GlobalVar::annoucementList.at(i)[1];
             QString t=GlobalVar::annoucementList.at(i)[2];
@@ -594,8 +592,8 @@ void DrawChart::appendAnnNews(int b, int e)
                     content="";
                     if (m>49)
                         return;
-                    break;
                 }
+                break;
             }
             else
             {
@@ -607,58 +605,6 @@ void DrawChart::appendAnnNews(int b, int e)
         }
         --n;
     }
-//    for (int i=0;i<GlobalVar::annoucementList.count();++i)
-//    {
-//        int n=GlobalVar::KRange-1;
-//        if (GlobalVar::mCandleChartList.count()-1<n)
-//            n=GlobalVar::mCandleChartList.count()-1;
-//        QString c=GlobalVar::annoucementList.at(i)[0];
-//        QString l=GlobalVar::annoucementList.at(i)[1];
-//        QString t=GlobalVar::annoucementList.at(i)[2];
-//        QString time=t.mid(1,10);
-//        for (int j=curPos;j>=b;--j)
-//        {
-//            if (backCode==time)
-//            {
-//                content=content+"\n"+t+l+"\n"+autoWordWrap(c,20);
-//                annLabel[m-1]->setToolTip(content);
-//                break;
-//            }
-//            int result=QString::compare(GlobalVar::mCandleChartList.at(j).time,time);
-//            if (result<=0)
-//            {
-//                annLabel[m]->show();
-//                if (isContinue)
-//                {
-//                    content=content+"\n"+t+l+"\n"+autoWordWrap(c,20);
-//                }
-//                else
-//                {
-//                    content=t+l+"\n"+autoWordWrap(c,20);
-//                }
-//                annLabel[m]->setToolTip(content);
-//                annLabel[m]->setStyleSheet("QToolTip{border:2px solid darkkhaki;padding:5px;border-radius:3px;opacity:200;}");
-//                int posX=(2*n+1)*(candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
-//                annLabel[m]->move(posX+KWIDTHEDGE-TIPWIDTH/2,10);
-//                ++m;
-//                backCode=time;
-//                bTime=GlobalVar::mCandleChartList.at(j).time;
-//                if (result<0)
-//                {
-//                    isContinue=true;
-//                }
-//                else
-//                {
-//                    isContinue=false;
-//                }
-//                if (m>49)
-//                    return;
-
-//                break;
-//            }
-//            --n;
-//        }
-//    }
     for (int i=m;i<50;++i)
         annLabel[i]->hide();
 }
@@ -666,7 +612,7 @@ void DrawChart::appendAnnNews(int b, int e)
 QString DrawChart::autoWordWrap(QString str, int width)
 {
     int curPost=0;
-    QString s;
+    QString s="";
     while(1)
     {
         QString temp =str.mid(curPost,width);

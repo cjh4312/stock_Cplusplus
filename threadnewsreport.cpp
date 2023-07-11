@@ -18,7 +18,7 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
 
 void ThreadNewsReport::getNewsData()
 {
-    if (tts->state() != QTextToSpeech::Ready)
+    if (tts->state() == QTextToSpeech::Speaking)
         return;
     getEastNews();
     QByteArray allData;
@@ -141,7 +141,7 @@ void ThreadNewsReport::sayJsNews(QJsonObject object)
         QString dt=QDateTime::fromString(object.value("time").toString().mid(0,19), "yyyy-MM-ddThh:mm:ss").addSecs(28800).toString("yyyy-MM-dd hh:mm:ss");
         if (jinShiNewsReportCurTime>=dt)
             return;
-        if (GlobalVar::isSayNews)
+        if (GlobalVar::isSayNews and tts->state() == QTextToSpeech::Ready)
             tts->say(newsText);
         id=newId;
         emit getNewsFinished("<font size=\"4\" color=red>"+dt+"</font>"+"<font size=\"4\">"+
@@ -155,7 +155,7 @@ void ThreadNewsReport::sayEastNews(QStringList l, int time)
     if (eastNewsReportCurTime>=time)
         return;
     QString newsText=l[1];
-    if (GlobalVar::isSayNews)
+    if (GlobalVar::isSayNews and tts->state() == QTextToSpeech::Ready)
         tts->say("东方财经:"+newsText);
     emit getNewsFinished("<font size=\"4\" color=red>"+l[2]+"</font>"+"<span> <a href="+l[0]+">"+
                         "<font size=\"4\">"+newsText+"</font>"+"</a> </span>");

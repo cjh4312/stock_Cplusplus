@@ -469,7 +469,7 @@ void MainWindow::initSignals()
     });
     connect(mTableStock.myStockView, &QTableView::doubleClicked, this, [this](const QModelIndex &/*index*/){
         GlobalVar::isKState=true;
-        isLookMyStock=true;
+        isTraversalMyStock=true;
 //        int curRow=index.row();
 //        GlobalVar::curCode=GlobalVar::mMyStockList.at(curRow).code;
 //        GlobalVar::curName=GlobalVar::mMyStockList.at(curRow).name;
@@ -1107,7 +1107,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         else
         {
             GlobalVar::isKState=false;
-            isLookMyStock=false;
+            isTraversalMyStock=false;
             if (GlobalVar::WhichInterface==1)
             {
                 mTableStock.risingSpeedView->show();
@@ -1345,12 +1345,8 @@ void MainWindow::setMarket()
         GlobalVar::curName="阿里巴巴";
     }
     GlobalVar::isBoard=false;
-    GlobalVar::isKState=false;
     resetKParameter();
-    mTableStock.stockTableView->show();
-    drawChart.candleChart->hide();
-    rightBaseWindow->show();
-    rightFundWindow->hide();
+    toInterFace("main");
     emit startThreadTable();
     emit startThreadTimeShareChart();
     emit startThreadTimeShareTick();
@@ -1755,7 +1751,7 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
         baseInfoData[i+8]->setText(QString::number(t[i])+"("+QString::number((t[i]-temp)*100/temp,'f',2)+"%)");
     }
     drawChart.rowTime->show();
-    drawChart.colPrice->show();
+
     if (mouseEvent->pos().ry()>drawChart.candleChart->height()*12/15)
     {
         float vol=drawChart.candleHighLowPoint[2]-drawChart.candleHighLowPoint[2]*(mouseEvent->pos().ry()-drawChart.candleChart->height()*12/15-KBOTTOMHEIGHTEDGE)/(drawChart.candleChart->height()*3/15-2*KBOTTOMHEIGHTEDGE);
@@ -1763,12 +1759,20 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
     }
     else
     {
-        float price=drawChart.candleHighLowPoint[0]-(drawChart.candleHighLowPoint[0]-drawChart.candleHighLowPoint[1])*(mouseEvent->pos().ry()-KTOPHEIGHTEDGE)/(drawChart.candleChart->height()*12/15-2*KTOPHEIGHTEDGE);
-        drawChart.colPrice->setText(QString::number(price,'f',2));
+        if (mouseEvent->pos().ry()>=KTOPHEIGHTEDGE)
+        {
+            float price=drawChart.candleHighLowPoint[0]-(drawChart.candleHighLowPoint[0]-drawChart.candleHighLowPoint[1])*(mouseEvent->pos().ry()-KTOPHEIGHTEDGE)/(drawChart.candleChart->height()*12/15-2*KTOPHEIGHTEDGE);
+            drawChart.colPrice->setText(QString::number(price,'f',2));
+        }
     }
     drawChart.colPrice->adjustSize();
     drawChart.rowTime->setText(GlobalVar::mCandleChartList.at(n).time);
-    drawChart.colPrice->move(0,mouseEvent->pos().ry()-25);
+    if (mouseEvent->pos().ry()>=KTOPHEIGHTEDGE)
+    {
+        drawChart.colPrice->show();
+        drawChart.colPrice->move(0,mouseEvent->pos().ry()-drawChart.colPrice->height());
+        drawChart.hKLine->move(0,mouseEvent->pos().ry());
+    }
     drawChart.rowTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-KWIDTHEDGE)*drawChart.rowTime->width()/(drawChart.candleChart->width()-2*KWIDTHEDGE),drawChart.candleChart->height()*12/15);
     drawChart.vKLine->setStyleSheet("QLabel{border:2px dotted white;}");
     drawChart.vKLine->resize(1,drawChart.candleChart->height());
@@ -1777,7 +1781,7 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
     int posX=(2*m+1)*(drawChart.candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
 //    int posY=;
     drawChart.vKLine->move(posX+KWIDTHEDGE,0);
-    drawChart.hKLine->move(0,mouseEvent->pos().ry());
+
     drawChart.vKLine->show();
     drawChart.hKLine->show();
 }
@@ -1786,7 +1790,7 @@ void MainWindow::toInterFace(QString which)
     if (which=="main")
     {
         GlobalVar::isKState=false;
-        isLookMyStock=false;
+        isTraversalMyStock=false;
         rightFundWindow->hide();
         drawChart.candleChart->hide();
         rightBaseWindow->show();
@@ -1810,7 +1814,7 @@ void MainWindow::toInterFace(QString which)
     {
         GlobalVar::WhichInterface=4;
         GlobalVar::isKState=false;
-        isLookMyStock=false;
+        isTraversalMyStock=false;
         rightBaseWindow->hide();
         drawChart.candleChart->hide();
         mTableStock.risingSpeedView->hide();
@@ -1961,7 +1965,7 @@ void MainWindow::downUpLookStock(QWheelEvent *event)
             counts=mFundFlow.model->rowCount()-1;
         else
         {
-            if (isLookMyStock)
+            if (isTraversalMyStock)
             {
                 counts=GlobalVar::mMyStockList.count()-1;
                 curRow=mTableStock.myStockView->currentIndex().row();
@@ -1991,7 +1995,7 @@ void MainWindow::downUpLookStock(QWheelEvent *event)
         }
         else
         {
-            if (isLookMyStock)
+            if (isTraversalMyStock)
             {
                 GlobalVar::curCode=GlobalVar::mMyStockList.at(curRow).code;
                 mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curRow,0));
