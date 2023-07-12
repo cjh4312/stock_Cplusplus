@@ -567,7 +567,7 @@ void DrawChart::appendAnnNews(int end)
     int n=GlobalVar::KRange-1;
     if (GlobalVar::mCandleChartList.count()-1<n)
         n=GlobalVar::mCandleChartList.count()-1;
-    int b=end-KRANGE;
+    int b=end-1-KRANGE;
     if (b<0)
         b=0;
     for (int j=end-1;j>=b;--j)
@@ -597,6 +597,10 @@ void DrawChart::appendAnnNews(int end)
             }
             else
             {
+                if (j==end-1 and i==GlobalVar::annoucementList.count()-1)
+                {
+                    return;
+                }
                 if (content.isEmpty())
                     content=t+l+"\n"+autoWordWrap(c,20);
                 else

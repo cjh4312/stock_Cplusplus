@@ -896,6 +896,9 @@ void FundFlow::initAllNews()
     }
     getEastNews();
     getGreatEvent();
+    QStringList list;
+    list<<""<<"[结束]"<<"(2000-01-01)";
+    GlobalVar::annoucementList.append(list);
     std::sort(GlobalVar::annoucementList.begin(),GlobalVar::annoucementList.end(),[](QStringList a,QStringList b){
         return a[2]>b[2];
     });

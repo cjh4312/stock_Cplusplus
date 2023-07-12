@@ -1065,7 +1065,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 int curItem=0;
                 QStringList l;
                 bool f=true;
-                for(int j = 0; j < GlobalVar::annoucementList.count(); j++)
+                for(int j = 0; j < GlobalVar::annoucementList.count()-1; j++)
                 {
                     if (f and date==GlobalVar::annoucementList.at(j)[2].left(11))
                     {
