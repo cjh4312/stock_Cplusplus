@@ -597,10 +597,6 @@ void DrawChart::appendAnnNews(int end)
             }
             else
             {
-                if (j==end-1 and i==GlobalVar::annoucementList.count()-1)
-                {
-                    return;
-                }
                 if (content.isEmpty())
                     content=t+l+"\n"+autoWordWrap(c,20);
                 else
