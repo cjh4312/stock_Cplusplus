@@ -92,6 +92,7 @@ void TableStock::initTableView()
         for (int i=0;i<GlobalVar::mMyStockList.count();++i)
             s<<GlobalVar::mMyStockList.at(i).code;
         GlobalVar::settings->setValue("myStock",s);
+        GlobalVar::mMyStockCode=s;
         QList<StockInfo> t;
         m_myStockModel->setModelData(t);
         m_myStockModel->setModelData(GlobalVar::mMyStockList);

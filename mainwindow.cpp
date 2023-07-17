@@ -985,7 +985,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         {
             QMenu *menu=new QMenu();
             QAction *moveOne=new QAction("左右移动一格");
-            QAction *moveFast=new QAction("快速左右移动");
+            QAction *moveFast=new QAction("左右快速移动");
             menu->addAction(moveFast);
             menu->addAction(moveOne);
             menu->popup(QCursor::pos());

@@ -25,7 +25,7 @@ ThreadTimeShareTick::ThreadTimeShareTick(QObject *parent)
 void ThreadTimeShareTick::getBuySellTimeShareTick()
 {
     QByteArray buySellData;
-    GlobalVar::getData(buySellData,0.9,QUrl("http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=2&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963"));
+    GlobalVar::getData(buySellData,0.9,QUrl("http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=2&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963"));
     if (not buySellData.isEmpty())
     {
         initBuySellList(buySellData);
@@ -67,21 +67,31 @@ void ThreadTimeShareTick::initBuySellList(const QByteArray &allData)
                     GlobalVar::baseInfoData[i]=jsonObject.value("data").toObject().value("f164").toDouble();
         }
         GlobalVar::baseInfoData[12]=jsonObject.value("data").toObject().value("f55").toDouble();
+        GlobalVar::EPSReportDate="每股收益";
+        GlobalVar::PEName="市盈率";
+        if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
+        {
+
+            int num=jsonObject.value("data").toObject().value("f62").toInt();
+            QString n[]={"一","二","三","四",};
+            GlobalVar::EPSReportDate="收益("+n[num-1]+")";
+            GlobalVar::PEName="PE(动)";
+        }
     }
 
-    GlobalVar::EPSReportDate="每股收益";
-    GlobalVar::PEName="市盈率";
-    if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
-    {
-        QByteArray allData;
-        GlobalVar::getData(allData,0.8,QUrl("http://quote.eastmoney.com/sz300418.html"));
-        QString html=QString(allData);
-        QString str=GlobalVar::peelStr(html,"<div class=\"quotecore\"","-1");
-        QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
-        QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
+//    GlobalVar::EPSReportDate="每股收益";
+//    GlobalVar::PEName="市盈率";
+//    if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
+//    {
+//        QByteArray allData;
+//        GlobalVar::getData(allData,0.8,QUrl("http://quote.eastmoney.com/sz300418.html"));
+//        QString html=QString(allData);
+//        QString str=GlobalVar::peelStr(html,"<div class=\"quotecore\"","-1");
+//        QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
+//        QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
 //        QStringList l;
 //        GlobalVar::getAllContent(s,l,"<span");
-        GlobalVar::EPSReportDate="收益("+GlobalVar::getAttributeContent(s,"title","\"")+")";
+//        GlobalVar::EPSReportDate="收益("+GlobalVar::getAttributeContent(s,"title","\"")+")";
 //        GlobalVar::getData(allData,0.8,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=REPORTDATE&sortTypes=-1&pageSize=1&pageNumber=1&columns=ALL&filter=(SECURITY_CODE%3D%22"+GlobalVar::curCode+"%22)&reportName=RPT_LICO_FN_CPD"));
 //        if (allData.isEmpty())
 //            return;
@@ -95,9 +105,9 @@ void ThreadTimeShareTick::initBuySellList(const QByteArray &allData)
 //            QVariantMap ceilMap = value.toVariant().toMap();
 //            GlobalVar::baseInfoData[12]=ceilMap.value("BASIC_EPS").toDouble();
 //            GlobalVar::EPSReportDate=ceilMap.value("DATEMMDD").toString();
-            GlobalVar::PEName="PE(动)";
+//            GlobalVar::PEName="PE(动)";
 //        }
-    }
+//    }
 }
 
 void ThreadTimeShareTick::initTimeShareTickList(const QByteArray &allData)

@@ -71,7 +71,7 @@ public:
 //    static QList<QStringList> mFundFlowList;         //资金流
 //    static bool timeOutFlag[10];                 //超时标志
     static int KRange;                  //k线范围
-    static float timeShareHighLowPoint[5];     //记录分时价格高低点 成交量高低点 涨跌停
+    static float timeShareHighLowPoint[5];     //记录分时价格高低点 成交量高点 涨跌停
 //    static float candleHighLowPoint[5];
     static float buySellPrice[10];             //买卖价格1-5
     static float buySellNum[10];              //买卖数量1-5
@@ -98,8 +98,6 @@ public:
     static QList<QStringList> formula;
     static QList<QStringList> annoucementList;
 
-signals:
-    void timeOutReport(QString s);
 };
 
 #endif // GLOBALVAR_H

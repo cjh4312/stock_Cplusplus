@@ -670,7 +670,6 @@ void FundFlow::getRoyalFlushFundFlow()
                 str=pair.second;
                 QStringList l;
                 GlobalVar::getAllContent(pair.first,l,"<td");
-    //            qDebug()<<l;
 //                QString p;
                 for (int j=0;j<10;++j)
                 {
