@@ -62,16 +62,15 @@ void ThreadTimeShareTick::initBuySellList(const QByteArray &allData)
         for (int i=0;i<14;++i)
         {
             GlobalVar::baseInfoData[i]=jsonObject.value("data").toObject().value(baseInfo[i]).toDouble();
-            if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5)
-                if (i==13)
-                    GlobalVar::baseInfoData[i]=jsonObject.value("data").toObject().value("f164").toDouble();
+            if (i==13 and (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5))
+                GlobalVar::baseInfoData[i]=jsonObject.value("data").toObject().value("f164").toDouble();
         }
         GlobalVar::baseInfoData[12]=jsonObject.value("data").toObject().value("f55").toDouble();
         GlobalVar::EPSReportDate="每股收益";
         GlobalVar::PEName="市盈率";
-        if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
+        if ((GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4) and
+            GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399" and GlobalVar::curCode.length()!=5)
         {
-
             int num=jsonObject.value("data").toObject().value("f62").toInt();
             QString n[]={"一","二","三","四",};
             GlobalVar::EPSReportDate="收益("+n[num-1]+")";
