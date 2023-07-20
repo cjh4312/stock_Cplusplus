@@ -8,7 +8,7 @@ GetF10Info::GetF10Info(QObject *parent)
     : QObject{parent}
 {
 //    naManager = new QNetworkAccessManager(this);
-    calcPeriod();
+//    calcPeriod();
 }
 
 void GetF10Info::getStockHotRank()
@@ -302,6 +302,7 @@ void GetF10Info::getAllData(QStringList key, QStringList value,QString url)
         t[i]<<value[i];
     QStringList c;
     colList={"基本指标"};
+    calcPeriod();
     for (int k=0;k<period.count();++k)
     {
         QList<QStringList> temp;
@@ -322,31 +323,40 @@ void GetF10Info::getAllData(QStringList key, QStringList value,QString url)
 
 void GetF10Info::calcPeriod()
 {
-    QStringList time={"03-31","06-30","09-30","12-31"};
-    QDateTime curTime=QDateTime::currentDateTime();
-    QString year=curTime.toString("yyyy");
-    QString md=curTime.toString("MMdd");
-    QDateTime initTime;
-    if (md<="0415")
-    {
-        QString setTime=curTime.addYears(-1).toString()+"-"+time[3];
-        initTime=QDateTime::fromString(setTime, "yyyy-MM-dd");
-    }
-    else if (md<="0715")
-    {
-        QString setTime=year+"-"+time[0];
-        initTime=QDateTime::fromString(setTime, "yyyy-MM-dd");
-    }
-    else if (md<="1015")
-    {
-        QString setTime=year+"-"+time[1];
-        initTime=QDateTime::fromString(setTime, "yyyy-MM-dd");
-    }
-    else
-    {
-        QString setTime=year+"-"+time[2];
-        initTime=QDateTime::fromString(setTime, "yyyy-MM-dd");
-    }
+    period.clear();
+    QByteArray allData;
+    QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/zcfzbDateAjaxNew?companyType=4&reportDateType=0&code="+GlobalVar::getStockSymbol();
+    GlobalVar::getData(allData,1,QUrl(url));
+    QString html=QString(allData);
+    QString s="REPORT_DATE\" : \"";
+    QString date=html.mid(html.indexOf(s)+s.length(),10);
+    QDateTime initTime=QDateTime::fromString(date, "yyyy-MM-dd");
+
+//    QStringList time={"03-31","06-30","09-30","12-31"};
+//    QDateTime curTime=QDateTime::currentDateTime();
+//    QString year=curTime.toString("yyyy");
+//    QString md=curTime.toString("MMdd");
+//    QDateTime initTime;
+//    if (md<="0415")
+//    {
+//        QString setTime=curTime.addYears(-1).toString()+"-"+time[3];
+//        initTime=QDateTime::fromString(setTime, "yyyy-MM-dd");
+//    }
+//    else if (md<="0715")
+//    {
+//        QString setTime=year+"-"+time[0];
+//        initTime=QDateTime::fromString(setTime, "yyyy-MM-dd");
+//    }
+//    else if (md<="1015")
+//    {
+//        QString setTime=year+"-"+time[1];
+//        initTime=QDateTime::fromString(setTime, "yyyy-MM-dd");
+//    }
+//    else
+//    {
+//        QString setTime=year+"-"+time[2];
+//        initTime=QDateTime::fromString(setTime, "yyyy-MM-dd");
+//    }
     for (int j=0;j<2;++j)
     {
         QString s="";
@@ -358,5 +368,4 @@ void GetF10Info::calcPeriod()
         }
         period.append(s);
     }
-//    qDebug()<<period;
 }
