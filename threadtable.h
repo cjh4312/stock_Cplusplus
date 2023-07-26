@@ -7,6 +7,7 @@
 //#include <QNetworkAccessManager>
 #include <QFile>
 #include <QTextCodec>
+#include <QMutex>
 
 class ThreadTable : public QObject
 {
@@ -14,10 +15,12 @@ class ThreadTable : public QObject
 public:
     explicit ThreadTable(QObject *parent = nullptr);
     void getTableData();
+
 private:
     void initTableList(const QByteArray &allData);
     void readMyStock();
     void reFlaseMyStock();
+    QMutex m_mutex;
 
 signals:
     void getTableDataFinished();

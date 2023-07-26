@@ -7,6 +7,7 @@
 #include <QJsonArray>
 #include <QFile>
 #include <QTextCodec>
+#include <QMutex>
 
 class ThreadTimeShareTick : public QObject
 {
@@ -20,6 +21,8 @@ private:
     void initTimeShareTickList(const QByteArray &allData);
     void findStockArea();
     QList<QStringList> areaData;
+    QMutex m_mutex;
+
 signals:
     void getTimeShareTickFinished();
     void getBuySellFinished();

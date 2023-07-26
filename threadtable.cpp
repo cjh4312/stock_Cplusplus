@@ -51,6 +51,7 @@ void ThreadTable::getTableData()
 
 void ThreadTable::initTableList(const QByteArray &allData)
 {
+    m_mutex.lock();
     if (not GlobalVar::isBoard)
         GlobalVar::mTableList.clear();
     if (GlobalVar::WhichInterface==1)
@@ -116,6 +117,7 @@ void ThreadTable::initTableList(const QByteArray &allData)
             GlobalVar::sortByColumn(&GlobalVar::mTableListCopy,0,true);
         GlobalVar::sortByColumn(&GlobalVar::mTableList,GlobalVar::curSortNum,GlobalVar::is_asc);
     }
+    m_mutex.unlock();
 }
 
 void ThreadTable::readMyStock()

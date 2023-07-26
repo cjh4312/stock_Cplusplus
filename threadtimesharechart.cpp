@@ -17,10 +17,12 @@ void ThreadTimeShareChart::getAllTimeShareChart()
         initTimeShareChartList(allData);
         emit getTimeShareChartFinished();
     }
+
 }
 
 void ThreadTimeShareChart::initTimeShareChartList(const QByteArray &allData)
 {
+    m_mutex.lock();
     GlobalVar::mTimeShareChartList.clear();
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
@@ -107,14 +109,7 @@ void ThreadTimeShareChart::initTimeShareChartList(const QByteArray &allData)
         GlobalVar::timeShareHighLowPoint[1]=per(l);
         if (GlobalVar::timeShareHighLowPoint[1]>0)
             GlobalVar::timeShareHighLowPoint[1]=0;
-
-        //        for (int i = 0; i < GlobalVar::mTimeShareChartList.size(); ++i)
-        //        {
-        //            qDebug()<<GlobalVar::mTimeShareChartList.at(i).time
-        //                <<GlobalVar::mTimeShareChartList.at(i).price
-        //                <<GlobalVar::mTimeShareChartList.at(i).vol
-        //                <<GlobalVar::mTimeShareChartList.at(i).avePrice;
-        //        }
     }
+    m_mutex.unlock();
 }
 

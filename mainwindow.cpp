@@ -734,9 +734,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::Paint)
         {
-            QPainter painter(drawChart.timeShareChart);
+            QPainter *painter=new QPainter(drawChart.timeShareChart);
             drawChart.drawTimeShareChart(painter);
-            painter.end();
+            delete painter;
         }
         else if(event->type()==QEvent::MouseMove)
         {
@@ -773,7 +773,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             drawChart.timeShareTime->setText(GlobalVar::mTimeShareChartList.at(n).time.right(5));
             drawChart.timeSharePrice->adjustSize();
             drawChart.timeShareVol->adjustSize();
-            drawChart.timeSharePrice->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.timeSharePrice->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),100);
+            drawChart.timeSharePrice->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.timeSharePrice->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),95);
             drawChart.timeShareVol->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.timeShareVol->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),250);
             drawChart.timeShareTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-WIDTHEDGE)*drawChart.timeShareTime->width()/(drawChart.timeShareChart->width()-2*WIDTHEDGE),220);
             drawChart.vLine.move(x,0);
@@ -818,9 +818,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::Paint)
         {
-            QPainter painter(drawChart.hisTimeShareChartView);
+            QPainter *painter=new QPainter(drawChart.hisTimeShareChartView);
             drawChart.drawHisTimeShare(painter);
-            painter.end();
+            delete painter;
         }
         else if (event->type()==QEvent::MouseMove)
         {
@@ -938,9 +938,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
         else if (event->type()==QEvent::Paint)
         {
-            QPainter painter(drawChart.candleChart);
+            QPainter *painter=new QPainter(drawChart.candleChart);
             drawChart.drawCandleChart(painter);
-            painter.end();
+            delete painter;
         }
         else if (event->type() == QEvent::Wheel)
         {
@@ -1080,7 +1080,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 QModelIndex qindex = drawChart.model->index(curItem,0);
                 drawChart.annTitle->setCurrentIndex(qindex);
                 drawChart.annoucementWindow->setWindowTitle(GlobalVar::curCode+" "+
-                            GlobalVar::curName.left(GlobalVar::curName.indexOf("("))+" "+"消息");
+                            GlobalVar::curName.left(GlobalVar::curName.indexOf("(")));
                 drawChart.annClicked(qindex);
                 drawChart.annoucementWindow->show();
                 return true;

@@ -5,6 +5,7 @@
 #include <QObject>
 //#include <QNetworkAccessManager>
 #include <QJsonArray>
+#include <QMutex>
 
 class ThreadTimeShareChart : public QObject
 {
@@ -12,8 +13,11 @@ class ThreadTimeShareChart : public QObject
 public:
     explicit ThreadTimeShareChart(QObject *parent = nullptr);
     void getAllTimeShareChart();
+
 private:
     void initTimeShareChartList(const QByteArray &allData);
+    QMutex m_mutex;
+
 signals:
     void getTimeShareChartFinished();
 };

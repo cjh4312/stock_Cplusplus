@@ -1,6 +1,7 @@
 
 #include "threadtimesharetick.h"
 #include "globalvar.h"
+
 ThreadTimeShareTick::ThreadTimeShareTick(QObject *parent)
     : QObject{parent}
 {
@@ -44,6 +45,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick()
 
 void ThreadTimeShareTick::initBuySellList(const QByteArray &allData)
 {
+    m_mutex.lock();
     QString price[]={"f31","f33","f35","f37","f39","f19","f17","f15","f13","f11"};
     QString nums[]={"f32","f34","f36","f38","f40","f20","f18","f16","f14","f12"};
     QString baseInfo[]={"f43","f170","f168","f48","f84","f116","f167","f46","f44","f45","f47","f85","f108","f162"};
@@ -77,40 +79,12 @@ void ThreadTimeShareTick::initBuySellList(const QByteArray &allData)
             GlobalVar::PEName="PE(动)";
         }
     }
-
-//    GlobalVar::EPSReportDate="每股收益";
-//    GlobalVar::PEName="市盈率";
-//    if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
-//    {
-//        QByteArray allData;
-//        GlobalVar::getData(allData,0.8,QUrl("http://quote.eastmoney.com/sz300418.html"));
-//        QString html=QString(allData);
-//        QString str=GlobalVar::peelStr(html,"<div class=\"quotecore\"","-1");
-//        QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
-//        QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
-//        QStringList l;
-//        GlobalVar::getAllContent(s,l,"<span");
-//        GlobalVar::EPSReportDate="收益("+GlobalVar::getAttributeContent(s,"title","\"")+")";
-//        GlobalVar::getData(allData,0.8,QUrl("https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=REPORTDATE&sortTypes=-1&pageSize=1&pageNumber=1&columns=ALL&filter=(SECURITY_CODE%3D%22"+GlobalVar::curCode+"%22)&reportName=RPT_LICO_FN_CPD"));
-//        if (allData.isEmpty())
-//            return;
-//        QJsonParseError jsonError;
-//        QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
-//        if (jsonError.error == QJsonParseError::NoError)
-//        {
-//            QJsonObject jsonObject = doc.object();
-//            QJsonArray data=jsonObject.value("result").toObject().value("data").toArray();
-//            QJsonValue value = data.at(0);
-//            QVariantMap ceilMap = value.toVariant().toMap();
-//            GlobalVar::baseInfoData[12]=ceilMap.value("BASIC_EPS").toDouble();
-//            GlobalVar::EPSReportDate=ceilMap.value("DATEMMDD").toString();
-//            GlobalVar::PEName="PE(动)";
-//        }
-//    }
+    m_mutex.unlock();
 }
 
 void ThreadTimeShareTick::initTimeShareTickList(const QByteArray &allData)
 {
+    m_mutex.lock();
     GlobalVar::mTimeShareTickList.clear();
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
@@ -131,6 +105,7 @@ void ThreadTimeShareTick::initTimeShareTickList(const QByteArray &allData)
             GlobalVar::mTimeShareTickList.append(info);
         }
     }
+    m_mutex.unlock();
 }
 //显示股票的区域和行业
 void ThreadTimeShareTick::findStockArea()
