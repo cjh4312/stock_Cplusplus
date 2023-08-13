@@ -362,7 +362,11 @@ void GetF10Info::calcPeriod()
         QString s="";
         for (int i=0;i<5;++i)
         {
-            s=s+initTime.addMonths(-i*3-j*15).toString("yyyy-MM-dd");
+            QString d=initTime.addMonths(-i*3-j*15).toString("yyyy-MM-dd");
+            QString dd=d.split("-")[1];
+            if (dd=="03" or dd=="12")
+                d.replace("-30","-31");
+            s=s+d;
             if (i!=4)
                 s=s+"%2C";
         }
