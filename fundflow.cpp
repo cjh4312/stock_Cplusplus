@@ -701,7 +701,7 @@ void FundFlow::getNotNormalStock()
 {
 //    getHisTimeShareTick();
     QStringList NotNormalStock;
-    NotNormalStock<<"时间"<<"代码"<<"名称"<<"类型"<<"相关信息";
+    NotNormalStock<<"代码"<<"名称"<<"时间"<<"类型"<<"相关信息";
     QByteArray allData;
     QString url="https://push2ex.eastmoney.com/getAllStockChanges?type=8201,8202,8193,4,32,64,8207,8209,8211,8213,8215,8204,8203,8194,8,16,128,8208,8210,8212,8214,8216&ut=7eea3edcaed734bea9cbfc24409ed989&pageindex=0&pagesize=10000&dpt=wzchanges&_=1692089577464";
     GlobalVar::getData(allData,2,QUrl(url));
@@ -725,9 +725,9 @@ void FundFlow::getNotNormalStock()
             QJsonValue value = data.at(i);
             QVariantMap ceilMap = value.toVariant().toMap();
 //            QStringList list;
-            model->setItem(i,0,new QStandardItem(ceilMap.value("tm").toString()));
-            model->setItem(i,1,new QStandardItem(ceilMap.value("c").toString()));
-            model->setItem(i,2,new QStandardItem(ceilMap.value("n").toString()));
+            model->setItem(i,0,new QStandardItem(ceilMap.value("c").toString()));
+            model->setItem(i,1,new QStandardItem(ceilMap.value("n").toString()));
+            model->setItem(i,2,new QStandardItem(ceilMap.value("tm").toString()));
 //            list<<ceilMap.value("tm").toString()<<ceilMap.value("c").toString()
 //                 <<ceilMap.value("n").toString();
             for (int j=0;j<len;++j)
