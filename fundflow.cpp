@@ -699,7 +699,51 @@ void FundFlow::getRoyalFlushFundFlow()
 
 void FundFlow::getNotNormalStock()
 {
-    getHisTimeShareTick();
+//    getHisTimeShareTick();
+    QStringList NotNormalStock;
+    NotNormalStock<<"时间"<<"代码"<<"名称"<<"类型"<<"相关信息";
+    QByteArray allData;
+    QString url="https://push2ex.eastmoney.com/getAllStockChanges?type=8201,8202,8193,4,32,64,8207,8209,8211,8213,8215,8204,8203,8194,8,16,128,8208,8210,8212,8214,8216&ut=7eea3edcaed734bea9cbfc24409ed989&pageindex=0&pagesize=10000&dpt=wzchanges&_=1692089577464";
+    GlobalVar::getData(allData,2,QUrl(url));
+    QJsonParseError jsonError;
+    QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
+    QString name[22]={"火箭发射","快速反弹","高台跳水","加速下跌","大笔买入","大笔卖出","封涨停板","封涨停板",
+        "打开跌停板","打开涨停板","竞价下跌","竞价上涨","有大卖盘","有大买盘","高开5日线","低开5日线",
+        "向上缺口","向下缺口","60日新高","60日新低","60日大幅上涨","60日大幅下跌"};
+    QString code[22]={"8201","8202","8203","8204","8193","8194","4","8",
+        "32","16","8208","8207","128","64","8209","8210",
+        "8211","8212","8213","8214","8215","8216"};
+    int len=sizeof(code)/sizeof(code[0]);
+    model->clear();
+    if (jsonError.error == QJsonParseError::NoError)
+    {
+        QJsonObject jsonObject = doc.object();
+        QJsonArray data=jsonObject.value("data").toObject().value("allstock").toArray();
+
+        for (int i = 0; i < data.size(); ++i)
+        {
+            QJsonValue value = data.at(i);
+            QVariantMap ceilMap = value.toVariant().toMap();
+//            QStringList list;
+            model->setItem(i,0,new QStandardItem(ceilMap.value("tm").toString()));
+            model->setItem(i,1,new QStandardItem(ceilMap.value("c").toString()));
+            model->setItem(i,2,new QStandardItem(ceilMap.value("n").toString()));
+//            list<<ceilMap.value("tm").toString()<<ceilMap.value("c").toString()
+//                 <<ceilMap.value("n").toString();
+            for (int j=0;j<len;++j)
+            {
+                if (code[j]==ceilMap.value("t").toString())
+                {
+                    model->setItem(i,3,new QStandardItem(name[j]));
+                    model->setItem(i,4,new QStandardItem(ceilMap.value("i").toString().split(",")[0]));
+//                    list<<name[i]<<ceilMap.value("i").toString().split(",");
+                    break;
+                }
+            }
+//            qDebug()<<list;
+        }
+    model->setHorizontalHeaderLabels(NotNormalStock);
+    }
 }
 
 void FundFlow::getHisTimeShareTick()
