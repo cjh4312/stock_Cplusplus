@@ -184,11 +184,7 @@ QString GlobalVar::getCookies(QString url)
     timer.start();
     loop.exec();
     QByteArray array=reply->rawHeader("Set-Cookie");
-    if (reply!=nullptr)
-    {
-        reply->deleteLater();
-        reply = nullptr;
-    }
+    reply->deleteLater();
     return QString(array);
 }
 
@@ -250,11 +246,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
                 qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
         }
     }
-    if (reply!=nullptr)
-    {
-        reply->deleteLater();
-        reply = nullptr;
-    }
+    reply->deleteLater();
 }
 
 void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest request)
@@ -282,11 +274,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest reques
         qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<request.url()<<timeOut;
     }
 
-    if (reply!=nullptr)
-    {
-        reply->deleteLater();
-        reply = nullptr;
-    }
+    reply->deleteLater();
 }
 
 void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float timeOut, const QUrl &url)
@@ -316,11 +304,7 @@ void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float t
         qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
     }
 
-    if (reply!=nullptr)
-    {
-        reply->deleteLater();
-        reply = nullptr;
-    }
+    reply->deleteLater();
 }
 
 QString GlobalVar::format_conversion(float data)
