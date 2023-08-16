@@ -158,7 +158,7 @@ void GetF10Info::assetLiability()
             "递延所得税负债", "负债合计","实收资本（或股本）","短期借款","资本公积","其他综合收益","盈余公积",
             "长期应付职工薪酬","一般风险准备", "未分配利润","归属于母公司股东权益总计","少数股东权益",
             "股东权益合计",  "负债和股东权益总计"};
-    QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/zcfzbAjaxNew?companyType=4&reportDateType=0&reportType=1&dates=";
+    QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/zcfzbAjaxNew?companyType="+companyType+"&reportDateType=0&reportType=1&dates=";
     getAllData(lableList,nameList,url);
 }
 
@@ -215,7 +215,7 @@ void GetF10Info::getIncome()
             "同比基本每股收益","同比稀释每股收益","同比归属于母公司股东的其他综合收益",
             "同比综合收益总额","同比归属于少数股东的综合收益总额","同比归属于母公司股东的综合收益总额"};
 
-    QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/lrbAjaxNew?companyType=4&reportDateType=0&reportType=1&dates=";
+    QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/lrbAjaxNew?companyType="+companyType+"&reportDateType=0&reportType=1&dates=";
     getAllData(lableList,nameList,url);
 }
 
@@ -259,7 +259,7 @@ void GetF10Info::getCashFlow()
             "经营性应付项目的增加","经营活动产生的现金流量净额","现金的期末余额", "减:现金的期初余额",
             "现金及现金等价物的净增加额"};
 
-    QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/xjllbAjaxNew?companyType=4&reportDateType=0&reportType=1&dates=";
+    QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/xjllbAjaxNew?companyType="+companyType+"&reportDateType=0&reportType=1&dates=";
     getAllData(lableList,nameList,url);
 }
 
@@ -325,7 +325,9 @@ void GetF10Info::calcPeriod()
 {
     period.clear();
     QByteArray allData;
-    QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/zcfzbDateAjaxNew?companyType=4&reportDateType=0&code="+GlobalVar::getStockSymbol();
+    if (GlobalVar::curName.contains("证券"))
+        companyType="1";
+    QString url="https://emweb.securities.eastmoney.com/PC_HSF10/NewFinanceAnalysis/zcfzbDateAjaxNew?companyType="+companyType+"&reportDateType=0&code="+GlobalVar::getStockSymbol();
     GlobalVar::getData(allData,1,QUrl(url));
     QString html=QString(allData);
     QString s="REPORT_DATE\" : \"";

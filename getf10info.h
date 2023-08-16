@@ -15,6 +15,7 @@ public:
     QList<QStringList> f10QList;
     QStringList colList;
     QStringList period={};
+    QString companyType="4";
     void getStockHotRank();
     void getMainIndex();
     void mainBusinessComposition();
