@@ -12,6 +12,8 @@
 //#include <QStringRef>
 #include <QJSEngine>
 #include <QNetworkCookie>
+#include <QDialog>
+#include <QPainter>
 
 class FundFlow : public QTableView
 {
@@ -20,10 +22,20 @@ public:
 //    QNetworkAccessManager *naManager;
     QList<QStringList> FundFlowList;
     QStandardItemModel *model=new QStandardItemModel(this);
+    QWidget *tableChart=new QWidget(this);
+    QDialog *fundFlowChart=new QDialog(this);
+    QList<QStringList> fundFlowKChart;
+    QList<QStringList> fundFlowMKChart;
+    float maxMinKChart[2];
+    float maxMinMKChart[2];
+    float pieData[8];
     void getEastPlateFundFlow(int days);
+    void getFundFlowChartData(QString code);
+    void drawFundFlowChart(QPainter *painter);
     void getData(int days,const QByteArray &allData);
     void getBoardStock(QString name);
     void getIntervalHighLow();
+    void drawIntervalHighLowChart(QPainter *painter);
     void getStockPoolStrong(QString date);
     void getNorthFundFlow(QString days);
     void getDragonTigerList(int nums,int pages);

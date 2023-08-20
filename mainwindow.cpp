@@ -403,6 +403,18 @@ void MainWindow::initSignals()
                 GlobalVar::curCode=mFundFlow.model->item(curRow,0)->text();
                 GlobalVar::curName=mFundFlow.model->item(curRow,1)->text();
             }
+            else if(ifCanClick==0)
+            {
+//                mFundFlow.fundFlowChart->close();
+                mFundFlow.getFundFlowChartData(mFundFlow.model->item(curRow,13)->text());
+                mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(curRow,0)->text()+" 资金流图表");
+                mFundFlow.fundFlowChart->show();
+                if (mFundFlow.fundFlowChart->pos().rx()==650)
+                    mFundFlow.fundFlowChart->move(649,150);
+                else
+                    mFundFlow.fundFlowChart->move(650,150);
+                mFundFlow.fundFlowChart->update();
+            }
         }
         else
         {
@@ -791,6 +803,27 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             drawChart.timeShareTime->hide();
             drawChart.vLine.hide();
             drawChart.hLine.hide();
+        }
+        return true;
+    }
+    else if (obj==mFundFlow.tableChart)
+    {
+        if (event->type() == QEvent::Paint)
+        {
+            QPainter *painter=new QPainter(mFundFlow.tableChart);
+            mFundFlow.drawIntervalHighLowChart(painter);
+            delete painter;
+        }
+        return true;
+    }
+    else if (obj==mFundFlow.fundFlowChart)
+    {
+        if (event->type() == QEvent::Paint)
+        {
+            QPainter *painter=new QPainter(mFundFlow.fundFlowChart);
+            painter->setRenderHint(QPainter::Antialiasing);
+            mFundFlow.drawFundFlowChart(painter);
+            delete painter;
         }
         return true;
     }
@@ -1345,6 +1378,7 @@ void MainWindow::setMarket()
         GlobalVar::curName="阿里巴巴";
     }
     GlobalVar::isBoard=false;
+    mTableStock.stockTableView->clearSpans();
     resetKParameter();
     toInterFace("main");
     emit startThreadTable();
@@ -1852,6 +1886,7 @@ void MainWindow::toInterFace(QString which)
 }
 void MainWindow::toFundFlow()
 {
+    mTableStock.stockTableView->clearSpans();
     if (sender()==fundFlow[0])
         dealWithFundFlow();
     else if((sender()==fundFlow[1]))
@@ -1864,7 +1899,10 @@ void MainWindow::toFundFlow()
     {
         ifCanClick=-1;
         mFundFlow.getIntervalHighLow();
+        mTableStock.stockTableView->setSpan(2,8,29,8);
+        mTableStock.stockTableView->setIndexWidget(mFundFlow.model->index(2, 8), mFundFlow.tableChart);
         mTableStock.stockTableView->setModel(mFundFlow.model);
+
     }
     else if((sender()==fundFlow[3]))
     {
