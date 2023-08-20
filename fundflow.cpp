@@ -198,18 +198,22 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     painter->drawText(right,up,"实时成交分布图");
     painter->drawText(left,down,"盘后资金流向趋势");
     painter->drawText(right-60,down,"盘后资金流向统计(5日、20日)");
-    QString time[5]={"9:31","10:30","11:30","14:00","15:00"};
     painter->drawLine(0,(height-bottom)/2,width/2,(height-bottom)/2);
     painter->drawLine(width/2,0,width/2,(height-bottom)/2);
     painter->drawText(width/2,textHeight,GlobalVar::format_conversion(maxMinKChart[0]));
     painter->drawText(width/2,(height-bottom)/2,GlobalVar::format_conversion(maxMinKChart[1]));
     for (int i=0;i<5;++i)
     {
-        painter->drawText(0+115*i,(height-bottom)/2+textHeight,time[i]);
         painter->setBrush(fiveColor[i]);
         painter->drawRect(50+150*i,760,20,20);
         painter->drawText(80+150*i,760+textHeight,name[i]);
     }
+    painter->drawText(0,(height-bottom)/2+textHeight,fundFlowKChart.at(0)[0].mid(11,5));
+    painter->drawText(maxNums/2*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums/2-1)[0].mid(11,5));
+    painter->drawText(maxNums/4*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums/4-1)[0].mid(11,5));
+    painter->drawText(maxNums*3/4*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums*3/4-1)[0].mid(11,5));
+    painter->drawText((maxNums-1)*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums-1)[0].mid(11,5));
+
     for (int j=1;j<6;++j)
     {
         for (int i=1;i<maxNums;++i)
@@ -218,6 +222,7 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
             float p2=(maxMinKChart[0]-fundFlowKChart.at(i)[j].toFloat())/interval*(height-bottom)/2;
             painter->setPen(QPen(fiveColor[j-1],2));
             painter->drawLine(QPointF((i-1)*aveW+leftOffset,p1),QPointF(i*aveW+leftOffset,p2));
+
         }
     }
     float total=0.0;
@@ -278,9 +283,7 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
             max=twentyTotal[j];
         else if (twentyTotal[j]<min)
             min=twentyTotal[j];
-        //                qDebug()<<fiveTotal[j]<<twentyTotal[j];
     }
-    //            qDebug()<<max<<min;
     float mid=0.0-min;
     interval=max-min;
     offset=80;
@@ -288,21 +291,20 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     {
         float five=fiveTotal[i]-min;
         float twenty=twentyTotal[i]-min;
-        //                qDebug()<<five<<twenty;
         painter->setPen(QPen(fColor[i],1));
         painter->setBrush(fColor[i]);
         if (fiveTotal[i]<0)
-            painter->drawRect(width/2+(five)/interval*width/2,(height-bottom)/2+offset+25*i,
-                              (mid-five)/interval*width/2,textHeight);
+            painter->drawRect(width/2+five/interval*(width/2-leftOffset),(height-bottom)/2+offset+25*i,
+                              (mid-five)/interval*(width/2-leftOffset),textHeight);
         else
-            painter->drawRect(width/2+(mid)/interval*width/2,(height-bottom)/2+offset+25*i,
-                              (five-mid)/interval*width/2,textHeight);
+            painter->drawRect(width/2+mid/interval*(width/2-leftOffset),(height-bottom)/2+offset+25*i,
+                              (five-mid)/interval*(width/2-leftOffset),textHeight);
         if (twentyTotal[i]<0)
-            painter->drawRect(width/2+(twenty)/interval*width/2,(height+bottom)/2+offset+25*i,
-                              (mid-twenty)/interval*width/2,textHeight);
+            painter->drawRect(width/2+twenty/interval*(width/2-leftOffset),(height+bottom)/2+offset+25*i,
+                              (mid-twenty)/interval*(width/2-leftOffset),textHeight);
         else
-            painter->drawRect(width/2+(mid)/interval*width/2,(height+bottom)/2+offset+25*i,
-                              (twenty-mid)/interval*width/2,textHeight);
+            painter->drawRect(width/2+mid/interval*(width/2-leftOffset),(height+bottom)/2+offset+25*i,
+                              (twenty-mid)/interval*(width/2-leftOffset),textHeight);
     }
 }
 
