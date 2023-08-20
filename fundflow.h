@@ -25,9 +25,9 @@ public:
     QWidget *tableChart=new QWidget(this);
     QDialog *fundFlowChart=new QDialog(this);
     QList<QStringList> fundFlowKChart;
-    QList<QStringList> fundFlowMKChart;
+    QList<QStringList> fundFlowHKChart;
     float maxMinKChart[2];
-    float maxMinMKChart[2];
+    float maxMinHKChart[2];
     float pieData[8];
     void getEastPlateFundFlow(int days);
     void getFundFlowChartData(QString code);
