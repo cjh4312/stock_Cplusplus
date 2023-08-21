@@ -825,6 +825,81 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             mFundFlow.drawFundFlowChart(painter);
             delete painter;
         }
+        else if(event->type()==QEvent::MouseMove)
+        {
+            QMouseEvent *mouseEvent = (QMouseEvent *)event;
+            int maxNums=mFundFlow.fundFlowKChart.count();
+            int aveW=mFundFlow.fundFlowChart->width()/2/maxNums;
+            int maxHNums=mFundFlow.fundFlowHKChart.count();
+            int aveHW=mFundFlow.fundFlowChart->width()/2/maxHNums;
+            if (mouseEvent->pos().rx()>10 and
+                mouseEvent->pos().rx()<mFundFlow.fundFlowChart->width()/2-10 and
+                mouseEvent->pos().ry()<(mFundFlow.fundFlowChart->height()-150)/2)
+            {
+                int n=(mouseEvent->pos().rx()-10)/aveW;
+                if (maxNums-1>=n)
+                {
+                    mFundFlow.vKLine->show();
+                    mFundFlow.vKLine->move(mouseEvent->pos().rx(),0);
+                    mFundFlow.time->setText(mFundFlow.fundFlowKChart.at(n)[0]);
+                    mFundFlow.textFund[0]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowKChart.at(n)[1].toFloat()));
+                    for (int i=1;i<5;++i)
+                        mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowKChart.at(n)[6-i].toFloat()));
+                }
+                else
+                    mFundFlow.vKLine->hide();
+            }
+            else if (mouseEvent->pos().rx()>5 and
+                       mouseEvent->pos().rx()<mFundFlow.fundFlowChart->width()/2-15 and
+                       mouseEvent->pos().ry()>(mFundFlow.fundFlowChart->height()+70)/2 and
+                       mouseEvent->pos().ry()<mFundFlow.fundFlowChart->height()-40)
+            {
+                int n=(mouseEvent->pos().rx()-5)/aveHW;
+                mFundFlow.vKLine->show();
+                mFundFlow.vKLine->move(mouseEvent->pos().rx(),435);
+                mFundFlow.time->setText(mFundFlow.fundFlowHKChart.at(n)[0]);
+                mFundFlow.textFund[0]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowHKChart.at(n)[1].toFloat()));
+                for (int i=1;i<5;++i)
+                    mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowHKChart.at(n)[6-i].toFloat()));
+            }
+            else if (mouseEvent->pos().rx()>mFundFlow.fundFlowChart->width()/2 and
+                       mouseEvent->pos().rx()<mFundFlow.fundFlowChart->width()-15 and
+                       mouseEvent->pos().ry()>(mFundFlow.fundFlowChart->height()+70)/2 and
+                       mouseEvent->pos().ry()<mFundFlow.fundFlowChart->height()-205)
+            {
+                mFundFlow.time->setText("一周5日资金流入");
+                for (int i=0;i<5;++i)
+                    mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.fiveTotal[i]));
+            }
+            else if (mouseEvent->pos().rx()>mFundFlow.fundFlowChart->width()/2 and
+                       mouseEvent->pos().rx()<mFundFlow.fundFlowChart->width()-15 and
+                       mouseEvent->pos().ry()>mFundFlow.fundFlowChart->height()-205 and
+                       mouseEvent->pos().ry()<mFundFlow.fundFlowChart->height()-40)
+            {
+                mFundFlow.time->setText("一月20日资金流入");
+                for (int i=0;i<5;++i)
+                    mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.twentyTotal[i]));
+            }
+            else
+            {
+
+                mFundFlow.vKLine->hide();
+                mFundFlow.time->setText("");
+                for (int i=0;i<5;++i)
+                    mFundFlow.textFund[i]->setText("");
+
+            }
+            if (mFundFlow.fundFlowChart->pos().rx()==650)
+            {
+                mFundFlow.fundFlowChart->move(649,150);
+                mFundFlow.fundFlowChart->move(650,150);
+            }
+            else
+            {
+                mFundFlow.fundFlowChart->move(650,150);
+                mFundFlow.fundFlowChart->move(649,150);
+            }
+        }
         return true;
     }
     else if (obj==drawChart.hisTimeShareChartTitle)

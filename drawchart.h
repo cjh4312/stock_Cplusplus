@@ -18,8 +18,8 @@ class DrawChart : public QWidget
     Q_OBJECT
 public:
     explicit DrawChart(QWidget *parent = nullptr);
-    QWidget *timeShareChart=new QWidget(this);
-    QWidget *candleChart=new QWidget(this);
+    QWidget *timeShareChart=new QWidget();
+    QWidget *candleChart=new QWidget();
     QWidget *hisTimeShareChart=new QWidget();
     QWidget *hisTimeShareChartTitle=new QWidget(hisTimeShareChart);
     QWidget *hisTimeShareChartView=new QWidget(hisTimeShareChart);

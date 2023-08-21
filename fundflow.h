@@ -2,6 +2,7 @@
 #ifndef FUNDFLOW_H
 #define FUNDFLOW_H
 
+#include "qlabel.h"
 #include "stockinfo.h"
 #include <QTableView>
 #include <QStandardItemModel>
@@ -14,6 +15,7 @@
 #include <QNetworkCookie>
 #include <QDialog>
 #include <QPainter>
+#include <complex>
 
 class FundFlow : public QTableView
 {
@@ -21,7 +23,7 @@ public:
     FundFlow();
 //    QNetworkAccessManager *naManager;
     QList<QStringList> FundFlowList;
-    QStandardItemModel *model=new QStandardItemModel(this);
+    QStandardItemModel *model=new QStandardItemModel();
     QWidget *tableChart=new QWidget(this);
     QDialog *fundFlowChart=new QDialog(this);
     QList<QStringList> fundFlowKChart;
@@ -29,6 +31,14 @@ public:
     float maxMinKChart[2];
     float maxMinHKChart[2];
     float pieData[8];
+    float pointX[8];
+    float pointY[8];
+    float fiveTotal[5]={0.0};
+    float twentyTotal[5]={0.0};
+    QLabel *backGround=new QLabel(fundFlowChart);
+    QLabel *vKLine=new QLabel(fundFlowChart);
+    QLabel *time=new QLabel(fundFlowChart);
+    QLabel *textFund[5];
     void getEastPlateFundFlow(int days);
     void getFundFlowChartData(QString code);
     void drawFundFlowChart(QPainter *painter);

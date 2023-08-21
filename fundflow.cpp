@@ -10,6 +10,19 @@ FundFlow::FundFlow()
 //    fundFlowChart->setAttribute(Qt::WA_DeleteOnClose);
     fundFlowChart->setWindowFlags(fundFlowChart->windowFlags() | Qt::WindowStaysOnTopHint);
     fundFlowChart->setGeometry(650, 150, 1000, 800);
+    vKLine->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    vKLine->setStyleSheet("QLabel{border:2px dotted blue;}");
+    vKLine->resize(1,(fundFlowChart->height()-150)/2);
+    backGround->setStyleSheet("QLabel{Background:rgba(127,193,128,0.3)}");
+    backGround->setGeometry(0,375,fundFlowChart->width(),60);
+    time->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,0,255)}");
+    time->setGeometry(25,380,200,20);
+    for (int i=0;i<5;++i)
+    {
+        textFund[i]=new QLabel(fundFlowChart);
+        textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,0,255)}");
+        textFund[i]->setGeometry(180+i*150,410,100,20);
+    }
 }
 
 void FundFlow::getEastPlateFundFlow(int days)
@@ -189,7 +202,7 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     int left=width/4-60;
     int right=width*3/4-60;
     int up=height/2-30;
-    int down=height-70;
+    int down=height-20;
     int leftOffset=10;
     int textHeight=20;
     painter->setFont(QFont("微软雅黑",14,700));
@@ -202,11 +215,15 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     painter->drawLine(width/2,0,width/2,(height-bottom)/2);
     painter->drawText(width/2,textHeight,GlobalVar::format_conversion(maxMinKChart[0]));
     painter->drawText(width/2,(height-bottom)/2,GlobalVar::format_conversion(maxMinKChart[1]));
+    painter->drawLine(0,height-40,width/2,height-40);
+    painter->drawLine(width/2,height-365,width/2,height-40);
+    painter->drawText(width/2,height-345,GlobalVar::format_conversion(maxMinHKChart[0]));
+    painter->drawText(width/2,height-40,GlobalVar::format_conversion(maxMinHKChart[1]));
     for (int i=0;i<5;++i)
     {
-        painter->setBrush(fiveColor[i]);
-        painter->drawRect(50+150*i,760,20,20);
-        painter->drawText(80+150*i,760+textHeight,name[i]);
+        painter->setBrush(fColor[i]);
+        painter->drawRect(150+150*i,(height-bottom)/2+80,20,20);
+        painter->drawText(180+150*i,(height-bottom)/2+80,name[i]);
     }
     painter->drawText(0,(height-bottom)/2+textHeight,fundFlowKChart.at(0)[0].mid(11,5));
     painter->drawText(maxNums/2*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums/2-1)[0].mid(11,5));
@@ -222,10 +239,10 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
             float p2=(maxMinKChart[0]-fundFlowKChart.at(i)[j].toFloat())/interval*(height-bottom)/2;
             painter->setPen(QPen(fiveColor[j-1],2));
             painter->drawLine(QPointF((i-1)*aveW+leftOffset,p1),QPointF(i*aveW+leftOffset,p2));
-
         }
     }
     float total=0.0;
+    float temp=0.0;
     float angle;
     float initAngle=90;
     for (int i=0;i<8;++i)
@@ -237,15 +254,25 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     {
         painter->setBrush(color[i]);
         angle=pieData[i]/total*360;
-        //                qDebug()<<initAngle<<initAngle+angle;
-        painter->drawPie(width*5/8+leftOffset, (height-bottom)/12, width/4,width/4,initAngle*16,angle*16);
+        pointX[i]=width*5/8+leftOffset+width/8-qSin((temp+angle/2)*PI/180)*width/8;
+        pointY[i]=(height-bottom)/13+width/8-qCos((temp+angle/2)*PI/180)*width/8;
+        temp+=angle;
+        painter->drawPie(width*5/8+leftOffset, (height-bottom)/13, width/4,width/4,initAngle*16,angle*16);
         initAngle=initAngle+angle;
     }
-
+    painter->setPen(Qt::black);
+    for (int i=0;i<4;++i)
+    {
+        painter->drawText(pointX[i]-15,pointY[i]-5,GlobalVar::format_conversion(pieData[i]));
+    }
+    for (int i=4;i<8;++i)
+    {
+        painter->drawText(pointX[i],pointY[i]+15,GlobalVar::format_conversion(pieData[i]));
+    }
     maxNums=fundFlowHKChart.count();
-    aveW=width/maxNums;
+    aveW=width/2/maxNums;
     interval=maxMinHKChart[0]-maxMinHKChart[1];
-    int offset=50;
+    int offset=110;
     for (int j=1;j<6;++j)
     {
         for (int i=1;i<maxNums;++i)
@@ -253,11 +280,14 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
             float p1=(2*maxMinHKChart[0]-maxMinHKChart[1]-fundFlowHKChart.at(i-1)[j].toFloat())/interval*(height-bottom)/2;
             float p2=(2*maxMinHKChart[0]-maxMinHKChart[1]-fundFlowHKChart.at(i)[j].toFloat())/interval*(height-bottom)/2;
             painter->setPen(QPen(fiveColor[j-1],2));
-            painter->drawLine(QPointF((i-1)*aveW/2+leftOffset,p1+offset),QPointF(i*aveW/2+leftOffset,p2+offset));
+            painter->drawLine(QPointF((i-1)*aveW+leftOffset,p1+offset),QPointF(i*aveW+leftOffset,p2+offset));
         }
     }
-    float fiveTotal[5]={0.0};
-    float twentyTotal[5]={0.0};
+    for (int i=0;i<5;++i)
+    {
+        fiveTotal[i]=0.0;
+        twentyTotal[i]=0.0;
+    }
     float max=0.0;
     float min=0.0;
 
@@ -286,7 +316,7 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     }
     float mid=0.0-min;
     interval=max-min;
-    offset=80;
+    offset=140;
     for (int i=0;i<5;++i)
     {
         float five=fiveTotal[i]-min;
@@ -294,16 +324,16 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
         painter->setPen(QPen(fColor[i],1));
         painter->setBrush(fColor[i]);
         if (fiveTotal[i]<0)
-            painter->drawRect(width/2+five/interval*(width/2-leftOffset),(height-bottom)/2+offset+25*i,
+            painter->drawRect(width/2+five/interval*(width/2-leftOffset)+5,(height-bottom)/2+offset+25*i,
                               (mid-five)/interval*(width/2-leftOffset),textHeight);
         else
-            painter->drawRect(width/2+mid/interval*(width/2-leftOffset),(height-bottom)/2+offset+25*i,
+            painter->drawRect(width/2+mid/interval*(width/2-leftOffset)+5,(height-bottom)/2+offset+25*i,
                               (five-mid)/interval*(width/2-leftOffset),textHeight);
         if (twentyTotal[i]<0)
-            painter->drawRect(width/2+twenty/interval*(width/2-leftOffset),(height+bottom)/2+offset+25*i,
+            painter->drawRect(width/2+twenty/interval*(width/2-leftOffset)+5,(height+bottom)/2+offset+25*i,
                               (mid-twenty)/interval*(width/2-leftOffset),textHeight);
         else
-            painter->drawRect(width/2+mid/interval*(width/2-leftOffset),(height+bottom)/2+offset+25*i,
+            painter->drawRect(width/2+mid/interval*(width/2-leftOffset)+5,(height+bottom)/2+offset+25*i,
                               (twenty-mid)/interval*(width/2-leftOffset),textHeight);
     }
 }

@@ -16,6 +16,7 @@
 #define SPLITBACK "////"
 #define TITLEHEIGHT 40
 #define TIPWIDTH 15
+#define PI 3.1415926
 
 struct StockInfo
 {
