@@ -31,8 +31,10 @@ public:
     float maxMinKChart[2];
     float maxMinHKChart[2];
     float pieData[8]={0.0};
+    int whichPiece=-1;
     float pointX[8];
     float pointY[8];
+    float degree[8]={0.0};
     float fiveTotal[5]={0.0};
     float twentyTotal[5]={0.0};
     QLabel *backGround=new QLabel(fundFlowChart);

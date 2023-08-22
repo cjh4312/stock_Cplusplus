@@ -190,7 +190,6 @@ void FundFlow::getFundFlowChartData(QString code)
 
 void FundFlow::drawFundFlowChart(QPainter *painter)
 {
-
     int maxNums=fundFlowKChart.count();
     float aveW=0;
     if (maxNums!=0)
@@ -254,7 +253,6 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     float temp=0.0;
     float angle=0.0;
     float initAngle=90;
-
     for (int i=0;i<8;++i)
     {
         total+=pieData[i];
@@ -268,7 +266,13 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
         pointX[i]=width*5/8+leftOffset+width/8-qSin((temp+angle/2)*PI/180)*width/8;
         pointY[i]=(height-bottom)/13+width/8-qCos((temp+angle/2)*PI/180)*width/8;
         temp+=angle;
-        painter->drawPie(width*5/8+leftOffset, (height-bottom)/13, width/4,width/4,initAngle*16,angle*16);
+        degree[i]=temp;
+        if (i==whichPiece-1)
+        {
+            painter->drawPie(width*5/8+leftOffset-25, (height-bottom)/13-25, width/4+50,width/4+50,initAngle*16,angle*16);
+        }
+        else
+            painter->drawPie(width*5/8+leftOffset, (height-bottom)/13, width/4,width/4,initAngle*16,angle*16);
         initAngle=initAngle+angle;
     }
 
@@ -276,15 +280,15 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     float x[8]={640,560,520,605,836,898,892,821},y[8]={40,85,190,310,310,190,85,40};
     int t=85;
     QString na[8]={"超","大","中","小","小","中","大","超"};
-    for (int i=0;i<8;++i)
+    for (int i=0;i<4;++i)
     {
-        if (i>3)
-        {
-            t=0;
-            painter->drawText(x[i],y[i],na[i]+GlobalVar::format_conversion(-pieData[i]));
-        }
-        else
-            painter->drawText(x[i],y[i],na[i]+GlobalVar::format_conversion(pieData[i]));
+        painter->drawText(x[i],y[i],na[i]+GlobalVar::format_conversion(pieData[i]));
+        painter->drawLine(x[i]+t,y[i]-5,pointX[i],pointY[i]);
+    }
+    for (int i=4;i<8;++i)
+    {
+        t=0;
+        painter->drawText(x[i],y[i],na[i]+GlobalVar::format_conversion(-pieData[i]));
         painter->drawLine(x[i]+t,y[i]-5,pointX[i],pointY[i]);
     }
 

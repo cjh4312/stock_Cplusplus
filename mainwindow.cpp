@@ -885,13 +885,38 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 for (int i=0;i<5;++i)
                     mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.twentyTotal[i]));
             }
+            else if ((mouseEvent->pos().rx()-760)*(mouseEvent->pos().rx()-760)+
+                           (mouseEvent->pos().ry()-175)*(mouseEvent->pos().ry()-175)<=125*125)
+            {
+                float degree=90-atan2(175-mouseEvent->pos().ry(),760-mouseEvent->pos().rx())*180/PI;
+                if (degree<0)
+                    degree+=360;
+                if (degree<mFundFlow.degree[0])
+                    mFundFlow.whichPiece=1;
+                else if (degree<mFundFlow.degree[1])
+                    mFundFlow.whichPiece=2;
+                else if (degree<mFundFlow.degree[2])
+                    mFundFlow.whichPiece=3;
+                else if (degree<mFundFlow.degree[3])
+                    mFundFlow.whichPiece=4;
+                else if (degree<mFundFlow.degree[4])
+                    mFundFlow.whichPiece=5;
+                else if (degree<mFundFlow.degree[5])
+                    mFundFlow.whichPiece=6;
+                else if (degree<mFundFlow.degree[6])
+                    mFundFlow.whichPiece=7;
+                else
+                    mFundFlow.whichPiece=8;
+                mFundFlow.fundFlowChart->update();
+            }
             else
             {
-
+                mFundFlow.whichPiece=-1;
                 mFundFlow.vKLine->hide();
                 mFundFlow.time->setText("");
                 for (int i=0;i<5;++i)
                     mFundFlow.textFund[i]->setText("");
+                mFundFlow.fundFlowChart->update();
 
             }
             if (mFundFlow.fundFlowChart->pos().rx()==650)
