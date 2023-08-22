@@ -30,6 +30,7 @@ public:
     QList<QStringList> fundFlowHKChart;
     float maxMinKChart[2];
     float maxMinHKChart[2];
+    bool isClick=false;
     float pieData[8]={0.0};
     int whichPiece=-1;
     float pointX[8];

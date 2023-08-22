@@ -405,7 +405,7 @@ void MainWindow::initSignals()
             }
             else if(ifCanClick==0)
             {
-//                mFundFlow.fundFlowChart->close();
+                mFundFlow.isClick=true;
                 mFundFlow.getFundFlowChartData(mFundFlow.model->item(curRow,13)->text());
                 mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(curRow,0)->text()+" 资金流图表");
                 mFundFlow.fundFlowChart->show();
@@ -947,9 +947,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             {
                 mFundFlow.whichPiece=-1;
                 mFundFlow.vKLine->hide();
-                mFundFlow.time->setText("");
-                for (int i=0;i<5;++i)
-                    mFundFlow.textFund[i]->setText("");
+//                mFundFlow.time->setText("");
+//                for (int i=0;i<5;++i)
+//                    mFundFlow.textFund[i]->setText("");
                 mFundFlow.fundFlowChart->update();
 
             }

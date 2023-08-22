@@ -363,6 +363,19 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
             painter->drawRect(width/2+mid/interval*(width/2-leftOffset)+5,(height+bottom)/2+offset+25*i,
                               (twenty-mid)/interval*(width/2-leftOffset),textHeight);
     }
+    if (isClick)
+    {
+        time->setText("一月20日资金流入");
+        for (int i=0;i<5;++i)
+        {
+            if (twentyTotal[i]<0)
+                textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
+            else
+                textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
+            textFund[i]->setText(GlobalVar::format_conversion(twentyTotal[i]));
+        }
+        isClick=false;
+    }
 }
 
 void FundFlow::getData(int days,const QByteArray &allData)
