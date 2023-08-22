@@ -829,14 +829,19 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         {
             QMouseEvent *mouseEvent = (QMouseEvent *)event;
             int maxNums=mFundFlow.fundFlowKChart.count();
-            int aveW=mFundFlow.fundFlowChart->width()/2/maxNums;
+
             int maxHNums=mFundFlow.fundFlowHKChart.count();
             int aveHW=mFundFlow.fundFlowChart->width()/2/maxHNums;
             if (mouseEvent->pos().rx()>10 and
                 mouseEvent->pos().rx()<mFundFlow.fundFlowChart->width()/2-10 and
                 mouseEvent->pos().ry()<(mFundFlow.fundFlowChart->height()-150)/2)
             {
-                int n=(mouseEvent->pos().rx()-10)/aveW;
+                int n=0;
+                if (maxNums!=0)
+                {
+                    int aveW=mFundFlow.fundFlowChart->width()/2/maxNums;
+                    n=(mouseEvent->pos().rx()-10)/aveW;
+                }
                 if (maxNums-1>=n)
                 {
                     mFundFlow.vKLine->show();

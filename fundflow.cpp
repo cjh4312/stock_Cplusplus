@@ -133,6 +133,7 @@ void FundFlow::getFundFlowChartData(QString code)
             fundFlowKChart.append(list);
         }
     }
+
     url="https://push2.eastmoney.com/api/qt/ulist.np/get?&fltt=2&secids="+BK+"&fields=f62%2Cf184%2Cf66%2Cf69%2Cf72%2Cf75%2Cf78%2Cf81%2Cf84%2Cf87%2Cf64%2Cf65%2Cf70%2Cf71%2Cf76%2Cf77%2Cf82%2Cf83%2Cf164%2Cf166%2Cf168%2Cf170%2Cf172%2Cf252%2Cf253%2Cf254%2Cf255%2Cf256%2Cf124%2Cf6%2Cf278%2Cf279%2Cf280%2Cf281%2Cf282&ut=b2884a393a59ad64002292a3e90d46a5&_=1692347418545";
     GlobalVar::getData(allData,1,QUrl(url));
 
@@ -153,6 +154,7 @@ void FundFlow::getFundFlowChartData(QString code)
         pieData[6]=ceilMap.value("f71").toFloat();
         pieData[7]=ceilMap.value("f65").toFloat();
     }
+
     url="https://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?&lmt=0&klt=101&fields1=f1%2Cf2%2Cf3%2Cf7&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf62%2Cf63%2Cf64%2Cf65&ut=b2884a393a59ad64002292a3e90d46a5&secid="+BK+"&_=1692405309552";
     GlobalVar::getData(allData,1,QUrl(url));
 //    qDebug()<<QString(allData);
@@ -188,8 +190,11 @@ void FundFlow::getFundFlowChartData(QString code)
 
 void FundFlow::drawFundFlowChart(QPainter *painter)
 {
+
     int maxNums=fundFlowKChart.count();
-    float aveW=fundFlowChart->width()/2/maxNums;
+    float aveW=0;
+    if (maxNums!=0)
+        aveW=fundFlowChart->width()/2/maxNums;
     float interval=maxMinKChart[0]-maxMinKChart[1];
     QColor fiveColor[5]={QColor(254,62,225),QColor(148,196,238),QColor(255,184,61),QColor(255,17,23),QColor(101,0,0)};
     QColor color[8]={QColor(111,0,0),QColor(174,0,0),QColor(248,52,52),QColor(255,128,128),
@@ -202,7 +207,7 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     int left=width/4-60;
     int right=width*3/4-60;
     int up=height/2-30;
-    int down=height-20;
+    int down=height-15;
     int leftOffset=10;
     int textHeight=20;
     painter->setFont(QFont("微软雅黑",14,700));
@@ -225,11 +230,15 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
         painter->drawRect(150+150*i,(height-bottom)/2+80,20,20);
         painter->drawText(180+150*i,(height-bottom)/2+80,name[i]);
     }
-    painter->drawText(0,(height-bottom)/2+textHeight,fundFlowKChart.at(0)[0].mid(11,5));
-    painter->drawText(maxNums/2*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums/2-1)[0].mid(11,5));
-    painter->drawText(maxNums/4*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums/4-1)[0].mid(11,5));
-    painter->drawText(maxNums*3/4*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums*3/4-1)[0].mid(11,5));
-    painter->drawText((maxNums-1)*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums-1)[0].mid(11,5));
+
+    if (maxNums!=0)
+    {
+        painter->drawText(0,(height-bottom)/2+textHeight,fundFlowKChart.at(0)[0].mid(11,5));
+        painter->drawText(maxNums/2*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums/2-1)[0].mid(11,5));
+        painter->drawText(maxNums/4*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums/4-1)[0].mid(11,5));
+        painter->drawText(maxNums*3/4*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums*3/4-1)[0].mid(11,5));
+        painter->drawText((maxNums-1)*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums-1)[0].mid(11,5));
+    }
 
     for (int j=1;j<6;++j)
     {
@@ -243,8 +252,9 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     }
     float total=0.0;
     float temp=0.0;
-    float angle;
+    float angle=0.0;
     float initAngle=90;
+
     for (int i=0;i<8;++i)
     {
         total+=pieData[i];
@@ -253,26 +263,38 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     for (int i=0;i<8;++i)
     {
         painter->setBrush(color[i]);
-        angle=pieData[i]/total*360;
+        if (total!=0)
+            angle=pieData[i]/total*360;
         pointX[i]=width*5/8+leftOffset+width/8-qSin((temp+angle/2)*PI/180)*width/8;
         pointY[i]=(height-bottom)/13+width/8-qCos((temp+angle/2)*PI/180)*width/8;
         temp+=angle;
         painter->drawPie(width*5/8+leftOffset, (height-bottom)/13, width/4,width/4,initAngle*16,angle*16);
         initAngle=initAngle+angle;
     }
-    painter->setPen(Qt::black);
-    for (int i=0;i<4;++i)
+
+    painter->setPen(Qt::gray);
+    float x[8]={640,560,520,605,836,898,892,821},y[8]={40,85,190,310,310,190,85,40};
+    int t=85;
+    QString na[8]={"超","大","中","小","小","中","大","超"};
+    for (int i=0;i<8;++i)
     {
-        painter->drawText(pointX[i]-15,pointY[i]-5,GlobalVar::format_conversion(pieData[i]));
+        if (i>3)
+        {
+            t=0;
+            painter->drawText(x[i],y[i],na[i]+GlobalVar::format_conversion(-pieData[i]));
+        }
+        else
+            painter->drawText(x[i],y[i],na[i]+GlobalVar::format_conversion(pieData[i]));
+        painter->drawLine(x[i]+t,y[i]-5,pointX[i],pointY[i]);
     }
-    for (int i=4;i<8;++i)
-    {
-        painter->drawText(pointX[i],pointY[i]+15,GlobalVar::format_conversion(pieData[i]));
-    }
+
     maxNums=fundFlowHKChart.count();
     aveW=width/2/maxNums;
     interval=maxMinHKChart[0]-maxMinHKChart[1];
     int offset=110;
+    painter->drawText(0,height-40+textHeight,fundFlowHKChart.at(0)[0].mid(5,5));
+    painter->drawText((maxNums-1)*aveW-15,height-40+textHeight,fundFlowHKChart.at(maxNums-1)[0].mid(5,5));
+
     for (int j=1;j<6;++j)
     {
         for (int i=1;i<maxNums;++i)
