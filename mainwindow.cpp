@@ -847,9 +847,20 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                     mFundFlow.vKLine->show();
                     mFundFlow.vKLine->move(mouseEvent->pos().rx(),0);
                     mFundFlow.time->setText(mFundFlow.fundFlowKChart.at(n)[0]);
+                    if (mFundFlow.fundFlowKChart.at(n)[1].toFloat()<0)
+                        mFundFlow.textFund[0]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
+                    else
+                        mFundFlow.textFund[0]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
+
                     mFundFlow.textFund[0]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowKChart.at(n)[1].toFloat()));
                     for (int i=1;i<5;++i)
+                    {
+                        if (mFundFlow.fundFlowKChart.at(n)[6-i].toFloat()<0)
+                            mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
+                        else
+                            mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
                         mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowKChart.at(n)[6-i].toFloat()));
+                    }
                 }
                 else
                     mFundFlow.vKLine->hide();
@@ -863,9 +874,19 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 mFundFlow.vKLine->show();
                 mFundFlow.vKLine->move(mouseEvent->pos().rx(),435);
                 mFundFlow.time->setText(mFundFlow.fundFlowHKChart.at(n)[0]);
+                if (mFundFlow.fundFlowHKChart.at(n)[1].toFloat()<0)
+                    mFundFlow.textFund[0]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
+                else
+                    mFundFlow.textFund[0]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
                 mFundFlow.textFund[0]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowHKChart.at(n)[1].toFloat()));
                 for (int i=1;i<5;++i)
+                {
+                    if (mFundFlow.fundFlowHKChart.at(n)[6-i].toFloat()<0)
+                        mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
+                    else
+                        mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
                     mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowHKChart.at(n)[6-i].toFloat()));
+                }
             }
             else if (mouseEvent->pos().rx()>mFundFlow.fundFlowChart->width()/2 and
                        mouseEvent->pos().rx()<mFundFlow.fundFlowChart->width()-15 and
@@ -874,7 +895,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             {
                 mFundFlow.time->setText("一周5日资金流入");
                 for (int i=0;i<5;++i)
+                {
+                    if (mFundFlow.fiveTotal[i]<0)
+                        mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
+                    else
+                        mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
+
                     mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.fiveTotal[i]));
+                }
             }
             else if (mouseEvent->pos().rx()>mFundFlow.fundFlowChart->width()/2 and
                        mouseEvent->pos().rx()<mFundFlow.fundFlowChart->width()-15 and
@@ -883,7 +911,13 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             {
                 mFundFlow.time->setText("一月20日资金流入");
                 for (int i=0;i<5;++i)
+                {
+                    if (mFundFlow.twentyTotal[i]<0)
+                        mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
+                    else
+                        mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
                     mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.twentyTotal[i]));
+                }
             }
             else if ((mouseEvent->pos().rx()-760)*(mouseEvent->pos().rx()-760)+
                            (mouseEvent->pos().ry()-175)*(mouseEvent->pos().ry()-175)<=125*125)

@@ -20,7 +20,7 @@ FundFlow::FundFlow()
     for (int i=0;i<5;++i)
     {
         textFund[i]=new QLabel(fundFlowChart);
-        textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,0,255)}");
+//        textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,0,255)}");
         textFund[i]->setGeometry(180+i*150,410,100,20);
     }
 }
@@ -276,15 +276,16 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
         initAngle=initAngle+angle;
     }
 
-    painter->setPen(Qt::gray);
     float x[8]={640,560,520,605,836,898,892,821},y[8]={40,85,190,310,310,190,85,40};
     int t=85;
     QString na[8]={"超","大","中","小","小","中","大","超"};
+    painter->setPen(Qt::red);
     for (int i=0;i<4;++i)
     {
         painter->drawText(x[i],y[i],na[i]+GlobalVar::format_conversion(pieData[i]));
         painter->drawLine(x[i]+t,y[i]-5,pointX[i],pointY[i]);
     }
+    painter->setPen(QColor(0,191,0));
     for (int i=4;i<8;++i)
     {
         t=0;
