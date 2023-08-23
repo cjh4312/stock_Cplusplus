@@ -672,6 +672,14 @@ void MainWindow::initSignals()
         if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
             ui->setVacation->setEnabled(false);
     });
+    for (int i=0;i<6;++i)
+        connect(mFundFlow.checkBox[i],&QCheckBox::clicked,this,[=](){
+            if (mFundFlow.checkBox[i]->isChecked())
+                mFundFlow.isShow[i]=true;
+            else
+                mFundFlow.isShow[i]=false;
+            mFundFlow.tableChart->update();
+        });
 }
 void MainWindow::saveMyStock()
 {

@@ -16,6 +16,7 @@
 #include <QDialog>
 #include <QPainter>
 #include <complex>
+#include <QCheckBox>
 
 class FundFlow : public QTableView
 {
@@ -38,6 +39,8 @@ public:
     float degree[8]={0.0};
     float fiveTotal[5]={0.0};
     float twentyTotal[5]={0.0};
+    bool isShow[6]={true,true,true,true,false,false};
+    QCheckBox *checkBox[6];
     QLabel *backGround=new QLabel(fundFlowChart);
     QLabel *vKLine=new QLabel(fundFlowChart);
     QLabel *time=new QLabel(fundFlowChart);
