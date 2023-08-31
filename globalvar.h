@@ -69,7 +69,7 @@ public:
     static QList<timeShartChartInfo> mHisTimeShareChartList;
     static QList<candleChartInfo> mCandleChartList;      //k线图
 //    static QList<QStringList> mFundFlowList;         //资金流
-//    static bool timeOutFlag[10];                 //超时标志
+    static bool timeOutFlag[10];                 //超时标志
     static int KRange;                  //k线范围
     static float timeShareHighLowPoint[5];     //记录分时价格高低点 成交量高点 涨跌停
 //    static float candleHighLowPoint[5];

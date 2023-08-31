@@ -9,6 +9,7 @@
 #include <QTextToSpeech>
 //#include <QRegularExpression>
 //#include <QRegularExpressionMatch>
+#include <QMutex>
 
 class ThreadNewsReport : public QObject
 {
@@ -26,9 +27,11 @@ private:
 //    bool isInitSpeech=false;
     int count=0;
     QString id;
-    void initNewsReport(const QByteArray &allData);
+    void initNewsReport();
     void sayJsNews(QJsonObject object);
     void sayEastNews(QStringList l,int time);
+    QByteArray allData;
+    QMutex m_mutex;
 signals:
     void getNewsFinished(QString s);
 

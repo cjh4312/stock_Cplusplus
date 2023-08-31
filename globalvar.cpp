@@ -203,6 +203,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
     loop.exec();
 
     int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+//    QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     if (statusCode == 200)
     {
         timer.stop();
@@ -211,7 +212,6 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
     else
     {
         //超时，未知状态
-        QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
         QStringList s={"http://push2his.eastmoney.com/api/qt/stock/kline",
                          "http://push2.eastmoney.com/api/qt/ulist",
                          "http://futsseapi.eastmoney.com/list/block",
@@ -236,7 +236,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
         {
             if (url.toString().contains(s[i]))
             {
-                //                timeOutFlag[i]=true;
+                timeOutFlag[i]=true;
 //                QString s=QDateTime::currentDateTime().toString()+n[i];
                 qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime().toString()<< n[i]<<timeOut;
 
@@ -246,7 +246,11 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
                 qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
         }
     }
-    reply->deleteLater();
+    if (reply!=nullptr)
+    {
+        delete reply;
+        reply=nullptr;
+    }
 }
 
 void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest request)
@@ -262,7 +266,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest reques
     loop.exec();
 
     int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+//    QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     if (statusCode == 200)
     {
         timer.stop();
@@ -273,8 +277,11 @@ void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest reques
 
         qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<request.url()<<timeOut;
     }
-
-    reply->deleteLater();
+    if (reply!=nullptr)
+    {
+        delete reply;
+        reply=nullptr;
+    }
 }
 
 void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float timeOut, const QUrl &url)
@@ -293,6 +300,7 @@ void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float t
     loop.exec();
 
     int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+//    QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     if (statusCode == 200)
     {
         timer.stop();
@@ -300,11 +308,14 @@ void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float t
     }
     else
     {
-        QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+
         qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
     }
-
-    reply->deleteLater();
+    if (reply!=nullptr)
+    {
+        delete reply;
+        reply=nullptr;
+    }
 }
 
 QString GlobalVar::format_conversion(float data)
@@ -420,7 +431,7 @@ QList<timeShartChartInfo> GlobalVar::mTimeShareChartList;
 QList<timeShartChartInfo> GlobalVar::mHisTimeShareChartList;
 QList<candleChartInfo> GlobalVar::mCandleChartList;
 //QList<QStringList> GlobalVar::mFundFlowList;
-//bool GlobalVar::timeOutFlag[10]={false};
+bool GlobalVar::timeOutFlag[10]={false};
 int GlobalVar::KRange=KRANGE;
 int GlobalVar::offsetEnd;
 int GlobalVar::offsetLocal=GlobalVar::KRange;

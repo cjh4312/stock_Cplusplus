@@ -169,6 +169,8 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
     }
     rect=QRect(timeShareChartWidth-52,high*aveHeight+TOPHEIGHTEDGE,100,20);
     painter->drawText(rect,Qt::AlignLeft,QString::number(GlobalVar::preClose,'f',2));
+    rect=QRect(timeShareChartWidth-100,timeShareChartHeight*12/15,100,20);
+    painter->drawText(rect,Qt::AlignLeft,QString::number(GlobalVar::timeShareHighLowPoint[2],'f',0));
     painter->setPen(Qt::blue);
     painter->drawLine(QPointF(0, high*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth, high*aveHeight+TOPHEIGHTEDGE));
     if (high>=5)
@@ -290,6 +292,8 @@ void DrawChart::drawHisTimeShare(QPainter *painter)
     }
     rect=QRect(timeShareChartWidth-52,(high-GlobalVar::hisPreClose)*aveHeight+TOPHEIGHTEDGE,100,20);
     painter->drawText(rect,Qt::AlignLeft,QString::number(GlobalVar::hisPreClose,'f',2));
+    rect=QRect(timeShareChartWidth-100,timeShareChartHeight*12/15,100,20);
+    painter->drawText(rect,Qt::AlignLeft,QString::number(hisTimeShareHighLowPoint[2],'f',0));
     painter->setPen(Qt::blue);
     painter->drawLine(QPointF(0, (high-GlobalVar::hisPreClose)*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth, (high-GlobalVar::hisPreClose)*aveHeight+TOPHEIGHTEDGE));
     float c=1.05*GlobalVar::hisPreClose;

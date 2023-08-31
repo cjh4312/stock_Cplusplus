@@ -5,6 +5,7 @@
 #include <QObject>
 //#include <QNetworkAccessManager>
 #include <QJsonArray>
+#include <QMutex>
 
 class ThreadIndex : public QObject
 {
@@ -13,8 +14,11 @@ public:
     explicit ThreadIndex(QObject *parent = nullptr);
     void getAllIndex();
 private:
-    void initIndexList(const QByteArray &allData);
-    void initFuturesList(const QByteArray &allData);
+    void initIndexList();
+    void initFuturesList();
+    QByteArray indexData;
+    QByteArray futuresData;
+    QMutex m_mutex;
 
 signals:
     void getIndexFinished();

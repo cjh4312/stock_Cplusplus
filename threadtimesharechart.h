@@ -15,7 +15,8 @@ public:
     void getAllTimeShareChart();
 
 private:
-    void initTimeShareChartList(const QByteArray &allData);
+    void initTimeShareChartList();
+    QByteArray allData;
     QMutex m_mutex;
 
 signals:

@@ -10,9 +10,11 @@ FundFlow::FundFlow()
 //    fundFlowChart->setAttribute(Qt::WA_DeleteOnClose);
     fundFlowChart->setWindowFlags(fundFlowChart->windowFlags() | Qt::WindowStaysOnTopHint);
     fundFlowChart->setGeometry(650, 150, 1000, 800);
+    fundFlowChart->hide();
     vKLine->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     vKLine->setStyleSheet("QLabel{border:2px dotted blue;}");
     vKLine->resize(1,(fundFlowChart->height()-150)/2);
+    vKLine->hide();
     backGround->setStyleSheet("QLabel{Background:rgba(127,193,128,0.3)}");
     backGround->setGeometry(0,375,fundFlowChart->width(),60);
     time->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,0,255)}");
@@ -201,18 +203,21 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
 {
     int maxNums=fundFlowKChart.count();
     int maxHNums=fundFlowHKChart.count();
+    int width=fundFlowChart->width();
+    int height=fundFlowChart->height();
     float aveW=0;
     if (maxNums!=0)
-        aveW=fundFlowChart->width()/2/maxNums;
+        aveW=width/2/maxNums;
     float interval=maxMinKChart[0]-maxMinKChart[1];
     QColor fiveColor[5]={QColor(254,62,225),QColor(148,196,238),QColor(255,184,61),QColor(255,17,23),QColor(101,0,0)};
     QColor color[8]={QColor(111,0,0),QColor(174,0,0),QColor(248,52,52),QColor(255,128,128),
                        QColor(119,233,122),QColor(39,183,41),QColor(10,130,10),QColor(0,72,0)};
     QColor fColor[5]={QColor(254,62,225),QColor(101,0,0),QColor(255,17,23),QColor(255,184,61),QColor(148,196,238)};
     QString name[5]={"主力净流入","超大单流入","大单净流入","中单净流入","小单净流入"};
-    int width=fundFlowChart->width();
-    int height=fundFlowChart->height();
-    float aveHW=width/2/maxHNums;
+
+    float aveHW=0.0;
+    if (maxHNums!=0)
+        aveHW=width/2/maxHNums;
     int bottom=150;
     int left=width/4-60;
     int right=width*3/4-60;
@@ -235,9 +240,11 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
 
     painter->drawText(width/2,height-345,GlobalVar::format_conversion(maxMinHKChart[0]));
     painter->drawText(width/2,height-40,GlobalVar::format_conversion(maxMinHKChart[1]));
-    painter->drawText(0,height-40+textHeight,fundFlowHKChart.at(0)[0].mid(5,5));
-    painter->drawText((maxHNums-1)*aveHW-15,height-40+textHeight,fundFlowHKChart.at(maxHNums-1)[0].mid(5,5));
-
+    if (maxHNums!=0)
+    {
+        painter->drawText(0,height-40+textHeight,fundFlowHKChart.at(0)[0].mid(5,5));
+        painter->drawText((maxHNums-1)*aveHW-15,height-40+textHeight,fundFlowHKChart.at(maxHNums-1)[0].mid(5,5));
+    }
     for (int i=0;i<5;++i)
     {
         painter->setBrush(fColor[i]);
@@ -379,14 +386,14 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     }
     if (isClick)
     {
-        time->setText("一月20日资金流入");
+        time->setText("一周5日资金流入");
         for (int i=0;i<5;++i)
         {
-            if (twentyTotal[i]<0)
+            if (fiveTotal[i]<0)
                 textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
             else
                 textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
-            textFund[i]->setText(GlobalVar::format_conversion(twentyTotal[i]));
+            textFund[i]->setText(GlobalVar::format_conversion(fiveTotal[i]));
         }
         isClick=false;
     }
@@ -507,7 +514,6 @@ void FundFlow::getIntervalHighLow()
         model->setItem(2,15,new QStandardItem());
     }
     model->setHorizontalHeaderLabels(HighLowCol);
-
 }
 
 void FundFlow::drawIntervalHighLowChart(QPainter *painter)

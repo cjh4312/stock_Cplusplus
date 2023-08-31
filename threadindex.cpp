@@ -10,30 +10,33 @@ ThreadIndex::ThreadIndex(QObject *parent)
 
 void ThreadIndex::getAllIndex()
 {
-    QByteArray indexData;
     GlobalVar::getData(indexData,1.8,QUrl("http://push2.eastmoney.com/api/qt/ulist.np/get?fid=f14&pi=0&pz=40&po=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&fields=f14,f12,f2,f3&np=1&secids=1.000001%2C0.399001%2C0.399006%2C100.HSI%2C100.N225%2C100.KS11%2C1.000688%2c100.TWII%2C100.SENSEX%2C100.DJIA%2C100.SPX%2C100.NDX%2C100.SX5E%2C100.GDAXI%2C100.RTS%2C100.FTSE%2C100.FCHI%2C100.AS51&_=1662857186403"));
-    if (not indexData.isEmpty())
-    {
-        initIndexList(indexData);
-        QByteArray futuresData;
-        GlobalVar::getData(futuresData,1.8,QUrl("http://futsseapi.eastmoney.com/list/block?orderBy=name&sort=desc&pageSize=20&pageIndex=0&blockName=financial&_=1666243575249"));
-        if (not futuresData.isEmpty())
+    if (GlobalVar::timeOutFlag[1])
+        GlobalVar::timeOutFlag[1]=false;
+    else
         {
-            initFuturesList(futuresData);
-            if (GlobalVar::mIndexList.count()>=20)
-                emit getIndexFinished();
+            GlobalVar::getData(futuresData,1.8,QUrl("http://futsseapi.eastmoney.com/list/block?orderBy=name&sort=desc&pageSize=20&pageIndex=0&blockName=financial&_=1666243575249"));
+            if (GlobalVar::timeOutFlag[2])
+                GlobalVar::timeOutFlag[2]=false;
+            else
+            {
+                initIndexList();
+                initFuturesList();
+                if (GlobalVar::mIndexList.count()>=20)
+                    emit getIndexFinished();
+            }
         }
-    }
 }
 
-void ThreadIndex::initIndexList(const QByteArray &allData)
+void ThreadIndex::initIndexList()
 {
-    GlobalVar::mIndexList.clear();
-    QJsonParseError jsonError;
-    QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
+    m_mutex.lock();
+    QJsonParseError *jsonError=new QJsonParseError;
+    QJsonDocument doc = QJsonDocument::fromJson(indexData, jsonError);
 
-    if (jsonError.error == QJsonParseError::NoError)
+    if (jsonError->error == QJsonParseError::NoError)
     {
+        GlobalVar::mIndexList.clear();
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("diff").toArray();
         for (int i = 0; i < data.size(); ++i)
@@ -51,16 +54,18 @@ void ThreadIndex::initIndexList(const QByteArray &allData)
             GlobalVar::mIndexList.append(info);
         }
     }
+    m_mutex.unlock();
 //    for (int i = 0; i < GlobalVar::mIndexList.size(); ++i)
 //        qDebug()<<i<<GlobalVar::mIndexList.at(i).name<<GlobalVar::mIndexList.at(i).code;
 }
 
-void ThreadIndex::initFuturesList(const QByteArray &allData)
+void ThreadIndex::initFuturesList()
 {
-    QJsonParseError jsonError;
-    QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
+    m_mutex.lock();
+    QJsonParseError *jsonError=new QJsonParseError;
+    QJsonDocument doc = QJsonDocument::fromJson(futuresData, jsonError);
 
-    if (jsonError.error == QJsonParseError::NoError)
+    if (jsonError->error == QJsonParseError::NoError)
     {
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("list").toArray();
@@ -76,8 +81,10 @@ void ThreadIndex::initFuturesList(const QByteArray &allData)
             if (info.name=="A50期指当月连续" || info.name=="小型道指当月连续")
                 GlobalVar::mIndexList.append(info);
         }
+
 //        for (int i = 0; i < GlobalVar::mIndexList.size(); ++i)
 //            qDebug()<<i<<GlobalVar::mIndexList.at(i).name<<GlobalVar::mIndexList.at(i).close<<GlobalVar::mIndexList.at(i).pctChg;
     }
+    m_mutex.unlock();
 }
 

@@ -123,6 +123,7 @@ void MainWindow::initInterface()
     market->addAction(ui->ZHMarket);
     ui->ZHMarket->setChecked(true);
 //    market->addAction(ui->USzMarket);
+
     //所有股票界面
     ui->mainLayout->setContentsMargins(2,2,2,2);
     ui->mainLayout->addWidget(mTableStock.stockTableView);
@@ -262,6 +263,7 @@ void MainWindow::initSettings()
     QWidget *F10Title=new QWidget(this);
     F10SmallWindow->setWindowFlag(Qt::Popup);
     F10SmallWindow->move(200,100);
+    F10SmallWindow->hide();
     QVBoxLayout *f10Main=new QVBoxLayout();
     F10SmallWindow->setLayout(f10Main);
     QHBoxLayout *f10 =new QHBoxLayout();
@@ -409,11 +411,9 @@ void MainWindow::initSignals()
                 mFundFlow.getFundFlowChartData(mFundFlow.model->item(curRow,13)->text());
                 mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(curRow,0)->text()+" 资金流图表");
                 mFundFlow.fundFlowChart->show();
-                if (mFundFlow.fundFlowChart->pos().rx()==650)
-                    mFundFlow.fundFlowChart->move(649,150);
-                else
-                    mFundFlow.fundFlowChart->move(650,150);
                 mFundFlow.fundFlowChart->update();
+                mFundFlow.fundFlowChart->move(649,150);
+                mFundFlow.fundFlowChart->move(650,150);
             }
         }
         else
@@ -500,7 +500,6 @@ void MainWindow::initSignals()
         }
         else
             GlobalVar::is_asc = not preSort;
-
         GlobalVar::sortByColumn(&GlobalVar::mTableList,logicalIndex,GlobalVar::is_asc);
         preSort=GlobalVar::is_asc;
         mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
@@ -717,6 +716,7 @@ void MainWindow::initFlag()
     if (GlobalVar::isKState)
     {
         preCode="";
+//        resetKParameter();
         emit startThreadCandleChart(freq,adjustFlag,true);
     }
 }
@@ -842,6 +842,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             int aveHW=mFundFlow.fundFlowChart->width()/2/maxHNums;
             if (mouseEvent->pos().rx()>10 and
                 mouseEvent->pos().rx()<mFundFlow.fundFlowChart->width()/2-10 and
+                mouseEvent->pos().ry()>0 and
                 mouseEvent->pos().ry()<(mFundFlow.fundFlowChart->height()-150)/2)
             {
                 int n=0;
@@ -955,22 +956,16 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             {
                 mFundFlow.whichPiece=-1;
                 mFundFlow.vKLine->hide();
-//                mFundFlow.time->setText("");
-//                for (int i=0;i<5;++i)
-//                    mFundFlow.textFund[i]->setText("");
                 mFundFlow.fundFlowChart->update();
-
             }
-            if (mFundFlow.fundFlowChart->pos().rx()==650)
-            {
-                mFundFlow.fundFlowChart->move(649,150);
-                mFundFlow.fundFlowChart->move(650,150);
-            }
-            else
-            {
-                mFundFlow.fundFlowChart->move(650,150);
-                mFundFlow.fundFlowChart->move(649,150);
-            }
+            mFundFlow.fundFlowChart->move(649,150);
+            mFundFlow.fundFlowChart->move(650,150);
+        }
+        else if (event->type()==QEvent::Leave)
+        {
+            mFundFlow.vKLine->hide();
+            mFundFlow.fundFlowChart->move(649,150);
+            mFundFlow.fundFlowChart->move(650,150);
         }
         return true;
     }
