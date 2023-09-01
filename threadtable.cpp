@@ -11,6 +11,7 @@ ThreadTable::ThreadTable(QObject *parent)
 
 void ThreadTable::getTableData()
 {
+//    QTime t=QDateTime::currentDateTime().time();
     if (GlobalVar::WhichInterface==1)
     {
         QString fs="m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048";
@@ -53,6 +54,7 @@ void ThreadTable::getTableData()
                 emit getTableDataFinished();
             }
     }
+//    qDebug()<<t.msecsTo(QDateTime::currentDateTime().time());
 }
 
 void ThreadTable::initTableList()
@@ -66,7 +68,6 @@ void ThreadTable::initTableList()
 //    qDebug()<<jsonError->error<<"\n";
     if (jsonError->error == QJsonParseError::NoError)
     {
-
         GlobalVar::upNums=0;
         GlobalVar::downNums=0;
         QJsonObject jsonObject = doc.object();
@@ -76,79 +77,41 @@ void ThreadTable::initTableList()
         {
             GlobalVar::mTableListCopy.clear();
             GlobalVar::mRisingSpeedList.clear();
-            if (not GlobalVar::isBoard)
+            for (int i = 0; i < data.size(); ++i)
             {
-                GlobalVar::mTableList.clear();
-                for (int i = 0; i < data.size(); ++i)
-                {
-                    QJsonValue value = data.at(i);
-                    QVariantMap ceilMap = value.toVariant().toMap();
+                QJsonValue value = data.at(i);
+                QVariantMap ceilMap = value.toVariant().toMap();
 
-                    StockInfo info;
-                    info.name = ceilMap.value("f14").toString();
-                    if (info.name.contains("退"))
-                        continue;
-                    info.code = ceilMap.value("f12").toString();
-                    info.close = ceilMap.value("f2").toFloat();
-                    info.pctChg=ceilMap.value("f3").toFloat();
-                    if (info.pctChg>0)
-                        GlobalVar::upNums+=1;
-                    else if (info.pctChg<0)
-                        GlobalVar::downNums+=1;
-                    info.turn=ceilMap.value("f8").toFloat();
-                    info.amount=ceilMap.value("f6").toFloat();
-                    info.velocity = ceilMap.value("f22").toFloat();
-                    info.pe = ceilMap.value("f9").toFloat();
-                    info.totalValue = ceilMap.value("f20").toFloat();
-                    info.circulatedValue=ceilMap.value("f21").toFloat();
-                    info.pctYear=ceilMap.value("f25").toFloat();
-                    info.pctSixty=ceilMap.value("f24").toFloat();
-                    info.volume = ceilMap.value("f5").toFloat();
-                    info.high = ceilMap.value("f15").toFloat();
-                    info.low = ceilMap.value("f16").toFloat();
-                    info.open=ceilMap.value("f17").toFloat();
-                    info.preClose=ceilMap.value("f18").toFloat();
-                    GlobalVar::mTableList.append(info);
-                    GlobalVar::mTableListCopy.append(info);
-                    if (i<=19)
-                        GlobalVar::mRisingSpeedList.append(info);
-                }
+                StockInfo info;
+                info.name = ceilMap.value("f14").toString();
+                if (info.name.contains("退"))
+                    continue;
+                info.code = ceilMap.value("f12").toString();
+                info.close = ceilMap.value("f2").toFloat();
+                info.pctChg=ceilMap.value("f3").toFloat();
+                if (info.pctChg>0)
+                    GlobalVar::upNums+=1;
+                else if (info.pctChg<0)
+                    GlobalVar::downNums+=1;
+                info.turn=ceilMap.value("f8").toFloat();
+                info.amount=ceilMap.value("f6").toFloat();
+                info.velocity = ceilMap.value("f22").toFloat();
+                info.pe = ceilMap.value("f9").toFloat();
+                info.totalValue = ceilMap.value("f20").toFloat();
+                info.circulatedValue=ceilMap.value("f21").toFloat();
+                info.pctYear=ceilMap.value("f25").toFloat();
+                info.pctSixty=ceilMap.value("f24").toFloat();
+                info.volume = ceilMap.value("f5").toFloat();
+                info.high = ceilMap.value("f15").toFloat();
+                info.low = ceilMap.value("f16").toFloat();
+                info.open=ceilMap.value("f17").toFloat();
+                info.preClose=ceilMap.value("f18").toFloat();
+                GlobalVar::mTableListCopy.append(info);
             }
-            else
-            {
-                for (int i = 0; i < data.size(); ++i)
-                {
-                    QJsonValue value = data.at(i);
-                    QVariantMap ceilMap = value.toVariant().toMap();
-                    StockInfo info;
-                    info.name = ceilMap.value("f14").toString();
-                    if (info.name.contains("退"))
-                        continue;
-                    info.code = ceilMap.value("f12").toString();
-                    info.close = ceilMap.value("f2").toFloat();
-                    info.pctChg=ceilMap.value("f3").toFloat();
-                    if (info.pctChg>0)
-                        GlobalVar::upNums+=1;
-                    else if (info.pctChg<0)
-                        GlobalVar::downNums+=1;
-                    info.turn=ceilMap.value("f8").toFloat();
-                    info.amount=ceilMap.value("f6").toFloat();
-                    info.velocity = ceilMap.value("f22").toFloat();
-                    info.pe = ceilMap.value("f9").toFloat();
-                    info.totalValue = ceilMap.value("f20").toFloat();
-                    info.circulatedValue=ceilMap.value("f21").toFloat();
-                    info.pctYear=ceilMap.value("f25").toFloat();
-                    info.pctSixty=ceilMap.value("f24").toFloat();
-                    info.volume = ceilMap.value("f5").toFloat();
-                    info.high = ceilMap.value("f15").toFloat();
-                    info.low = ceilMap.value("f16").toFloat();
-                    info.open=ceilMap.value("f17").toFloat();
-                    info.preClose=ceilMap.value("f18").toFloat();
-                    GlobalVar::mTableListCopy.append(info);
-                    if (i<=19)
-                        GlobalVar::mRisingSpeedList.append(info);
-                }
-            }
+            if (not GlobalVar::isBoard)
+                GlobalVar::mTableList=GlobalVar::mTableListCopy;
+            for (int i=0;i<=19;++i)
+                GlobalVar::mRisingSpeedList.append(GlobalVar::mTableListCopy.at(i));
             GlobalVar::sortByColumn(&GlobalVar::mTableListCopy,0,true);
         }
         else
@@ -198,7 +161,7 @@ void ThreadTable::readMyStock()
     for(int i=0;i<GlobalVar::mMyStockCode.count();++i)
     {
         StockInfo info;
-        info.code=GlobalVar::mMyStockCode[i];
+        info.code=GlobalVar::mMyStockCode.at(i);
         GlobalVar::mMyStockList.append(info);
     }
 }
