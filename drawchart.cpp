@@ -129,6 +129,9 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
     float low=GlobalVar::timeShareHighLowPoint[1];
     float stopH=GlobalVar::timeShareHighLowPoint[3];
     float stopL=GlobalVar::timeShareHighLowPoint[4];
+    float mid=(high-low)/2;
+    float midDown=mid*3/2;
+    float midUp=mid/2;
     float aveWidth=0;
     float aveHeight=0;
     if (high!=low)
@@ -147,6 +150,14 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
         d=90;
     for (int i=1;i<=trendsTotal/30;++i)
         painter->drawLine(QPointF(i*d*aveWidth/2+WIDTHEDGE,0),QPointF(i*d*aveWidth/2+WIDTHEDGE,timeShareChartHeight-BOTTOMHEIGHTEDGE));
+
+    painter->setPen(QColor(79,79,79));
+    painter->drawLine(QPointF(WIDTHEDGE, mid*aveHeight+TOPHEIGHTEDGE),
+                      QPointF(timeShareChartWidth-WIDTHEDGE, mid*aveHeight+TOPHEIGHTEDGE));
+    painter->drawLine(QPointF(WIDTHEDGE, midDown*aveHeight+TOPHEIGHTEDGE),
+                      QPointF(timeShareChartWidth-WIDTHEDGE, midDown*aveHeight+TOPHEIGHTEDGE));
+    painter->drawLine(QPointF(WIDTHEDGE, midUp*aveHeight+TOPHEIGHTEDGE),
+                      QPointF(timeShareChartWidth-WIDTHEDGE, midUp*aveHeight+TOPHEIGHTEDGE));
 
     if (GlobalVar::mTimeShareChartList.isEmpty())
         return;
@@ -256,6 +267,9 @@ void DrawChart::drawHisTimeShare(QPainter *painter)
 
     float high=hisTimeShareHighLowPoint[0];
     float low=hisTimeShareHighLowPoint[1];
+    float mid=(high-low)/2;
+    float midDown=mid*3/2;
+    float midUp=mid/2;
     float aveWidth=0;
     float aveHeight=0;
     if (high!=low)
@@ -263,6 +277,13 @@ void DrawChart::drawHisTimeShare(QPainter *painter)
     if (trendsTotal!=0)
         aveWidth=(timeShareChartWidth-2*WIDTHEDGE)/trendsTotal;
 
+    painter->setPen(QColor(79,79,79));
+    painter->drawLine(QPointF(WIDTHEDGE, mid*aveHeight+TOPHEIGHTEDGE),
+                      QPointF(timeShareChartWidth-WIDTHEDGE, mid*aveHeight+TOPHEIGHTEDGE));
+    painter->drawLine(QPointF(WIDTHEDGE, midDown*aveHeight+TOPHEIGHTEDGE),
+                      QPointF(timeShareChartWidth-WIDTHEDGE, midDown*aveHeight+TOPHEIGHTEDGE));
+    painter->drawLine(QPointF(WIDTHEDGE, midUp*aveHeight+TOPHEIGHTEDGE),
+                      QPointF(timeShareChartWidth-WIDTHEDGE, midUp*aveHeight+TOPHEIGHTEDGE));
     float volAveHeight=0;
     if (hisTimeShareHighLowPoint[2]!=0)
         volAveHeight=(3*timeShareChartHeight/15-TOPHEIGHTEDGE-BOTTOMHEIGHTEDGE)/hisTimeShareHighLowPoint[2];
@@ -393,9 +414,9 @@ void DrawChart::drawCandleChart(QPainter *painter)
     calcHighLowPoint(begin,end);
     float highPoint=candleHighLowPoint[0];
     float lowPoint=candleHighLowPoint[1];
-    float midPoint=(highPoint+lowPoint)/2;
-    float midDownPoint=(3*highPoint+lowPoint)/4;
-    float midUpPoint=(highPoint+3*lowPoint)/4;
+    float midPoint=(highPoint-lowPoint)/2;
+    float midDownPoint=midPoint*3/2;
+    float midUpPoint=midPoint/2;
     float aveWidth=(candleChartWidth-2*KWIDTHEDGE)/GlobalVar::KRange;
 //        qDebug()<<aveWidth;
     float w=aveWidth/4;
@@ -403,12 +424,12 @@ void DrawChart::drawCandleChart(QPainter *painter)
     if (highPoint!=lowPoint)
         aveHeight=(priceH-2*KTOPHEIGHTEDGE)/(highPoint-lowPoint);
     painter->setPen(QColor(79,79,79));
-    painter->drawLine(QPointF(0,(highPoint-midPoint)*aveHeight+KTOPHEIGHTEDGE),
-                      QPointF(candleChartWidth,(highPoint-midPoint)*aveHeight+KTOPHEIGHTEDGE));
-    painter->drawLine(QPointF(0,(highPoint-midUpPoint)*aveHeight+KTOPHEIGHTEDGE),
-                      QPointF(candleChartWidth,(highPoint-midUpPoint)*aveHeight+KTOPHEIGHTEDGE));
-    painter->drawLine(QPointF(0,(highPoint-midDownPoint)*aveHeight+KTOPHEIGHTEDGE),
-                      QPointF(candleChartWidth,(highPoint-midDownPoint)*aveHeight+KTOPHEIGHTEDGE));
+    painter->drawLine(QPointF(0,midPoint*aveHeight+KTOPHEIGHTEDGE),
+                      QPointF(candleChartWidth,midPoint*aveHeight+KTOPHEIGHTEDGE));
+    painter->drawLine(QPointF(0,midUpPoint*aveHeight+KTOPHEIGHTEDGE),
+                      QPointF(candleChartWidth,midUpPoint*aveHeight+KTOPHEIGHTEDGE));
+    painter->drawLine(QPointF(0,midDownPoint*aveHeight+KTOPHEIGHTEDGE),
+                      QPointF(candleChartWidth,midDownPoint*aveHeight+KTOPHEIGHTEDGE));
     float aveHeightVol=0;
     if (candleHighLowPoint[2]!=0)
         aveHeightVol=(canldeChartHeight*3/15-2*KBOTTOMHEIGHTEDGE)/candleHighLowPoint[2];
