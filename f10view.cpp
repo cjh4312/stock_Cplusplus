@@ -29,6 +29,7 @@ void F10View::dealWithHotRank()
         for (int j=0;j<getF10Info.f10QList.at(i).count();++j)
             model->setItem(i, j, new QStandardItem(getF10Info.f10QList.at(i)[j]));
     stockInfoView->setModel(model);
+//    getF10Info.getConstituentStocks();
 }
 
 void F10View::dealWithMainIndex()

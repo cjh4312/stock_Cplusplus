@@ -5,6 +5,7 @@
 //#include <QNetworkAccessManager>
 #include <QJsonArray>
 #include <QTextCodec>
+#include <QFile>
 
 class GetF10Info : public QObject
 {

@@ -11,7 +11,8 @@
 #define KWIDTHEDGE 4.0
 #define KTOPHEIGHTEDGE 60.0
 #define KBOTTOMHEIGHTEDGE 5
-#define per(c) ((c)>=(GlobalVar::preClose))?(int((((c)-(GlobalVar::preClose))*100/(GlobalVar::preClose))*100+0.5)/100.0):(int((((c)-(GlobalVar::preClose))*100/(GlobalVar::preClose))*100-0.5)/100.0)
+#define per(c) ((c)>=(GlobalVar::preClose))?(int((((c)-(GlobalVar::preClose))/(GlobalVar::preClose))*10000+0.5)/100.0):(int((((c)-(GlobalVar::preClose))/(GlobalVar::preClose))*10000-0.5)/100.0)
+//#define per3(c) ((c)>=(GlobalVar::preClose))?(int((((c)-(GlobalVar::preClose))/(GlobalVar::preClose))*100000+0.5)/1000.0):(int((((c)-(GlobalVar::preClose))/(GlobalVar::preClose))*100000-0.5)/1000.0)
 #define SPLITMID "/R"
 #define SPLITBACK "////"
 #define TITLEHEIGHT 40

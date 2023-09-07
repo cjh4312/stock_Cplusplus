@@ -97,7 +97,6 @@ public:
     static QString mCandleListCode;
     static QList<QStringList> formula;
     static QList<QStringList> annoucementList;
-
 };
 
 #endif // GLOBALVAR_H

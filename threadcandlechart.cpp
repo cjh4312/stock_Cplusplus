@@ -33,7 +33,7 @@ void ThreadCandleChart::initCandleChartList()
 
     if (jsonError->error == QJsonParseError::NoError)
     {
-        GlobalVar::mCandleChartList.clear();
+        QList<candleChartInfo> candleChartList;
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("klines").toArray();
         float MA;
@@ -61,40 +61,41 @@ void ThreadCandleChart::initCandleChartList()
             if (i>=4)
             {
                 for (int k=i-4;k<i;++k)
-                    MA+=GlobalVar::mCandleChartList.at(k).close;
+                    MA+=candleChartList.at(k).close;
                 info.MA5=(MA+info.close)/5;
                 MA=0;
                 for (int k=i-4;k<i;++k)
-                    MA+=GlobalVar::mCandleChartList.at(k).vol;
+                    MA+=candleChartList.at(k).vol;
                 info.VMA5=(MA+info.vol)/5;
             }
             if (i>=9)
             {
                 MA=0;
                 for (int k=i-9;k<i;++k)
-                    MA+=GlobalVar::mCandleChartList.at(k).close;
+                    MA+=candleChartList.at(k).close;
                 info.MA10=(MA+info.close)/10;
                 MA=0;
                 for (int k=i-9;k<i;++k)
-                    MA+=GlobalVar::mCandleChartList.at(k).vol;
+                    MA+=candleChartList.at(k).vol;
                 info.VMA10=(MA+info.vol)/10;
             }
             if (i>=19)
             {
                 MA=0;
                 for (int k=i-19;k<i;++k)
-                    MA+=GlobalVar::mCandleChartList.at(k).close;
+                    MA+=candleChartList.at(k).close;
                 info.MA20=(MA+info.close)/20;
             }
             if (i>=59)
             {
                 MA=0;
                 for (int k=i-59;k<i;++k)
-                    MA+=GlobalVar::mCandleChartList.at(k).close;
+                    MA+=candleChartList.at(k).close;
                 info.MA60=(MA+info.close)/60;
             }
-            GlobalVar::mCandleChartList.append(info);
+            candleChartList.append(info);
         }
+        GlobalVar::mCandleChartList=candleChartList;
     }
 }
 

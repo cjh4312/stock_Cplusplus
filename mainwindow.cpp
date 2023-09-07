@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "qheaderview.h"
+#include "stockinfo.h"
 #include "ui_mainwindow.h"
 #include "globalvar.h"
 
@@ -433,7 +434,6 @@ void MainWindow::initSignals()
     connect(mTableStock.myStockView, &QTableView::clicked, this, [this](const QModelIndex &index){
         int curRow=index.row();
         GlobalVar::curCode=GlobalVar::mMyStockList.at(curRow).code;
-//        GlobalVar::curName=GlobalVar::mMyStockList.at(curRow).name;
         emit startThreadTimeShareTick();
         emit startThreadTimeShareChart();
     });
@@ -491,20 +491,27 @@ void MainWindow::initSignals()
     // 信号发出，进行排序
     connect(mTableStock.stockTableView->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, [this](int logicalIndex/*, Qt::SortOrder order*/) {
         //        bool is_asc;
-        if (GlobalVar::WhichInterface==4 and ifCanClick!=1)
-            return;
-        if (GlobalVar::curSortNum!=logicalIndex)
+        if (GlobalVar::WhichInterface!=4 or(GlobalVar::WhichInterface==4 and ifCanClick==1))
         {
-            GlobalVar::is_asc = false;
-            GlobalVar::curSortNum=logicalIndex;
+            if (GlobalVar::curSortNum!=logicalIndex)
+            {
+                GlobalVar::is_asc = false;
+                GlobalVar::curSortNum=logicalIndex;
+            }
+            else
+                GlobalVar::is_asc = not preSort;
+            GlobalVar::sortByColumn(&GlobalVar::mTableList,logicalIndex,GlobalVar::is_asc);
+            preSort=GlobalVar::is_asc;
+            mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+            mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+            mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
         }
-        else
-            GlobalVar::is_asc = not preSort;
-        GlobalVar::sortByColumn(&GlobalVar::mTableList,logicalIndex,GlobalVar::is_asc);
-        preSort=GlobalVar::is_asc;
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
-        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
+//        else if (GlobalVar::WhichInterface==4 and ifCanClick==2)
+//        {
+//            mFundFlow.model->sort(logicalIndex,Qt::DescendingOrder);
+//            mTableStock.stockTableView->setModel(mFundFlow.model);
+//            mTableStock.stockTableView->setCurrentIndex(mFundFlow.model->index(0,0));
+//        }
     });
     connect(mTableStock.stockTableView,&QTableView::customContextMenuRequested,this,[=](QPoint){
         if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
@@ -1477,6 +1484,7 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=2;
+        GlobalVar::curSortNum=5;
         isAsia=true;
         mTableStock.risingSpeedView->hide();
         mTableStock.myStockView->hide();
@@ -1492,6 +1500,7 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=5;
+        GlobalVar::curSortNum=5;
         isAsia=false;
         GlobalVar::isUsZhStock=false;
         mTableStock.risingSpeedView->hide();
@@ -1508,6 +1517,7 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=5;
+        GlobalVar::curSortNum=5;
         isAsia=false;
         GlobalVar::isUsZhStock=true;
         mTableStock.risingSpeedView->hide();
@@ -2117,7 +2127,7 @@ void MainWindow::toFundFlow()
     }
     else if((sender()==fundFlow[9]))
     {
-        ifCanClick=-1;
+        ifCanClick=2;
         QString ft[]={"all","gp","hh","zq","zs","qdii","lof","fof"};
         QString sc[]={"zzf", "6yzf", "6yzf", "6yzf", "6yzf", "6yzf", "6yzf", "6yzf"};
         mFundFlow.openFundRank(ft[openFundBox->currentIndex()],sc[openFundBox->currentIndex()]);

@@ -36,7 +36,7 @@ void ThreadIndex::initIndexList()
 
     if (jsonError->error == QJsonParseError::NoError)
     {
-        GlobalVar::mIndexList.clear();
+        QList<IndexInfo> indexList;
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("diff").toArray();
         for (int i = 0; i < data.size(); ++i)
@@ -51,8 +51,9 @@ void ThreadIndex::initIndexList()
             info.name = ceilMap.value("f14").toString();
             info.close = ceilMap.value("f2").toString();
             info.pctChg=ceilMap.value("f3").toString();
-            GlobalVar::mIndexList.append(info);
+            indexList.append(info);
         }
+        GlobalVar::mIndexList=indexList;
     }
     m_mutex.unlock();
 //    for (int i = 0; i < GlobalVar::mIndexList.size(); ++i)

@@ -102,7 +102,7 @@ QString GlobalVar::getComCode()
         return curCode;
     else
     {
-        if (GlobalVar::curCode.left(1)=="6")
+        if (GlobalVar::curCode.left(1)=="6" or GlobalVar::curCode.left(1)=="5")
             return "1."+curCode;
         else
             return "0."+curCode;

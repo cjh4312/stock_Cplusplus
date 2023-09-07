@@ -1165,7 +1165,7 @@ void FundFlow::getTimeShareMin(QString code,QString date)
     QString str=s.mid(pos,s.size()-pos-1);
 
     QStringList ss=str.split(",");
-    GlobalVar::mHisTimeShareChartList.clear();
+    QList<timeShartChartInfo> hisTimeShareChartList;
     for (int i=0;i<ss.count();++i)
     {
         QJSValueList args;
@@ -1194,8 +1194,9 @@ void FundFlow::getTimeShareMin(QString code,QString date)
                 info.time=d+" "+curTime.addSecs(300+(j-2)*60).toString("hh:mm");
             else
                 info.time=d+" "+curTime.addSecs(5700+(j-2)*60).toString("hh:mm");
-            GlobalVar::mHisTimeShareChartList.append(info);
+            hisTimeShareChartList.append(info);
         }
+        GlobalVar::mHisTimeShareChartList=hisTimeShareChartList;
 //        for (int i=0;i<GlobalVar::mHisTimeShareChartList.count();++i)
 //            qDebug()<<GlobalVar::mHisTimeShareChartList.at(i).price<<GlobalVar::mHisTimeShareChartList.at(i).vol;
     }

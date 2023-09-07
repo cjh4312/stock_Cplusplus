@@ -72,11 +72,9 @@ void ThreadTable::initTableList()
         GlobalVar::downNums=0;
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("diff").toArray();
-
+        QList<StockInfo> tableList;
         if (GlobalVar::WhichInterface==1)
         {
-            GlobalVar::mTableListCopy.clear();
-            GlobalVar::mRisingSpeedList.clear();
             for (int i = 0; i < data.size(); ++i)
             {
                 QJsonValue value = data.at(i);
@@ -106,17 +104,19 @@ void ThreadTable::initTableList()
                 info.low = ceilMap.value("f16").toFloat();
                 info.open=ceilMap.value("f17").toFloat();
                 info.preClose=ceilMap.value("f18").toFloat();
-                GlobalVar::mTableListCopy.append(info);
+                tableList.append(info);
             }
+            GlobalVar::mTableListCopy=tableList;
             if (not GlobalVar::isBoard)
                 GlobalVar::mTableList=GlobalVar::mTableListCopy;
+            QList<StockInfo> risingSpeedList;
             for (int i=0;i<=19;++i)
-                GlobalVar::mRisingSpeedList.append(GlobalVar::mTableListCopy.at(i));
+                risingSpeedList.append(GlobalVar::mTableListCopy.at(i));
+            GlobalVar::mRisingSpeedList=risingSpeedList;
             GlobalVar::sortByColumn(&GlobalVar::mTableListCopy,0,true);
         }
         else
         {
-            GlobalVar::mTableList.clear();
             for (int i = 0; i < data.size(); ++i)
             {
                 QJsonValue value = data.at(i);
@@ -147,8 +147,9 @@ void ThreadTable::initTableList()
                 info.low = ceilMap.value("f16").toFloat();
                 info.open=ceilMap.value("f17").toFloat();
                 info.preClose=ceilMap.value("f18").toFloat();
-                GlobalVar::mTableList.append(info);
+                tableList.append(info);
             }
+            GlobalVar::mTableList=tableList;
         }
         GlobalVar::sortByColumn(&GlobalVar::mTableList,GlobalVar::curSortNum,GlobalVar::is_asc);
     }
@@ -171,6 +172,7 @@ void ThreadTable::reFlaseMyStock()
     int n=GlobalVar::mTableListCopy.count();
     if (n==0)
         return;
+    StockInfo info;
     for (int i=0;i<GlobalVar::mMyStockList.count();++i)
     {
         int l = 0;
@@ -180,7 +182,7 @@ void ThreadTable::reFlaseMyStock()
             int mid = (l + r) / 2;
             if (GlobalVar::mTableListCopy.at(mid).code == GlobalVar::mMyStockList.at(i).code)
             {
-                StockInfo info=GlobalVar::mTableListCopy.at(mid);
+                info=GlobalVar::mTableListCopy.at(mid);
                 GlobalVar::mMyStockList.replace(i,info);
                 break;
             }

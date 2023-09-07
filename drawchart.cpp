@@ -393,12 +393,22 @@ void DrawChart::drawCandleChart(QPainter *painter)
     calcHighLowPoint(begin,end);
     float highPoint=candleHighLowPoint[0];
     float lowPoint=candleHighLowPoint[1];
+    float midPoint=(highPoint+lowPoint)/2;
+    float midDownPoint=(3*highPoint+lowPoint)/4;
+    float midUpPoint=(highPoint+3*lowPoint)/4;
     float aveWidth=(candleChartWidth-2*KWIDTHEDGE)/GlobalVar::KRange;
 //        qDebug()<<aveWidth;
     float w=aveWidth/4;
     float aveHeight=0;
     if (highPoint!=lowPoint)
         aveHeight=(priceH-2*KTOPHEIGHTEDGE)/(highPoint-lowPoint);
+    painter->setPen(QColor(79,79,79));
+    painter->drawLine(QPointF(0,(highPoint-midPoint)*aveHeight+KTOPHEIGHTEDGE),
+                      QPointF(candleChartWidth,(highPoint-midPoint)*aveHeight+KTOPHEIGHTEDGE));
+    painter->drawLine(QPointF(0,(highPoint-midUpPoint)*aveHeight+KTOPHEIGHTEDGE),
+                      QPointF(candleChartWidth,(highPoint-midUpPoint)*aveHeight+KTOPHEIGHTEDGE));
+    painter->drawLine(QPointF(0,(highPoint-midDownPoint)*aveHeight+KTOPHEIGHTEDGE),
+                      QPointF(candleChartWidth,(highPoint-midDownPoint)*aveHeight+KTOPHEIGHTEDGE));
     float aveHeightVol=0;
     if (candleHighLowPoint[2]!=0)
         aveHeightVol=(canldeChartHeight*3/15-2*KBOTTOMHEIGHTEDGE)/candleHighLowPoint[2];
