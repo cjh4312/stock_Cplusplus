@@ -11,7 +11,6 @@ from xtquant import xtconstant
 path = r'D:\Program Files\Finance\国金证券QMT交易端\userdata_mini'
 
 def qmtBuy(account,code,numbers,price):
-#    path = r'D:\Program Files\Finance\国金证券QMT交易端\userdata_mini'
     session_id = int(random.randint(100000, 999999))
     xt_trader = XtQuantTrader(path, session_id)
 
@@ -24,7 +23,6 @@ def qmtBuy(account,code,numbers,price):
     return f'{connect_result};{subscribe_result};{order_id}'
 
 def qmtSell(account,code,numbers,price):
-#    path = r'D:\Program Files\Finance\国金证券QMT交易端\userdata_mini'
     session_id = int(random.randint(100000, 999999))
     xt_trader = XtQuantTrader(path, session_id)
 
@@ -37,7 +35,6 @@ def qmtSell(account,code,numbers,price):
     return f'{connect_result};{subscribe_result};{order_id}'
 
 def getAsset(account):
-#    path = r'D:\Program Files\Finance\国金证券QMT交易端\userdata_mini'
     session_id = int(random.randint(100000, 999999))
     xt_trader = XtQuantTrader(path, session_id)
 
@@ -54,7 +51,6 @@ def getAsset(account):
         return f'{connect_result};{subscribe_result}'
 
 def getPositions(account):
-#    path = r'D:\Program Files\Finance\国金证券QMT交易端\userdata_mini'
     session_id = int(random.randint(100000, 999999))
     xt_trader = XtQuantTrader(path, session_id)
 
@@ -69,6 +65,7 @@ def getPositions(account):
         return f"{positions[-1].stock_code};{positions[-1].can_use_volume}"
     else:
         return f'{connect_result};{subscribe_result}'
+
 #    positions = xt_trader.query_stock_positions(acc)
 #    info=[]
 #    if len(positions)!=0:

@@ -594,9 +594,6 @@ void MainWindow::initSignals()
     connect(ui->DLStockInfo,&QAction::triggered,this,[=](){
         requestsToCsv.downStockIndexPlateInfo();
     });
-    for (int i=0;i<6;++i)
-        connect(periodAdjust[i],&QRadioButton::clicked,this,&MainWindow::initFlag);
-
     connect(F10Info[0],&QPushButton::clicked,this,[=](){
         toInterFace("f3");
     });
@@ -625,8 +622,6 @@ void MainWindow::initSignals()
         F10SmallWindow->setFixedSize(1430,700);
         f10View.dealWithCashFlow();
     });
-    for (int i=0;i<10;++i)
-        connect(fundFlow[i],&QPushButton::clicked,this,&MainWindow::toFundFlow);
     connect(f10View.stockInfoView,&QTableView::doubleClicked,this,[=](const QModelIndex &index){
         GlobalVar::curBoard=f10View.model->item(index.row(),3)->text();
         GlobalVar::isBoard=true;
@@ -693,6 +688,7 @@ void MainWindow::initSignals()
             ui->setVacation->setEnabled(false);
     });
     for (int i=0;i<6;++i)
+    {
         connect(mFundFlow.checkBox[i],&QCheckBox::clicked,this,[=](){
             if (mFundFlow.checkBox[i]->isChecked())
                 mFundFlow.isShow[i]=true;
@@ -700,8 +696,13 @@ void MainWindow::initSignals()
                 mFundFlow.isShow[i]=false;
             mFundFlow.tableChart->update();
         });
+        connect(periodAdjust[i],&QRadioButton::clicked,this,&MainWindow::initFlag);
+    }
     for (int i=0;i<10;++i)
+    {
+        connect(fundFlow[i],&QPushButton::clicked,this,&MainWindow::toFundFlow);
         connect(buySellPrice[i],&QLabel::customContextMenuRequested,this,&MainWindow::fastTrade);
+    }
     connect(ui->login,&QAction::triggered,this,[=](){
         if (m_process->state()==QProcess::NotRunning)
         {
@@ -1271,14 +1272,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             if (obj==buySellPrice[i])
             {
                 if (event->type()==QEvent::MouseButtonPress)
-                {
                     tradePrice=buySellPrice[i]->text().toFloat();
-
-                }
-                else if (event->type()==QEvent::MouseMove)
-                {
+                else if (event->type()==QEvent::MouseMove and !buySellPrice[i]->text().isEmpty())
                     buySellPrice[i]->setStyleSheet("border-width:1px;border-style:solid;border-color:rgb(255,170,0);font:14px;font-family:微软雅黑;color:blue");
-                }
                 else if (event->type()==QEvent::Leave)
                 {
                     buySellPrice[i]->setStyleSheet("border-width: 0px;font:16px;font-family:微软雅黑");
@@ -1734,7 +1730,7 @@ void MainWindow::dealWithFundFlow()
 }
 void MainWindow::fastTrade()
 {
-    if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5)
+    if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or tradePrice==0)
         return;
     QMenu *menu=new QMenu();
     QAction *act=new QAction("闪电买入");
@@ -2124,10 +2120,13 @@ void MainWindow::reFlashBuySellBaseInfo()
         else
             buySellPrice[i]->setPalette(GlobalVar::pBlack);
         buySellPrice[i]->setText(str);
-        str=QString::number(GlobalVar::buySellNum[i]);
+        if (GlobalVar::buySellNum[i]>1000000)
+            str=GlobalVar::format_conversion(GlobalVar::buySellNum[i]);
+        else
+            str=QString::number(GlobalVar::buySellNum[i]);
         if (GlobalVar::buySellNum[i]==0)
             str="";
-        buySellNum[i]->setText(str+" ");
+        buySellNum[i]->setText(str);
     }
     if (GlobalVar::baseInfoData[1]>0)
     {
