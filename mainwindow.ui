@@ -103,9 +103,17 @@
     <addaction name="formula"/>
     <addaction name="setVacation"/>
    </widget>
+   <widget class="QMenu" name="menu_5">
+    <property name="title">
+     <string>交易</string>
+    </property>
+    <addaction name="login"/>
+    <addaction name="commonTrade"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_3"/>
+   <addaction name="menu_5"/>
    <addaction name="menu_4"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
@@ -225,6 +233,16 @@
   <action name="setVacation">
    <property name="text">
     <string>设置A股假期</string>
+   </property>
+  </action>
+  <action name="login">
+   <property name="text">
+    <string>登录</string>
+   </property>
+  </action>
+  <action name="commonTrade">
+   <property name="text">
+    <string>普通交易</string>
    </property>
   </action>
  </widget>

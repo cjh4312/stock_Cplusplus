@@ -42,10 +42,10 @@ struct StockInfo
 
 struct IndexInfo
 {
-    QString code;
-    QString name;
-    QString close;
-    QString pctChg;
+    QString code="";
+    QString name="";
+    QString close="";
+    QString pctChg="";
 };
 
 struct timeShareTickInfo

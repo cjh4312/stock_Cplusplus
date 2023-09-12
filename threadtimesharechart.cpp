@@ -29,7 +29,7 @@ void ThreadTimeShareChart::initTimeShareChartList()
     QJsonDocument doc = QJsonDocument::fromJson(allData, jsonError);
     if (jsonError->error == QJsonParseError::NoError)
     {
-        QList<timeShartChartInfo> timeShareChartList;
+//        QList<timeShartChartInfo> timeShareChartList;
         QJsonObject jsonObject = doc.object();
         GlobalVar::preClose=jsonObject.value("data").toObject().value("preClose").toDouble();
         int ph=110;
@@ -51,6 +51,7 @@ void ThreadTimeShareChart::initTimeShareChartList()
         float l=100000.0;
         GlobalVar::timeShareHighLowPoint[2]=0;
         float pp=GlobalVar::preClose;
+        GlobalVar::mTimeShareChartList.clear();
         if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
             for (int i = 0; i < data.size(); ++i)
             {
@@ -78,7 +79,7 @@ void ThreadTimeShareChart::initTimeShareChartList()
 
                 if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
                     GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
-                timeShareChartList.append(info);
+                GlobalVar::mTimeShareChartList.append(info);
             }
         else
             for (int i = 0; i < data.size(); ++i)
@@ -103,9 +104,9 @@ void ThreadTimeShareChart::initTimeShareChartList()
 
                 if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
                     GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
-                timeShareChartList.append(info);
+                GlobalVar::mTimeShareChartList.append(info);
             }
-        GlobalVar::mTimeShareChartList=timeShareChartList;
+//        GlobalVar::mTimeShareChartList=timeShareChartList;
         GlobalVar::timeShareHighLowPoint[0]=per(h);
         if (GlobalVar::timeShareHighLowPoint[0]<0)
             GlobalVar::timeShareHighLowPoint[0]=0;

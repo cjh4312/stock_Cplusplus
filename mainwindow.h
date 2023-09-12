@@ -31,6 +31,8 @@
 #include <QMessageBox>
 #include <QListWidgetItem>
 #include <complex>
+#include <QProcess>
+#include <Python.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -55,6 +57,7 @@ private slots:
     void showSearchResult();
     void resetKParameter();
     void dealWithFundFlow();
+    void fastTrade();
 
 signals:
     void startThreadTable();
@@ -66,6 +69,7 @@ signals:
 
 private:
     Ui::MainWindow *ui;
+    QProcess *m_process=new QProcess(this);
     TableStock mTableStock;
     DrawChart drawChart;
     SearchStock searchStock;
@@ -96,6 +100,7 @@ private:
     QWidget *F10SmallWindow;
     QPointF p;
     int hisTimeShareN;
+    QString account;
 
     int timeCount=0;
     bool changeInTurn=true;
@@ -118,6 +123,7 @@ private:
     QComboBox *singleStockBoard=new QComboBox(this);
     QComboBox *openFundBox=new QComboBox(this);
     bool preSort=false;
+    float tradePrice;
 
     void initGlobalVar();
     void initThread();
@@ -133,6 +139,7 @@ private:
     void toInterFace(QString which);
     void toFundFlow();
     void downUpLookStock(QWheelEvent *event);
+
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);//事件过滤器

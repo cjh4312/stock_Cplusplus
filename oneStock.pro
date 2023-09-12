@@ -33,6 +33,7 @@ SOURCES += \
     threadtimesharetick.cpp
 
 HEADERS += \
+    PyThreadStateLock.h \
     commondelegate.h \
     drawchart.h \
     f10view.h \
@@ -64,3 +65,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resources.qrc
+
+INCLUDEPATH += d:\workstation\python\include
+LIBS += -Ld:\workstation\python\libs -lpython310
+
+DISTFILES += \
+    qmt.py

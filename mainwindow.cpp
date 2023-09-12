@@ -1,13 +1,18 @@
 #include "mainwindow.h"
 #include "qheaderview.h"
+#include "qspinbox.h"
 #include "stockinfo.h"
 #include "ui_mainwindow.h"
 #include "globalvar.h"
+#include <Python.h>
+#include <PyThreadStateLock.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    Py_Initialize();
+
     initGlobalVar();
     initThread();
     initInterface();
@@ -17,10 +22,12 @@ MainWindow::MainWindow(QWidget *parent)
     tim->setInterval(500);
     connect(tim,SIGNAL(timeout()),this,SLOT(tradingTimeRunThread()));
     tim->start();
+
 }
 
 MainWindow::~MainWindow()
 {
+    Py_Finalize();
     saveCode();
     for (int i=0;i<6;++i)
     {
@@ -33,6 +40,10 @@ MainWindow::~MainWindow()
     delete threadTimeShareChart;
     delete threadNewsReport;
     delete threadCandleChart;
+    if (m_process) {
+        m_process->close();
+        delete m_process;
+    }
     delete ui;
 }
 
@@ -43,6 +54,7 @@ void MainWindow::initGlobalVar()
     GlobalVar::curCode=GlobalVar::settings->value("curCode").toString();
     GlobalVar::isSayNews=GlobalVar::settings->value("sayNews").toBool();
     GlobalVar::offsetEnd=GlobalVar::settings->value("offsetEnd").toInt();
+    account=GlobalVar::settings->value("account").toString();
     for (int i=0;i<5;++i)
         GlobalVar::areaFlag[i]=true;
     GlobalVar::pRed.setColor(QPalette::WindowText, Qt::red);
@@ -358,6 +370,7 @@ void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
     {
         buySellName[i]=new QLabel("卖"+n[4-i]);
         buySellPrice[i]=new QLabel();
+        buySellPrice[i]->setContextMenuPolicy(Qt::CustomContextMenu);
         buySellNum[i]=new QLabel();
         buySellNum[i]->setAlignment(Qt::AlignRight);
         buySellName[i]->setStyleSheet("QLabel{font:bold 16px;font-family:微软雅黑;color:rgb(47,79,79)}");
@@ -369,6 +382,7 @@ void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
 
         buySellName[i+5]=new QLabel("买"+n[i]);
         buySellPrice[5+i]=new QLabel();
+        buySellPrice[5+i]->setContextMenuPolicy(Qt::CustomContextMenu);
         buySellNum[5+i]=new QLabel();
         buySellNum[5+i]->setAlignment(Qt::AlignRight);
         buySellName[i+5]->setStyleSheet("QLabel{font:bold 16px;font-family:微软雅黑;color:rgb(47,79,79)}");
@@ -686,6 +700,18 @@ void MainWindow::initSignals()
                 mFundFlow.isShow[i]=false;
             mFundFlow.tableChart->update();
         });
+    for (int i=0;i<10;++i)
+        connect(buySellPrice[i],&QLabel::customContextMenuRequested,this,&MainWindow::fastTrade);
+    connect(ui->login,&QAction::triggered,this,[=](){
+        if (m_process->state()==QProcess::NotRunning)
+        {
+            QString str = "D:\\Program Files\\Finance\\国金证券QMT交易端\\bin.x64\\XtMiniQmt.exe";
+            QString tagDir = "\"" + str + "\"";
+            m_process->start(tagDir);
+        }
+        else
+            QMessageBox::information(this,"提示", "交易已经启动", QMessageBox::Ok);
+    });
 }
 void MainWindow::saveMyStock()
 {
@@ -1240,6 +1266,32 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     }
     else
     {
+        for (int i=0;i<10;++i)
+        {
+            if (obj==buySellPrice[i])
+            {
+                if (event->type()==QEvent::MouseButtonPress)
+                {
+                    tradePrice=buySellPrice[i]->text().toFloat();
+
+                }
+                else if (event->type()==QEvent::MouseMove)
+                {
+                    buySellPrice[i]->setStyleSheet("border-width:1px;border-style:solid;border-color:rgb(255,170,0);font:14px;font-family:微软雅黑;color:blue");
+                }
+                else if (event->type()==QEvent::Leave)
+                {
+                    buySellPrice[i]->setStyleSheet("border-width: 0px;font:16px;font-family:微软雅黑");
+                    float price=buySellPrice[i]->text().toFloat();
+                    if (price>GlobalVar::preClose)
+                        buySellPrice[i]->setPalette(GlobalVar::pRed);
+                    else if (price<GlobalVar::preClose)
+                        buySellPrice[i]->setPalette(GlobalVar::pGreen);
+                    else
+                        buySellPrice[i]->setPalette(GlobalVar::pBlack);
+                }
+            }
+        }
         for (int i=0;i<50;++i)
             if (obj==drawChart.annLabel[i] and event->type()==QEvent::MouseButtonDblClick)
             {
@@ -1273,7 +1325,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 }
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button()==Qt::RightButton)
+    if (event->pos().ry()<250 and event->button()==Qt::RightButton)
         if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
             addRightMenu(3);
 }
@@ -1679,6 +1731,248 @@ void MainWindow::dealWithFundFlow()
         mTableStock.stockTableView->setColumnWidth(i,100);
     for (int i=6;i<12;++i)
         mTableStock.stockTableView->setColumnWidth(i,100);
+}
+void MainWindow::fastTrade()
+{
+    if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5)
+        return;
+    QMenu *menu=new QMenu();
+    QAction *act=new QAction("闪电买入");
+    menu->addAction(act);
+    QAction *act1=new QAction("闪电卖出");
+    menu->addAction(act1);
+    menu->popup(QCursor::pos());
+
+    connect(act,&QAction::triggered,this,[=](){
+        PyGILState_STATE state=PyGILState_Ensure();
+        PyObject* pModule = PyImport_ImportModule("qmt");
+        if(!pModule)
+            qDebug()<<"import failure";
+        PyObject* pFunTrade = PyObject_GetAttrString(pModule,"getAsset");
+        if(!pFunTrade)
+            qDebug()<<"get function failed";
+        PyObject* args = PyTuple_New(1);
+        PyTuple_SetItem(args,0,Py_BuildValue("s",account.toStdString().c_str()));
+        PyObject* outcome=PyObject_CallFunction(pFunTrade,"O",args);
+        float cash=QString(PyUnicode_AsUTF8(outcome)).toFloat();
+        PyGILState_Release(state);
+
+        QDialog *fastBuy=new QDialog();
+        fastBuy->setAttribute(Qt::WA_DeleteOnClose);
+        fastBuy->setWindowFlags(fastBuy->windowFlags() | Qt::WindowStaysOnTopHint);
+        fastBuy->setWindowTitle("闪电买入");
+        fastBuy->setGeometry(670, 200, 260, 300);
+
+        QLabel *infoName[5];
+        QString name[5]={"证券代码:","报价方式:","买入价格:","最大可买:","买入数量:"};
+        QVBoxLayout *mainLayout=new QVBoxLayout(fastBuy);
+        QGridLayout *tradeInfo=new QGridLayout();
+        QHBoxLayout *group=new QHBoxLayout();
+        QHBoxLayout *buttom=new QHBoxLayout();
+
+//        mainLayout->setContentsMargins(15, 5, 15, 20);
+        mainLayout->addLayout(tradeInfo);
+        mainLayout->addLayout(group);
+        mainLayout->addSpacing(15);
+        mainLayout->addLayout(buttom);
+        for (int i=0;i<5;++i)
+        {
+            infoName[i]=new QLabel(name[i],fastBuy);
+            infoName[i]->setStyleSheet("QLabel{font:16px;font-family:微软雅黑}");
+            tradeInfo->addWidget(infoName[i],i,0);
+        }
+        QLabel *code=new QLabel(GlobalVar::curCode,fastBuy);
+        QLabel *fix=new QLabel("限价委托",fastBuy);
+        QDoubleSpinBox *price=new QDoubleSpinBox(fastBuy);
+        QPushButton *flash=new QPushButton("刷新",fastBuy);
+
+        QLabel *numbers=new QLabel(GlobalVar::curCode,fastBuy);
+        QSpinBox *buyNums=new QSpinBox(fastBuy);
+        buyNums->setRange(0,1000000);
+        buyNums->setSingleStep(100);
+        int maxNums=floor(cash/tradePrice/100)*100;
+        numbers->setText(QString::number(maxNums));
+        buyNums->setValue(maxNums);
+        connect(flash,&QPushButton::clicked,this,[=](){
+            numbers->setText(QString::number(floor(cash/price->text().toFloat()/100)*100));
+        });
+        price->setSingleStep(0.01);
+        price->setRange(0,10000);
+        price->setValue(tradePrice);
+        tradeInfo->addWidget(code,0,2);
+        tradeInfo->addWidget(fix,1,2);
+        tradeInfo->addWidget(price,2,2);
+        tradeInfo->addWidget(numbers,3,2);
+        tradeInfo->addWidget(flash,3,3);
+        tradeInfo->addWidget(buyNums,4,2);
+        QButtonGroup *proportion=new QButtonGroup(fastBuy);
+        QRadioButton *proportionName[5];
+        QStringList proportionNums={"全仓","1/2","1/3","1/4","1/5"};
+        for (int i=0;i<5;++i)
+        {
+            proportionName[i]=new QRadioButton(proportionNums[i]);
+            proportion->addButton(proportionName[i]);
+            group->addWidget(proportionName[i]);
+            connect(proportionName[i],&QRadioButton::clicked,this,[=](){
+                int n=floor(cash/price->text().toFloat()/100);
+                buyNums->setValue(n/(i+1)*100);
+                numbers->setText(QString::number(n*100));
+            });
+        }
+        proportionName[0]->setChecked(true);
+        QPushButton *buy=new QPushButton("买入",fastBuy);
+        QPushButton *close=new QPushButton("取消",fastBuy);
+        connect(buy,&QPushButton::clicked,this,[=](){
+            PyGILState_STATE state=PyGILState_Ensure();
+            PyObject* pModule = PyImport_ImportModule("qmt");
+            if(!pModule)
+                qDebug()<<"import failure";
+            PyObject* pFunTrade = PyObject_GetAttrString(pModule,"qmtBuy");
+            if(!pFunTrade)
+                qDebug()<<"get function failed";
+
+            PyObject* args = PyTuple_New(4);
+            QString code=GlobalVar::curCode;
+            if (code.mid(0,1)=='3' or code.mid(0,1)=='0')
+                code=code+".SZ";
+            else
+                code=code+".SH";
+            PyTuple_SetItem(args,0,Py_BuildValue("s",account.toStdString().c_str()));
+            PyTuple_SetItem(args,1,Py_BuildValue("s",code.toStdString().c_str()));
+            PyTuple_SetItem(args,2,Py_BuildValue("i",buyNums->value()));
+            PyTuple_SetItem(args,3,Py_BuildValue("f",price->value()));
+
+            PyObject* outcome=PyObject_CallFunction(pFunTrade, "O",args);
+            fastBuy->close();
+            QMessageBox::information(this,"提示", QString(PyUnicode_AsUTF8(outcome)), QMessageBox::Ok);
+            PyGILState_Release(state);
+        });
+        connect(close,&QPushButton::clicked,this,[=](){
+            fastBuy->close();
+        });
+
+        buttom->addWidget(buy);
+        buttom->addWidget(close);
+        mainLayout->addSpacing(15);
+        fastBuy->show();
+    });
+    connect(act1,&QAction::triggered,this,[=](){
+        PyGILState_STATE state=PyGILState_Ensure();
+        PyObject* pModule = PyImport_ImportModule("qmt");
+        if(!pModule)
+            qDebug()<<"import failure";
+        PyObject* pFunTrade = PyObject_GetAttrString(pModule,"getPositions");
+        if(!pFunTrade)
+            qDebug()<<"get function failed";
+
+        PyObject* args = PyTuple_New(1);
+        PyTuple_SetItem(args,0,Py_BuildValue("s",account.toStdString().c_str()));
+        PyObject* outcome=PyObject_CallFunction(pFunTrade, "O",args);
+        QStringList l=QString(PyUnicode_AsUTF8(outcome)).split(";");
+        PyGILState_Release(state);
+//        if (l[0]=="-1" or l[1]=="-1")
+//            return;
+
+        QDialog *fastSell=new QDialog();
+        fastSell->setAttribute(Qt::WA_DeleteOnClose);
+        fastSell->setWindowFlags(fastSell->windowFlags() | Qt::WindowStaysOnTopHint);
+        fastSell->setWindowTitle("闪电卖出");
+        fastSell->setGeometry(670, 200, 260, 300);
+
+        QLabel *infoName[5];
+        QString name[5]={"证券代码:","报价方式:","卖出价格:","最大可卖:","卖出数量:"};
+        QVBoxLayout *mainLayout=new QVBoxLayout(fastSell);
+        QGridLayout *tradeInfo=new QGridLayout();
+        QHBoxLayout *group=new QHBoxLayout();
+        QHBoxLayout *buttom=new QHBoxLayout();
+
+        mainLayout->addLayout(tradeInfo);
+        mainLayout->addLayout(group);
+        mainLayout->addSpacing(15);
+        mainLayout->addLayout(buttom);
+        for (int i=0;i<5;++i)
+        {
+            infoName[i]=new QLabel(name[i],fastSell);
+            infoName[i]->setStyleSheet("QLabel{font:16px;font-family:微软雅黑}");
+            tradeInfo->addWidget(infoName[i],i,0);
+        }
+        QLabel *code=new QLabel(GlobalVar::curCode,fastSell);
+        QLabel *fix=new QLabel("限价委托",fastSell);
+        QDoubleSpinBox *price=new QDoubleSpinBox(fastSell);
+
+        QLabel *numbers=new QLabel(GlobalVar::curCode,fastSell);
+        QSpinBox *sellNums=new QSpinBox(fastSell);
+        sellNums->setRange(0,10000);
+        int maxNums=0;
+        if (GlobalVar::curCode==l[0])
+        {
+            maxNums=l[1].toInt();
+            numbers->setText(QString::number(maxNums));
+            sellNums->setValue(maxNums);
+        }
+        else
+        {
+            numbers->setText(QString::number(maxNums));
+            sellNums->setValue(maxNums);
+        }
+
+        price->setSingleStep(0.01);
+        price->setRange(0,10000);
+        price->setValue(tradePrice);
+        tradeInfo->addWidget(code,0,2);
+        tradeInfo->addWidget(fix,1,2);
+        tradeInfo->addWidget(price,2,2,1,2);
+        tradeInfo->addWidget(numbers,3,2);
+        tradeInfo->addWidget(sellNums,4,2);
+        QButtonGroup *proportion=new QButtonGroup(fastSell);
+        QRadioButton *proportionName[5];
+        QStringList proportionNums={"全仓","1/2","1/3","1/4","1/5"};
+        for (int i=0;i<5;++i)
+        {
+            proportionName[i]=new QRadioButton(proportionNums[i]);
+            proportion->addButton(proportionName[i]);
+            group->addWidget(proportionName[i]);
+            connect(proportionName[i],&QRadioButton::clicked,this,[=](){
+                sellNums->setValue(maxNums/(i+1));
+            });
+        }
+        proportionName[0]->setChecked(true);
+        QPushButton *sell=new QPushButton("卖出",fastSell);
+        QPushButton *close=new QPushButton("取消",fastSell);
+        connect(sell,&QPushButton::clicked,this,[=](){
+            PyGILState_STATE state=PyGILState_Ensure();
+            PyObject* pModule = PyImport_ImportModule("qmt");
+            if(!pModule)
+                qDebug()<<"import failure";
+            PyObject* pFunTrade = PyObject_GetAttrString(pModule,"qmtSell");
+            if(!pFunTrade)
+                qDebug()<<"get function failed";
+
+            PyObject* args = PyTuple_New(4);
+            QString code=GlobalVar::curCode;
+            if (code.mid(0,1)=='3' or code.mid(0,1)=='0')
+                code=code+".SZ";
+            else
+                code=code+".SH";
+            PyTuple_SetItem(args,0,Py_BuildValue("s",account.toStdString().c_str()));
+            PyTuple_SetItem(args,1,Py_BuildValue("s",code.toStdString().c_str()));
+            PyTuple_SetItem(args,2,Py_BuildValue("i",sellNums->value()));
+            PyTuple_SetItem(args,3,Py_BuildValue("f",price->value()));
+
+            PyObject* outcome=PyObject_CallFunction(pFunTrade, "O",args);
+            fastSell->close();
+            QMessageBox::information(this,"提示", QString(PyUnicode_AsUTF8(outcome)), QMessageBox::Ok);
+            PyGILState_Release(state);
+        });
+        connect(close,&QPushButton::clicked,this,[=](){
+            fastSell->close();
+        });
+
+        buttom->addWidget(sell);
+        buttom->addWidget(close);
+        mainLayout->addSpacing(15);
+        fastSell->show();
+    });
 }
 //交易日每5秒刷新一次数据
 void MainWindow::tradingTimeRunThread()
