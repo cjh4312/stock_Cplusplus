@@ -32,7 +32,9 @@
 #include <QListWidgetItem>
 #include <complex>
 #include <QProcess>
+#undef slots
 #include <Python.h>
+#define slots Q_SLOTS
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

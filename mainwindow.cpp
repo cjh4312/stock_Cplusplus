@@ -5,7 +5,6 @@
 #include "ui_mainwindow.h"
 #include "globalvar.h"
 #include <Python.h>
-#include <PyThreadStateLock.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -55,6 +54,8 @@ void MainWindow::initGlobalVar()
     GlobalVar::isSayNews=GlobalVar::settings->value("sayNews").toBool();
     GlobalVar::offsetEnd=GlobalVar::settings->value("offsetEnd").toInt();
     account=GlobalVar::settings->value("account").toString();
+//    QString path=GlobalVar::currentPath+"/python/";
+//    Py_SetPythonHome((wchar_t *)(reinterpret_cast<const wchar_t *>(path.utf16())));
     for (int i=0;i<5;++i)
         GlobalVar::areaFlag[i]=true;
     GlobalVar::pRed.setColor(QPalette::WindowText, Qt::red);
@@ -1733,13 +1734,13 @@ void MainWindow::fastTrade()
     if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or tradePrice==0)
         return;
     QMenu *menu=new QMenu();
-    QAction *act=new QAction("闪电买入");
-    menu->addAction(act);
-    QAction *act1=new QAction("闪电卖出");
-    menu->addAction(act1);
+    QAction *actB=new QAction("闪电买入");
+    menu->addAction(actB);
+    QAction *actS=new QAction("闪电卖出");
+    menu->addAction(actS);
     menu->popup(QCursor::pos());
 
-    connect(act,&QAction::triggered,this,[=](){
+    connect(actB,&QAction::triggered,this,[=](){
         PyGILState_STATE state=PyGILState_Ensure();
         PyObject* pModule = PyImport_ImportModule("qmt");
         if(!pModule)
@@ -1852,7 +1853,7 @@ void MainWindow::fastTrade()
         mainLayout->addSpacing(15);
         fastBuy->show();
     });
-    connect(act1,&QAction::triggered,this,[=](){
+    connect(actS,&QAction::triggered,this,[=](){
         PyGILState_STATE state=PyGILState_Ensure();
         PyObject* pModule = PyImport_ImportModule("qmt");
         if(!pModule)

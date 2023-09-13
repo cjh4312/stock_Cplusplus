@@ -33,7 +33,6 @@ SOURCES += \
     threadtimesharetick.cpp
 
 HEADERS += \
-    PyThreadStateLock.h \
     commondelegate.h \
     drawchart.h \
     f10view.h \
