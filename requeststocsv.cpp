@@ -12,13 +12,13 @@ RequestsToCsv::RequestsToCsv(QDialog *parent)
 
 }
 
-void RequestsToCsv::getIndexList()
+bool RequestsToCsv::getIndexList()
 {
 //    QDateTime start=QDateTime::currentDateTime();
     QByteArray allData;
     GlobalVar::getData(allData,2,QUrl("https://www.joinquant.com/data/dict/indexData"));
     if (allData.isEmpty())
-        return;
+        return false;
     QString html=QString(allData);
     QString tbody=GlobalVar::peelStr(html,"<tbody","-1");
     QPair<QString, QString> pair;
@@ -65,7 +65,33 @@ void RequestsToCsv::getIndexList()
         }
     }
     file.close();
+    return true;
     //    qDebug()<<start.msecsTo(QDateTime::currentDateTime());
+}
+
+bool RequestsToCsv::getPlateList()
+{
+    QList<QStringList> plateList;
+    QString url[]={"http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=40&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=f3&fs=m:90+t:1+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1665566741514",
+                     "http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=600&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=7111416627128474|0|1|0|web&fid=f3&fs=m:90+t:3+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1682126899835",
+                     "http://1.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=7111416627128474|0|1|0|web&fid=f3&fs=m:90+t:2+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1682127442774"};
+    for (int i=0;i<3;++i)
+    {
+        QByteArray allData;
+        GlobalVar::getData(allData,1,QUrl(url[i]));
+        if (allData.isEmpty())
+            return false;
+        dealWithPlateList(plateList,allData);
+    }
+    std::sort(plateList.begin(),plateList.end(),[](QStringList a,QStringList b){
+        return a[2]<b[2];
+    });
+    QFile file(GlobalVar::currentPath+"/list/concept_industry_board.csv");
+    if (file.open(QFile::WriteOnly))
+        for (int i=0;i<plateList.count();++i)
+            file.write(plateList.at(i)[0].toLocal8Bit()+","+plateList.at(i)[1].toLocal8Bit()+","+plateList.at(i)[2].toLocal8Bit()+"\n");
+    file.close();
+    return true;
 }
 
 void RequestsToCsv::dealWithPlateList(QList<QStringList> &list,const QByteArray &allData)
@@ -88,7 +114,7 @@ void RequestsToCsv::dealWithPlateList(QList<QStringList> &list,const QByteArray 
     }
 }
 
-void RequestsToCsv::getStockList()
+bool RequestsToCsv::getStockList()
 {
     QJsonObject json;
     json.insert("api_name", "stock_basic");
@@ -101,7 +127,7 @@ void RequestsToCsv::getStockList()
     QByteArray allData;
     GlobalVar::postData(dataArray,allData,1,QUrl("http://api.waditu.com"));
     if (allData.size()<800)
-        return;
+        return false;
 //    qDebug()<<QString(allData);
     QJsonParseError jsonError;
     doc = QJsonDocument::fromJson(allData, &jsonError);
@@ -123,14 +149,13 @@ void RequestsToCsv::getStockList()
         }
     }
     file.close();
+    return true;
 }
 
 void RequestsToCsv::dealWithAllList()
 {
 //    QDateTime start=QDateTime::currentDateTime();
-    getIndexList();
-    getStockList();
-    getPlateList();
+
     QList<QStringList> allDataList;
     QFile saveFile(GlobalVar::currentPath+"/list/abbreviation_list.csv");
     if (saveFile.open(QFile::WriteOnly))
@@ -222,6 +247,18 @@ void RequestsToCsv::downStockIndexPlateInfo()
     Vlay->addWidget(promptText);
     promptWindow->show();
     promptText->append("开始下载指数、板块、个股信息...请稍等");
+    if (getIndexList())
+        promptText->append("指数处理成功");
+    else
+        promptText->append("指数处理失败");
+    if (getPlateList())
+        promptText->append("板块处理成功");
+    else
+        promptText->append("板块处理失败");
+    if (getStockList())
+        promptText->append("股票处理成功");
+    else
+        promptText->append("股票处理失败");
     dealWithAllList();
     promptText->append("指数、板块、个股信息处理完毕");
 }
@@ -369,28 +406,6 @@ void RequestsToCsv::downloadAllStockK()
 //        qDebug()<<"成功和服务器建立好连接";
 //    });
 //}
-
-void RequestsToCsv::getPlateList()
-{
-    QList<QStringList> plateList;
-    QString url[]={"http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=40&po=0&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=f3&fs=m:90+t:1+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1665566741514",
-                    "http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=600&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=7111416627128474|0|1|0|web&fid=f3&fs=m:90+t:3+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1682126899835",
-                     "http://1.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=7111416627128474|0|1|0|web&fid=f3&fs=m:90+t:2+f:!50&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222&_=1682127442774"};
-    for (int i=0;i<3;++i)
-    {
-        QByteArray allData;
-        GlobalVar::getData(allData,1,QUrl(url[i]));
-        dealWithPlateList(plateList,allData);
-    }
-    std::sort(plateList.begin(),plateList.end(),[](QStringList a,QStringList b){
-        return a[2]<b[2];
-    });
-    QFile file(GlobalVar::currentPath+"/list/concept_industry_board.csv");
-    if (file.open(QFile::WriteOnly))
-        for (int i=0;i<plateList.count();++i)
-            file.write(plateList.at(i)[0].toLocal8Bit()+","+plateList.at(i)[1].toLocal8Bit()+","+plateList.at(i)[2].toLocal8Bit()+"\n");
-    file.close();
-}
 
 QString RequestsToCsv::CNToEL(const QString &cnstr)
 {

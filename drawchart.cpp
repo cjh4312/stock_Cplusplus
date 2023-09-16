@@ -403,22 +403,43 @@ void DrawChart::drawCandleChart(QPainter *painter)
     float highPoint=candleHighLowPoint[0];
     float lowPoint=candleHighLowPoint[1];
     float interval=highPoint-lowPoint;
-    int lineNums=5;
+    int lineNums=9;
 
-    float aveWidth=(candleChartWidth-2*KWIDTHEDGE)/GlobalVar::KRange;
+    float aveWidth=(candleChartWidth-2*KWIDTHEDGE-KRIGHTWIDTHEDGE)/GlobalVar::KRange;
 //        qDebug()<<aveWidth;
     float w=aveWidth/4;
     float aveHeight=0;
+    QRect rect;
     if (highPoint!=lowPoint)
         aveHeight=(priceH-2*KTOPHEIGHTEDGE)/(highPoint-lowPoint);
     painter->setPen(QColor(79,79,79));
+    painter->drawLine(QPointF(candleChartWidth-KRIGHTWIDTHEDGE, 0),
+                      QPointF(candleChartWidth-KRIGHTWIDTHEDGE, canldeChartHeight));
     for (int i=0;i<lineNums;++i)
-        painter->drawLine(QPointF(WIDTHEDGE, interval*i/(lineNums-1)*aveHeight+KTOPHEIGHTEDGE),
-            QPointF(candleChartWidth-WIDTHEDGE, interval*i/(lineNums-1)*aveHeight+KTOPHEIGHTEDGE));
+    {
+        painter->setPen(QColor(79,79,79));
+        painter->drawLine(QPointF(KWIDTHEDGE, interval*i/(lineNums-1)*aveHeight+KTOPHEIGHTEDGE),
+            QPointF(candleChartWidth-KRIGHTWIDTHEDGE+5, interval*i/(lineNums-1)*aveHeight+KTOPHEIGHTEDGE));
+        rect=QRect(candleChartWidth-KRIGHTWIDTHEDGE,interval*i/(lineNums-1)*aveHeight+KTOPHEIGHTEDGE-10,60,20);
+        painter->setPen(QColor(255,165,0));
+        painter->drawText(rect,Qt::AlignCenter,QString::number(highPoint-interval*i/(lineNums-1),'f',2));
+    }
 
     float aveHeightVol=0;
     if (candleHighLowPoint[2]!=0)
         aveHeightVol=(canldeChartHeight*3/15-2*KBOTTOMHEIGHTEDGE)/candleHighLowPoint[2];
+
+    interval=candleHighLowPoint[2];
+    lineNums=5;
+    for (int i=1;i<lineNums;++i)
+    {
+        painter->setPen(QColor(79,79,79));
+        painter->drawLine(QPointF(KWIDTHEDGE, canldeChartHeight-KBOTTOMHEIGHTEDGE-interval*i/(lineNums-1)*aveHeightVol),
+                          QPointF(candleChartWidth-KRIGHTWIDTHEDGE+5, canldeChartHeight-KBOTTOMHEIGHTEDGE-interval*i/(lineNums-1)*aveHeightVol));
+        rect=QRect(candleChartWidth-KRIGHTWIDTHEDGE,canldeChartHeight-KBOTTOMHEIGHTEDGE-interval*i/(lineNums-1)*aveHeightVol-10,60,20);
+        painter->setPen(QColor(255,165,0));
+        painter->drawText(rect,Qt::AlignCenter,GlobalVar::format_conversion(candleHighLowPoint[2]-interval*(lineNums-1-i)/(lineNums-1)));
+    }
     float curXPos=KWIDTHEDGE+aveWidth/2;
     float preXPos=KWIDTHEDGE-aveWidth/2;
     for (int n=begin;n<end;++n)
@@ -494,7 +515,7 @@ void DrawChart::drawCandleChart(QPainter *painter)
     painter->setPen(Qt::red);
     painter->setFont(QFont("微软雅黑",15,700));
 //    qDebug()<<KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]<<GlobalVar::format_conversion(highPoint);
-    QRect rect;
+
     if (not GlobalVar::offsetEnd)
     {
         if (highPoint!=0)
@@ -608,7 +629,7 @@ void DrawChart::appendAnnNews(int end)
                 {
                     annLabel[m]->show();
                     annLabel[m]->setToolTip(content);
-                    int posX=(2*n+1)*(candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
+                    int posX=(2*n+1)*(candleChart->width()-2*KWIDTHEDGE-KRIGHTWIDTHEDGE)/(2*GlobalVar::KRange);
                     annLabel[m]->move(posX+KWIDTHEDGE-TIPWIDTH/2,10);
                     ++m;
                     pos=i;

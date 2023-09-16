@@ -20,10 +20,10 @@ public:
     explicit RequestsToCsv(QDialog *parent = nullptr);
 //    QNetworkAccessManager *naManager;
 //    QStringList listJP;
-    void getIndexList();
-    void getPlateList();
+    bool getIndexList();
+    bool getPlateList();
     void dealWithPlateList(QList<QStringList> &list,const QByteArray &allData);
-    void getStockList();
+    bool getStockList();
     void dealWithAllList();
     void downStockIndexPlateInfo();
     void downloadAllStockK();

@@ -4,7 +4,6 @@
 #include "stockinfo.h"
 #include "ui_mainwindow.h"
 #include "globalvar.h"
-#include <Python.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -1133,7 +1132,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             QMouseEvent *mouseEvent = (QMouseEvent *)event;
             if (mouseEvent->pos().y()<30)
                 return false;
-            int m=(mouseEvent->pos().x()-KWIDTHEDGE)*GlobalVar::KRange/(drawChart.candleChart->width()-2*KWIDTHEDGE);
+            int m=(mouseEvent->pos().x()-KWIDTHEDGE)*GlobalVar::KRange/(drawChart.candleChart->width()-2*KWIDTHEDGE-KRIGHTWIDTHEDGE);
             if (GlobalVar::mCandleChartList.count()<GlobalVar::KRange)
                 hisTimeShareN=m;
             else
@@ -2180,7 +2179,7 @@ void MainWindow::reFlashBuySellBaseInfo()
 }
 void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
 {
-    int m=(mouseEvent->pos().x()-KWIDTHEDGE)*GlobalVar::KRange/(drawChart.candleChart->width()-2*KWIDTHEDGE);
+    int m=(mouseEvent->pos().x()-KWIDTHEDGE)*GlobalVar::KRange/(drawChart.candleChart->width()-2*KWIDTHEDGE-KRIGHTWIDTHEDGE);
 //    qDebug()<<m<<GlobalVar::KRange;
     int n;
     if (GlobalVar::mCandleChartList.count()<GlobalVar::KRange)
@@ -2250,15 +2249,15 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
     if (mouseEvent->pos().ry()>=KTOPHEIGHTEDGE)
     {
         drawChart.colPrice->show();
-        drawChart.colPrice->move(0,mouseEvent->pos().ry()-drawChart.colPrice->height());
+        drawChart.colPrice->move(drawChart.candleChart->width()-KRIGHTWIDTHEDGE,mouseEvent->pos().ry()-drawChart.colPrice->height());
         drawChart.hKLine->move(0,mouseEvent->pos().ry());
     }
-    drawChart.rowTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-KWIDTHEDGE)*drawChart.rowTime->width()/(drawChart.candleChart->width()-2*KWIDTHEDGE),drawChart.candleChart->height()*12/15);
+    drawChart.rowTime->move(mouseEvent->pos().rx()-(mouseEvent->pos().x()-KWIDTHEDGE)*drawChart.rowTime->width()/(drawChart.candleChart->width()-2*KWIDTHEDGE-KRIGHTWIDTHEDGE),drawChart.candleChart->height()*12/15);
     drawChart.vKLine->setStyleSheet("QLabel{border:2px dotted white;}");
     drawChart.vKLine->resize(1,drawChart.candleChart->height());
     drawChart.hKLine->setStyleSheet("QLabel{border:2px dotted white;}");
     drawChart.hKLine->resize(drawChart.candleChart->width(),1);
-    int posX=(2*m+1)*(drawChart.candleChart->width()-2*KWIDTHEDGE)/(2*GlobalVar::KRange);
+    int posX=(2*m+1)*(drawChart.candleChart->width()-2*KWIDTHEDGE-KRIGHTWIDTHEDGE)/(2*GlobalVar::KRange);
 //    int posY=;
     drawChart.vKLine->move(posX+KWIDTHEDGE,0);
 
