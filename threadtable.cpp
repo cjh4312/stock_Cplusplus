@@ -11,6 +11,7 @@ ThreadTable::ThreadTable(QObject *parent)
 
 void ThreadTable::getTableData()
 {
+    QByteArray allData;
 //    QTime t=QDateTime::currentDateTime().time();
     if (GlobalVar::WhichInterface==1)
     {
@@ -21,7 +22,7 @@ void ThreadTable::getTableData()
             GlobalVar::timeOutFlag[5]=false;
         else
             {
-                initTableList();
+                initTableList(allData);
                 emit getTableDataFinished();
                 reFlaseMyStock();
             }
@@ -33,7 +34,7 @@ void ThreadTable::getTableData()
             GlobalVar::timeOutFlag[5]=false;
         else
             {
-                initTableList();
+                initTableList(allData);
                 emit getTableDataFinished();
             }
     }
@@ -50,14 +51,14 @@ void ThreadTable::getTableData()
             GlobalVar::timeOutFlag[5]=false;
         else
             {
-                initTableList();
+                initTableList(allData);
                 emit getTableDataFinished();
             }
     }
 //    qDebug()<<t.msecsTo(QDateTime::currentDateTime().time());
 }
 
-void ThreadTable::initTableList()
+void ThreadTable::initTableList(QByteArray allData)
 {
     m_mutex.lock();
 //    qDebug()<<QDateTime::currentDateTime()<<allData.size();

@@ -128,6 +128,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/Zh.png</normaloff>:/new/png/png/Zh.png</iconset>
+   </property>
    <property name="text">
     <string>A股</string>
    </property>
@@ -140,6 +144,10 @@
   <action name="USMarket">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/Us.png</normaloff>:/new/png/png/Us.png</iconset>
    </property>
    <property name="text">
     <string>美股</string>
@@ -155,6 +163,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/Hk.png</normaloff>:/new/png/png/Hk.png</iconset>
+   </property>
    <property name="text">
     <string>港股</string>
    </property>
@@ -168,6 +180,10 @@
   <action name="USzMarket">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/Us_Zh.png</normaloff>:/new/png/png/Us_Zh.png</iconset>
    </property>
    <property name="text">
     <string>美中概股</string>
@@ -188,26 +204,46 @@
    </property>
   </action>
   <action name="exit">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/exit.png</normaloff>:/new/png/png/exit.png</iconset>
+   </property>
    <property name="text">
     <string>退出</string>
    </property>
   </action>
   <action name="fundFlow">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/fund.jpg</normaloff>:/new/png/png/fund.jpg</iconset>
+   </property>
    <property name="text">
     <string>资金流</string>
    </property>
   </action>
   <action name="actionF10">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/finance.jpeg</normaloff>:/new/png/png/finance.jpeg</iconset>
+   </property>
    <property name="text">
     <string>F10--财务经营分析</string>
    </property>
   </action>
   <action name="actionF3">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/hots.jpg</normaloff>:/new/png/png/hots.jpg</iconset>
+   </property>
    <property name="text">
     <string>F3--热度关键词</string>
    </property>
   </action>
   <action name="DLStockInfo">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/download_2.png</normaloff>:/new/png/png/download_2.png</iconset>
+   </property>
    <property name="text">
     <string>下载指数板块个股信息</string>
    </property>
@@ -216,37 +252,63 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/Save.png</normaloff>:/new/png/png/Save.png</iconset>
+   </property>
    <property name="text">
     <string>下载所有股票k线</string>
    </property>
   </action>
   <action name="pickStock">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/select.png</normaloff>:/new/png/png/select.png</iconset>
+   </property>
    <property name="text">
     <string>公式选股</string>
    </property>
   </action>
   <action name="formula">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/help.jpg</normaloff>:/new/png/png/help.jpg</iconset>
+   </property>
    <property name="text">
     <string>公式编写说明</string>
    </property>
   </action>
   <action name="setVacation">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/date.jpg</normaloff>:/new/png/png/date.jpg</iconset>
+   </property>
    <property name="text">
     <string>设置A股假期</string>
    </property>
   </action>
   <action name="login">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/login.png</normaloff>:/new/png/png/login.png</iconset>
+   </property>
    <property name="text">
     <string>登录</string>
    </property>
   </action>
   <action name="commonTrade">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/bs.jpg</normaloff>:/new/png/png/bs.jpg</iconset>
+   </property>
    <property name="text">
     <string>普通交易</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>exit</sender>

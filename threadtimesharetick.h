@@ -17,11 +17,10 @@ public:
     void getBuySellTimeShareTick();
 
 private:
-    void initBuySellList();
-    void initTimeShareTickList();
+    void initBuySellList(QByteArray buySellData);
+    void initTimeShareTickList(QByteArray timeShareTickData);
     void findStockArea();
-    QByteArray buySellData;
-    QByteArray timeShareTickData;
+
     QList<QStringList> areaData;
     QString price[10]={"f31","f33","f35","f37","f39","f19","f17","f15","f13","f11"};
     QString nums[10]={"f32","f34","f36","f38","f40","f20","f18","f16","f14","f12"};

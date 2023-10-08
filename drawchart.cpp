@@ -24,7 +24,7 @@ DrawChart::DrawChart(QWidget *parent)
     main->addWidget(hisTimeShareChartView);
     QPushButton *close=new QPushButton(hisTimeShareChartTitle);
     QIcon myicon;
-    myicon.addFile(tr(":/new/pictures/close.png"));
+    myicon.addFile(tr(":/new/png/png/close.png"));
     close->setIcon(myicon);
     close->setIconSize(QSize(20,20));
     close->setMaximumSize(QSize(30,30));
@@ -97,7 +97,7 @@ DrawChart::DrawChart(QWidget *parent)
     annLayout->addWidget(annText);
 
 //    annoucementWindow
-    QPixmap *pixmap = new QPixmap(":/new/pictures/annoucement.png");
+    QPixmap *pixmap = new QPixmap(":/new/png/png/annoucement.png");
     for (int i=0;i<50;++i)
     {
         annLabel[i]=new QLabel(candleChart);
@@ -394,7 +394,7 @@ void DrawChart::drawCandleChart(QPainter *painter)
     int canldeChartHeight=candleChart->height();
     int priceH=canldeChartHeight*12/15;
     painter->drawRect(0,0,candleChartWidth,canldeChartHeight);
-    painter->drawLine(0,priceH,candleChartWidth,priceH);
+    painter->drawLine(0,priceH,candleChartWidth-KRIGHTWIDTHEDGE,priceH);
 
     if (GlobalVar::mCandleChartList.isEmpty())
         return;
@@ -403,7 +403,12 @@ void DrawChart::drawCandleChart(QPainter *painter)
     float highPoint=candleHighLowPoint[0];
     float lowPoint=candleHighLowPoint[1];
     float interval=highPoint-lowPoint;
-    int lineNums=9;
+    int lineNums=20;
+    float rate=0.2;
+    if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
+        rate=0.02;
+    while (lineNums>2 and interval/(lineNums-1)/lowPoint<rate)
+        lineNums-=1;
 
     float aveWidth=(candleChartWidth-2*KWIDTHEDGE-KRIGHTWIDTHEDGE)/GlobalVar::KRange;
 //        qDebug()<<aveWidth;

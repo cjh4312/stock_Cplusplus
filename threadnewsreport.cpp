@@ -18,10 +18,12 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
 
 void ThreadNewsReport::getNewsData()
 {
+
     if (tts->state() == QTextToSpeech::Speaking)
         return;
-    m_mutex.lock();
+//    m_mutex.lock();
     getEastNews();
+    QByteArray allData;
     if (GlobalVar::timeOutFlag[4])
         GlobalVar::timeOutFlag[4]=false;
     else
@@ -30,13 +32,14 @@ void ThreadNewsReport::getNewsData()
             if (GlobalVar::timeOutFlag[3])
                 GlobalVar::timeOutFlag[3]=false;
             else
-                initNewsReport();
+                initNewsReport(allData);
         }
-    m_mutex.unlock();
+//    m_mutex.unlock();
 }
 
 void ThreadNewsReport::getEastNews()
 {
+    QByteArray allData;
     GlobalVar::getData(allData,2,QUrl("https://finance.eastmoney.com/yaowen.html"));
     if (GlobalVar::timeOutFlag[4])
         return;
@@ -61,7 +64,7 @@ void ThreadNewsReport::getEastNews()
     });
 }
 
-void ThreadNewsReport::initNewsReport()
+void ThreadNewsReport::initNewsReport(QByteArray allData)
 {
     QString cur_time=QDateTime::currentDateTime().toString("yyyyMMddhhmmss").mid(10,2);
     if (cur_time <= "01")

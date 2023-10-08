@@ -25,6 +25,8 @@ ThreadTimeShareTick::ThreadTimeShareTick(QObject *parent)
 
 void ThreadTimeShareTick::getBuySellTimeShareTick()
 {
+    QByteArray buySellData;
+    QByteArray timeShareTickData;
 
     GlobalVar::getData(buySellData,0.9,QUrl("http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=2&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963"));
 
@@ -32,7 +34,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick()
         GlobalVar::timeOutFlag[8]=false;
     else
         {
-            initBuySellList();
+            initBuySellList(buySellData);
             QString l=GlobalVar::curCode.left(1);
             if (l=="3" or l=="6" or l=="0")
                 findStockArea();
@@ -44,12 +46,12 @@ void ThreadTimeShareTick::getBuySellTimeShareTick()
         GlobalVar::timeOutFlag[7]=false;
     else
     {
-        initTimeShareTickList();
+        initTimeShareTickList(timeShareTickData);
         emit getTimeShareTickFinished();
     }
 }
 
-void ThreadTimeShareTick::initBuySellList()
+void ThreadTimeShareTick::initBuySellList(QByteArray buySellData)
 {
     m_mutex.lock();
     QJsonParseError *jsonError=new QJsonParseError;
@@ -85,7 +87,7 @@ void ThreadTimeShareTick::initBuySellList()
     m_mutex.unlock();
 }
 
-void ThreadTimeShareTick::initTimeShareTickList()
+void ThreadTimeShareTick::initTimeShareTickList(QByteArray timeShareTickData)
 {
     m_mutex.lock();
     QJsonParseError *jsonError=new QJsonParseError;

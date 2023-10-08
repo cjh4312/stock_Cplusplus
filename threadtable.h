@@ -17,10 +17,10 @@ public:
     void getTableData();
 
 private:
-    void initTableList();
+    void initTableList(QByteArray allData);
     void readMyStock();
     void reFlaseMyStock();
-    QByteArray allData;
+
     QMutex m_mutex;
 
 signals:

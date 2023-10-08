@@ -50,7 +50,6 @@ public:
 
 private slots:
     void tradingTimeRunThread();
-    void reFlashTable();
     void reFlashIndex();
     void reFlashBuySellBaseInfo();
     void setMarket();
@@ -136,7 +135,6 @@ private:
     void initSignals();
     void saveMyStock();
     void saveCode();
-    void initFlag();
     void flashOldCandleInfo(QMouseEvent *mouseEvent);
     void toInterFace(QString which);
     void toFundFlow();

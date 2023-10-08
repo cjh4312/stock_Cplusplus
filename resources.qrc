@@ -1,8 +1,30 @@
 <RCC>
-    <qresource prefix="/new/pictures">
-        <file>logo.ico</file>
-        <file>des.jpg</file>
-        <file>close.png</file>
-        <file>annoucement.png</file>
+    <qresource prefix="/new/png">
+        <file>png/download_2.png</file>
+        <file>png/exit.png</file>
+        <file>png/Save.png</file>
+        <file>png/Hk.png</file>
+        <file>png/Zh.png</file>
+        <file>png/Us.png</file>
+        <file>png/buy.jpg</file>
+        <file>png/sell.jpg</file>
+        <file>png/login.png</file>
+        <file>png/select.png</file>
+        <file>png/date.jpg</file>
+        <file>png/des.jpg</file>
+        <file>png/finance.jpeg</file>
+        <file>png/no_report.png</file>
+        <file>png/report.png</file>
+        <file>png/del.jpg</file>
+        <file>png/join.jpg</file>
+        <file>png/annoucement.png</file>
+        <file>png/close.png</file>
+        <file>png/help.jpg</file>
+        <file>png/fund.jpg</file>
+        <file>png/fast.jpg</file>
+        <file>png/step.jpeg</file>
+        <file>png/Us_Zh.png</file>
+        <file>png/bs.jpg</file>
+        <file>png/hots.jpg</file>
     </qresource>
 </RCC>

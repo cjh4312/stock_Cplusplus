@@ -15,18 +15,18 @@ void ThreadCandleChart::getAllCandleChart(QString freq, QString adjustFlag,bool 
         startDate=QDateTime::currentDateTime().addDays(-KRANGE*7/3).toString("yyyyMMdd");
     else
         startDate="19900101";
-
+    QByteArray allData;
     GlobalVar::getData(allData,2,QUrl("http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg="+startDate+"&end=20500101&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid="+GlobalVar::getComCode()+"&klt="+freq+"&fqt="+adjustFlag));
     if(GlobalVar::timeOutFlag[0])
         GlobalVar::timeOutFlag[0]=false;
     else
         {
-            initCandleChartList();
+            initCandleChartList(allData);
             emit getCandleChartFinished();
         }
 }
 
-void ThreadCandleChart::initCandleChartList()
+void ThreadCandleChart::initCandleChartList(QByteArray allData)
 {
     QJsonParseError *jsonError=new QJsonParseError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, jsonError);

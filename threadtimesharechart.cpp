@@ -10,20 +10,20 @@ ThreadTimeShareChart::ThreadTimeShareChart(QObject *parent)
 
 void ThreadTimeShareChart::getAllTimeShareChart()
 {
-
+    QByteArray allData;
     GlobalVar::getData(allData,1.5,QUrl("https://push2his.eastmoney.com/api/qt/stock/trends2/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893"));
     if (GlobalVar::timeOutFlag[6])
         GlobalVar::timeOutFlag[6]=false;
     else
         {
-            initTimeShareChartList();
+            initTimeShareChartList(allData);
             emit getTimeShareChartFinished();
         }
 }
 
-void ThreadTimeShareChart::initTimeShareChartList()
+void ThreadTimeShareChart::initTimeShareChartList(QByteArray allData)
 {
-    m_mutex.lock();
+//    m_mutex.lock();
 
     QJsonParseError *jsonError=new QJsonParseError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, jsonError);
@@ -114,6 +114,6 @@ void ThreadTimeShareChart::initTimeShareChartList()
         if (GlobalVar::timeShareHighLowPoint[1]>0)
             GlobalVar::timeShareHighLowPoint[1]=0;
     }
-    m_mutex.unlock();
+//    m_mutex.unlock();
 }
 

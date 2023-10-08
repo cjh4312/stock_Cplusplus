@@ -14,8 +14,8 @@ public:
     explicit ThreadCandleChart(QObject *parent = nullptr);
     void getAllCandleChart(QString freq,QString adjustFlag,bool isFirst);
 private:
-    void initCandleChartList();
-    QByteArray allData;
+    void initCandleChartList(QByteArray allData);
+
 signals:
     void getCandleChartFinished();
 };

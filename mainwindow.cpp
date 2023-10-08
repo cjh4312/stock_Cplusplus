@@ -70,7 +70,11 @@ void MainWindow::initThread()
 
     threadTable=new ThreadTable;
     threadTable->moveToThread(thread[0]);
-    connect(threadTable,SIGNAL(getTableDataFinished()),this,SLOT(reFlashTable()));
+    connect(threadTable,&ThreadTable::getTableDataFinished,this,[=](){
+        mTableStock.setTableView();
+        baseInfoData[7]->setText(QString::number(GlobalVar::upNums));
+        baseInfoData[15]->setText(QString::number(GlobalVar::downNums));
+    });
     connect(this,&MainWindow::startThreadTable,threadTable,&ThreadTable::getTableData);
     thread[0]->start();
     emit startThreadTable();
@@ -125,7 +129,7 @@ void MainWindow::initInterface()
 {
     ui->setupUi(this);
     setWindowTitle("Stock");
-    setWindowIcon(QIcon(":/new/pictures/logo.ico"));
+    setWindowIcon(QIcon(":/new/png/png/logo.ico"));
     if (not GlobalVar::isSayNews)
         ui->newsReport->setChecked(true);
     if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
@@ -252,6 +256,18 @@ void MainWindow::initInterface()
 }
 void MainWindow::initSettings()
 {
+    if (GlobalVar::isSayNews)
+    {
+        QIcon icon(":/new/png/png/report.png");
+        ui->newsReport->setIcon(icon);
+        ui->newsReport->setText("关闭语音播报");
+    }
+    else
+    {
+        QIcon icon(":/new/png/png/no_report.png");
+        ui->newsReport->setIcon(icon);
+        ui->newsReport->setText("打开语音播报");
+    }
     newsData->setOpenExternalLinks(true);
     drawChart.hisTimeShareChart->setParent(this);
 
@@ -294,7 +310,7 @@ void MainWindow::initSettings()
     f10Main->setContentsMargins(0,0,0,0);
 
     QIcon myicon;
-    myicon.addFile(tr(":/new/pictures/close.png"));
+    myicon.addFile(tr(":/new/png/png/close.png"));
     close->setIcon(myicon);
     close->setIconSize(QSize(20,20));
     close->setMaximumSize(QSize(30,30));
@@ -585,6 +601,18 @@ void MainWindow::initSignals()
             threadNewsReport->tts->resume();
         }
         GlobalVar::isSayNews=not GlobalVar::isSayNews;
+        if (GlobalVar::isSayNews)
+        {
+            QIcon icon(":/new/png/png/report.png");
+            ui->newsReport->setIcon(icon);
+            ui->newsReport->setText("关闭语音播报");
+        }
+        else
+        {
+            QIcon icon(":/new/png/png/no_report.png");
+            ui->newsReport->setIcon(icon);
+            ui->newsReport->setText("打开语音播报");
+        }
     });
     connect(ui->fundFlow,&QAction::triggered,this,&MainWindow::dealWithFundFlow);
     connect(&searchStock,SIGNAL(showSearch()),this,SLOT(showSearchResult()));
@@ -678,7 +706,7 @@ void MainWindow::initSignals()
 //        des->setCursor();
         QTextBrowser *d=new QTextBrowser(formulaDes);
         mainLayout->addWidget(d);
-        d->insertHtml("<img src=:/new/pictures/des.jpg/>");
+        d->insertHtml("<img src=:/new/png/png/des.jpg/>");
         formulaDes->show();
         file.close();
     });
@@ -696,7 +724,26 @@ void MainWindow::initSignals()
                 mFundFlow.isShow[i]=false;
             mFundFlow.tableChart->update();
         });
-        connect(periodAdjust[i],&QRadioButton::clicked,this,&MainWindow::initFlag);
+        connect(periodAdjust[i],&QRadioButton::clicked,this,[=](){
+            if (i==0)
+                freq="101";
+            else if (i==1)
+                freq="102";
+            else if (i==2)
+                freq="103";
+            else if (i==3)
+                adjustFlag="0";
+            else if (i==4)
+                adjustFlag="1";
+            else if (i==5)
+                adjustFlag="2";
+            if (GlobalVar::isKState)
+            {
+                preCode="";
+                //        resetKParameter();
+                emit startThreadCandleChart(freq,adjustFlag,true);
+            }
+        });
     }
     for (int i=0;i<10;++i)
     {
@@ -731,27 +778,6 @@ void MainWindow::saveCode()
         GlobalVar::settings->setValue("curCode",GlobalVar::curCode);
 //        GlobalVar::settings->setValue("curName",GlobalVar::curName);
         GlobalVar::settings->sync();
-    }
-}
-void MainWindow::initFlag()
-{
-    if (sender()==periodAdjust[0])
-        freq="101";
-    else if (sender()==periodAdjust[1])
-        freq="102";
-    else if (sender()==periodAdjust[2])
-        freq="103";
-    else if (sender()==periodAdjust[3])
-        adjustFlag="0";
-    else if (sender()==periodAdjust[4])
-        adjustFlag="1";
-    else if (sender()==periodAdjust[5])
-        adjustFlag="2";
-    if (GlobalVar::isKState)
-    {
-        preCode="";
-//        resetKParameter();
-        emit startThreadCandleChart(freq,adjustFlag,true);
     }
 }
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -1195,6 +1221,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             QMenu *menu=new QMenu();
             QAction *moveOne=new QAction("左右移动一格");
             QAction *moveFast=new QAction("左右快速移动");
+            QIcon icon(":/new/png/png/step.jpeg");
+            moveOne->setIcon(icon);
+            QIcon icon1(":/new/png/png/fast.jpg");
+            moveFast->setIcon(icon1);
             menu->addAction(moveFast);
             menu->addAction(moveOne);
             menu->popup(QCursor::pos());
@@ -1269,7 +1299,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         for (int i=0;i<10;++i)
         {
-            if (obj==buySellPrice[i])
+            if (obj==buySellPrice[i] and (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4))
             {
                 if (event->type()==QEvent::MouseButtonPress)
                     tradePrice=buySellPrice[i]->text().toFloat();
@@ -1624,6 +1654,8 @@ void MainWindow::addRightMenu(int num)
     }
     QMenu *menu=new QMenu();
     QAction *act=new QAction("加入自选");
+    QIcon icon(":/new/png/png/join.jpg");
+    act->setIcon(icon);
     menu->addAction(act);
     menu->popup(QCursor::pos());
     connect(act,&QAction::triggered,this,[info, this](){
@@ -1653,6 +1685,8 @@ void MainWindow::delRightMenu()
 {
     QMenu *menu=new QMenu();
     QAction *act=new QAction("删除自选");
+    QIcon icon(":/new/png/png/del.jpg");
+    act->setIcon(icon);
     menu->addAction(act);
     menu->popup(QCursor::pos());
     connect(act,&QAction::triggered,this,[=](){
@@ -1734,8 +1768,12 @@ void MainWindow::fastTrade()
         return;
     QMenu *menu=new QMenu();
     QAction *actB=new QAction("闪电买入");
+    QIcon icon(":/new/png/png/buy.jpg");
+    actB->setIcon(icon);
     menu->addAction(actB);
     QAction *actS=new QAction("闪电卖出");
+    QIcon icon1(":/new/png/png/sell.jpg");
+    actS->setIcon(icon1);
     menu->addAction(actS);
     menu->popup(QCursor::pos());
 
@@ -1898,9 +1936,9 @@ void MainWindow::fastTrade()
 
         QLabel *numbers=new QLabel(GlobalVar::curCode,fastSell);
         QSpinBox *sellNums=new QSpinBox(fastSell);
-        sellNums->setRange(0,10000);
+        sellNums->setRange(0,1000000);
         int maxNums=0;
-        if (GlobalVar::curCode==l[0])
+        if (GlobalVar::curCode==l[0].split('.')[0])
         {
             maxNums=l[1].toInt();
             numbers->setText(QString::number(maxNums));
@@ -1929,7 +1967,7 @@ void MainWindow::fastTrade()
             proportion->addButton(proportionName[i]);
             group->addWidget(proportionName[i]);
             connect(proportionName[i],&QRadioButton::clicked,this,[=](){
-                sellNums->setValue(maxNums/(i+1));
+                sellNums->setValue(int(maxNums/(i+1)/100)*100);
             });
         }
         proportionName[0]->setChecked(true);
@@ -2031,10 +2069,16 @@ void MainWindow::tradingTimeRunThread()
             emit startThreadIndex();
             //每天9点,更新A股指数板块股票信息
             QString d=curTime.date().toString("yyyy-MM-dd");
-            if (curTime.time().toString("hh:mm")>="09:00" and d>GlobalVar::settings->value("curTime").toString())
+            if (curTime.time().toString("hh:mm")>="09:00" and
+                d>GlobalVar::settings->value("curTime").toString())
             {
-                requestsToCsv.downStockIndexPlateInfo();
-                GlobalVar::settings->setValue("curTime",d);
+                QStringList vacation=GlobalVar::settings->value("Vacation_ZH").toStringList();
+                QString cur_date=curTime.toString("MMdd");
+                if (not vacation.contains(cur_date))
+                {
+                    requestsToCsv.downStockIndexPlateInfo();
+                    GlobalVar::settings->setValue("curTime",d);
+                }
             }
         }
         else
@@ -2049,12 +2093,6 @@ void MainWindow::tradingTimeRunThread()
     }
     timeCount+=1;
 //    qDebug()<<timeCount;
-}
-void MainWindow::reFlashTable()
-{
-    mTableStock.setTableView();
-    baseInfoData[7]->setText(QString::number(GlobalVar::upNums));
-    baseInfoData[15]->setText(QString::number(GlobalVar::downNums));
 }
 void MainWindow::reFlashIndex()
 {
