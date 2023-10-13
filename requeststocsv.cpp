@@ -1,7 +1,6 @@
 
 #include "requeststocsv.h"
 #include "globalvar.h"
-#include "qlabel.h"
 #include "qmessagebox.h"
 #include "qpushbutton.h"
 
@@ -9,14 +8,27 @@ RequestsToCsv::RequestsToCsv(QDialog *parent)
     : QDialog{parent}
 {
 //    naManager = new QNetworkAccessManager(this);
-
+    progressBarWindow=new QDialog(this);
+    progressBarWindow->setWindowFlags(progressBarWindow->windowFlags() | Qt::WindowStaysOnTopHint);
+    progressBarWindow->setWindowTitle("下载所有股票k线数据");
+    progressBarWindow->setGeometry(850, 400, 300, 150);
+    QLabel *stockNums = new QLabel("剩余股票数量:");
+    numLine = new QLabel();
+    progressBar = new QProgressBar;
+    stopBtn = new QPushButton("终止下载");
+    QGridLayout *mainLayout = new QGridLayout(this);
+    progressBarWindow->setLayout(mainLayout);
+    mainLayout->addWidget(stockNums, 0, 1);
+    mainLayout->addWidget(numLine, 0, 3);
+    mainLayout->addWidget(progressBar, 1, 0, 1, 5);
+    mainLayout->addWidget(stopBtn, 2, 3);
 }
 
 bool RequestsToCsv::getIndexList()
 {
 //    QDateTime start=QDateTime::currentDateTime();
     QByteArray allData;
-    GlobalVar::getData(allData,2,QUrl("https://www.joinquant.com/data/dict/indexData"));
+    GlobalVar::getData(allData,3,QUrl("https://www.joinquant.com/data/dict/indexData"));
     if (allData.isEmpty())
         return false;
     QString html=QString(allData);
@@ -118,8 +130,8 @@ bool RequestsToCsv::getStockList()
 {
     QJsonObject json;
     json.insert("api_name", "stock_basic");
-//    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
-    json.insert("token", "bbe1d68e9a152f87296960ffd981449ed98fff7cfd13b3cf2a50be79");
+    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
+//    json.insert("token", "bbe1d68e9a152f87296960ffd981449ed98fff7cfd13b3cf2a50be79");
     json.insert("fields", "ts_code,symbol,name,area,industry,list_date,cnspell");
 
     QJsonDocument doc;
@@ -251,15 +263,24 @@ void RequestsToCsv::downStockIndexPlateInfo()
     if (getIndexList())
         promptText->append("指数处理成功");
     else
-        promptText->append("指数处理失败");
+        if (getIndexList())
+            promptText->append("指数处理成功");
+        else
+            promptText->append("指数处理失败");
     if (getPlateList())
         promptText->append("板块处理成功");
     else
-        promptText->append("板块处理失败");
+        if (getPlateList())
+            promptText->append("板块处理成功");
+        else
+            promptText->append("板块处理失败");
     if (getStockList())
         promptText->append("股票处理成功");
     else
-        promptText->append("股票处理失败");
+        if (getStockList())
+            promptText->append("股票处理成功");
+        else
+            promptText->append("股票处理失败");
     dealWithAllList();
     promptText->append("指数、板块、个股信息处理完毕");
 }
@@ -268,34 +289,25 @@ void RequestsToCsv::downloadAllStockK()
 {
     if (GlobalVar::settings->value("isDownloadK").toString()==
         QDateTime::currentDateTime().toString("yyyy-MM-dd"))
+    {
         QMessageBox::information(this,"提示", "已经下载过了", QMessageBox::Ok);
-    if (isDownload)
         return;
+    }
+    if (isDownload)
+    {
+        progressBarWindow->show();
+        return;
+    }
     isDownload=true;
+    stopBtn->setText("停止下载");
+    stopBtn->setEnabled(true);
     QDateTime curTime=GlobalVar::curRecentWorkDay(0);
-    QString startDate;
+    QString startDate="1990-01-01";
     QString curDate=curTime.toString("yyyy-MM-dd");
     QString endDate=curTime.toString("yyyyMMdd");
-//    qDebug()<<endDate;
-    QDialog *progressBarWindow=new QDialog(this);
-    progressBarWindow->setWindowFlags(progressBarWindow->windowFlags() | Qt::WindowStaysOnTopHint);
-    progressBarWindow->setWindowTitle("下载所有股票k线数据");
-    progressBarWindow->setGeometry(850, 400, 300, 150);
-
-    QLabel *stockNums = new QLabel("剩余股票数量:");
-    QLabel *numLine = new QLabel();
     int n=GlobalVar::mTableListCopy.count();
     numLine->setText(QString::number(n));
-
-    QProgressBar *progressBar = new QProgressBar;
     progressBar->setRange(0, n);
-    QPushButton *stopBtn = new QPushButton("终止下载");
-    QGridLayout *mainLayout = new QGridLayout(this);
-    progressBarWindow->setLayout(mainLayout);
-    mainLayout->addWidget(stockNums, 0, 1);
-    mainLayout->addWidget(numLine, 0, 3);
-    mainLayout->addWidget(progressBar, 1, 0, 1, 5);
-    mainLayout->addWidget(stopBtn, 2, 3);
     progressBarWindow->show();
     connect(stopBtn,&QPushButton::clicked,this,[=](){
         isStop=true;
@@ -305,10 +317,7 @@ void RequestsToCsv::downloadAllStockK()
         numLine->setText(QString::number(n-i));
         progressBar->setValue(i);
         if (isStop)
-        {
-            stopBtn->setEnabled(false);
             break;
-        }
         QString code=GlobalVar::mTableListCopy.at(i-1).code;
 //        if (GlobalVar::mTableListCopy.at(i-1).name.contains("退"))
 //            continue;
@@ -346,6 +355,8 @@ void RequestsToCsv::downloadAllStockK()
             startDate=QDateTime::fromString(str,"yyyy-MM-dd").addDays(1).toString("yyyyMMdd");
 //            qDebug()<<startDate;
         }
+        else
+            startDate="1990-01-01";
         file.close();
 
         if (file.open(QFile::Append))
@@ -364,11 +375,14 @@ void RequestsToCsv::downloadAllStockK()
         file.close();
     }
     if (not isStop)
+    {
         GlobalVar::settings->setValue("isDownloadK",GlobalVar::curRecentWorkDay(0).toString("yyyy-MM-dd"));
-    stopBtn->setText("下载完成");
+        stopBtn->setText("下载完成");
+    }
     stopBtn->setEnabled(false);
     isStop=false;
     isDownload=false;
+
 }
 
 //QString add_zero_for_string(int content,int len,bool direction)

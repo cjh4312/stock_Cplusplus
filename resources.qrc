@@ -13,8 +13,6 @@
         <file>png/date.jpg</file>
         <file>png/des.jpg</file>
         <file>png/finance.jpeg</file>
-        <file>png/no_report.png</file>
-        <file>png/report.png</file>
         <file>png/del.jpg</file>
         <file>png/join.jpg</file>
         <file>png/annoucement.png</file>
@@ -26,5 +24,7 @@
         <file>png/Us_Zh.png</file>
         <file>png/bs.jpg</file>
         <file>png/hots.jpg</file>
+        <file>png/no_report.png</file>
+        <file>png/report.png</file>
     </qresource>
 </RCC>

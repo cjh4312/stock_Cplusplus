@@ -405,7 +405,7 @@ void DrawChart::drawCandleChart(QPainter *painter)
     float interval=highPoint-lowPoint;
     int lineNums=20;
     float rate=0.2;
-    if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
+    if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399")
         rate=0.02;
     while (lineNums>2 and interval/(lineNums-1)/lowPoint<rate)
         lineNums-=1;

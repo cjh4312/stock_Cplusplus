@@ -12,6 +12,7 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 #include <QProgressBar>
+#include <QLabel>
 
 class RequestsToCsv : public QDialog
 {
@@ -20,6 +21,10 @@ public:
     explicit RequestsToCsv(QDialog *parent = nullptr);
 //    QNetworkAccessManager *naManager;
 //    QStringList listJP;
+    QDialog *progressBarWindow;
+    QLabel *numLine;
+    QProgressBar *progressBar;
+    QPushButton *stopBtn;
     bool getIndexList();
     bool getPlateList();
     void dealWithPlateList(QList<QStringList> &list,const QByteArray &allData);
