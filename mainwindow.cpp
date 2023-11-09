@@ -108,10 +108,11 @@ void MainWindow::initThread()
     threadTimeShareChart=new ThreadTimeShareChart;
     threadTimeShareChart->moveToThread(thread[4]);
     connect(threadTimeShareChart,&ThreadTimeShareChart::getTimeShareChartFinished,this,[=](){
-        QWidget *pActiveWindow = QApplication::activeWindow();
-        MainWindow *pMainWindow = dynamic_cast<MainWindow*>(pActiveWindow);
-        if(pMainWindow && pMainWindow == this)
+//        QWidget *pActiveWindow = QApplication::activeWindow();
+//        MainWindow *pMainWindow = dynamic_cast<MainWindow*>(pActiveWindow);
+//        if(pMainWindow && pMainWindow == this)
             drawChart.timeShareChart->update();
+
     });
     connect(this,&MainWindow::startThreadTimeShareChart,threadTimeShareChart,&ThreadTimeShareChart::getAllTimeShareChart);
     thread[4]->start();
@@ -450,22 +451,22 @@ void MainWindow::initSignals()
         else
         {
             GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
-            emit startThreadTimeShareTick();
             emit startThreadTimeShareChart();
+            emit startThreadTimeShareTick();
         }
     });
     connect(mTableStock.risingSpeedView, &QTableView::clicked, this, [this](const QModelIndex &index){
         int curRow=index.row();
         GlobalVar::curCode=GlobalVar::mRisingSpeedList.at(curRow).code;
 //        GlobalVar::curName=GlobalVar::mRisingSpeedList.at(curRow).name;
-        emit startThreadTimeShareTick();
         emit startThreadTimeShareChart();
+        emit startThreadTimeShareTick();
     });
     connect(mTableStock.myStockView, &QTableView::clicked, this, [this](const QModelIndex &index){
         int curRow=index.row();
         GlobalVar::curCode=GlobalVar::mMyStockList.at(curRow).code;
-        emit startThreadTimeShareTick();
         emit startThreadTimeShareChart();
+        emit startThreadTimeShareTick();
     });
     connect(ui->ZHMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
     connect(ui->HKMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
@@ -2022,10 +2023,8 @@ void MainWindow::tradingTimeRunThread()
             if (GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
                 emit startThreadTimeShareTick();
     }
-    //每5秒
     else if (timeCount==8 or timeCount==18)
     {
-        //A股交易时段实时刷新所有股票，及分时图
         if (GlobalVar::WhichInterface==1 and GlobalVar::isZhMarketDay(curTime))
         {
             circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
@@ -2036,16 +2035,14 @@ void MainWindow::tradingTimeRunThread()
 //                mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
 //                mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
             }
-            //A股交易时段实时刷新k线图
+
 //            if (GlobalVar::isKState)
 //                emit startThreadCandleChart(freq,adjustFlag,true);
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
                 emit startThreadTimeShareTick();
             emit startThreadTable();
-            emit startThreadTimeShareChart();
-
+//            emit startThreadTimeShareChart();
         }
-        //美股港股交易时段实时刷新所有股票，及分时图、分时成交
         else if ((GlobalVar::WhichInterface==5 and GlobalVar::isUSMarketDay(curTime)) or
                  (GlobalVar::WhichInterface==2 and GlobalVar::isHKMarketDay(curTime)))
         {
@@ -2053,21 +2050,15 @@ void MainWindow::tradingTimeRunThread()
 //            if (GlobalVar::isKState)
 //                emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTable();
-            emit startThreadTimeShareChart();
             emit startThreadTimeShareTick();
+//            emit startThreadTimeShareChart();
         }
-
-        //标注非交易时段
         else
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
 
-        //工作日
-
         if (GlobalVar::isWorkDay(curTime))
         {
-            //更新全球指数
             emit startThreadIndex();
-            //每天9点,更新A股指数板块股票信息
             QString d=curTime.date().toString("yyyy-MM-dd");
             if (curTime.time().toString("hh:mm")>="09:00" and
                 d>GlobalVar::settings->value("curTime").toString())
@@ -2078,21 +2069,19 @@ void MainWindow::tradingTimeRunThread()
                 {
                     requestsToCsv.downStockIndexPlateInfo();
                     GlobalVar::settings->setValue("curTime",d);
+                    emit startThreadTimeShareChart();
                 }
             }
         }
         else
             reFlashIndex();
-        //交换显示指数
     }
-    //每10秒获取最新新闻信息
     else if (timeCount==20)
     {
         emit startThreadGetNews();
         timeCount=0;
     }
     timeCount+=1;
-//    qDebug()<<timeCount;
 }
 void MainWindow::reFlashIndex()
 {

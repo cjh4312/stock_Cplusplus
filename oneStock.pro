@@ -65,8 +65,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     resources.qrc
 
-INCLUDEPATH += d:\workstation\python\include
-LIBS += -Ld:\workstation\python\libs -lpython310
+INCLUDEPATH += d:\workstation\Python\include
+LIBS += -Ld:\workstation\Python\libs -lpython311
+
+#QMAKE_LFLAGS_RELEASE = /INCREMENTAL:NO /DEBUG
+#LIBS += -lDbgHelp
 
 DISTFILES += \
     qmt.py

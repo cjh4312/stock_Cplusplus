@@ -49,34 +49,121 @@ void ThreadTimeShareTick::getBuySellTimeShareTick()
         initTimeShareTickList(timeShareTickData);
         emit getTimeShareTickFinished();
     }
+//    QString url="http://push2.eastmoney.com/api/qt/stock/sse?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=2&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963";
+//    getSSEdata(1,url);
+//    url="http://push2.eastmoney.com/api/qt/stock/details/sse?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55&mpi=2000&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&pos=-0&secid="+GlobalVar::getComCode();
+//    GlobalVar::mTimeShareTickList.clear();
+//    getSSEdata(2,url);
+}
+
+void ThreadTimeShareTick::getSSEdata(int nums,QString url)
+{
+    QByteArray* qByteArray=new QByteArray();
+    QString preCode=GlobalVar::curCode;
+    QNetworkRequest request;
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    request.setUrl(QUrl(url));
+    QNetworkAccessManager *naManager =new QNetworkAccessManager();
+    QNetworkReply *reply= naManager->get(request);
+    connect(reply, &QNetworkReply::readyRead, this, [=]()mutable{
+        if (GlobalVar::curCode!=preCode)
+        {
+            reply->abort();
+            disconnect(reply);
+            delete reply;
+            reply=nullptr;
+            delete qByteArray;
+            qByteArray=nullptr;
+            delete naManager;
+            naManager=nullptr;
+        }
+        else
+        {
+            QByteArray allData=reply->readAll();
+            if (allData.contains("data:"))
+            {
+                if (allData.contains("\"data\":{\""))
+                {
+                    if (allData.mid(allData.size()-2,2)=="\n\n")
+                    {
+                        if (nums==1)
+                        {
+                            initBuySellList(allData.mid(6,allData.size()-8));
+                            QString l=GlobalVar::curCode.left(1);
+                            if (l=="3" or l=="6" or l=="0")
+                                findStockArea();
+                            emit getBuySellFinished();
+                        }
+                        else
+                        {
+                            initTimeShareTickList(allData.mid(6,allData.size()-8));
+                            emit getTimeShareTickFinished();
+                        }
+                    }
+                    else
+                        qByteArray->append(allData);
+                }
+            }
+            else
+            {
+                qByteArray->append(allData);
+                QByteArray tempByteArray=qByteArray->data();
+//                qDebug()<<tempByteArray;
+                if (tempByteArray.mid(tempByteArray.size()-2,2)=="\n\n")
+                {
+                    if (nums==1)
+                    {
+                        initBuySellList(tempByteArray.mid(6,tempByteArray.size()-8));
+                        QString l=GlobalVar::curCode.left(1);
+                        if (l=="3" or l=="6" or l=="0")
+                            findStockArea();
+                        emit getBuySellFinished();
+                    }
+                    else
+                    {
+                        initTimeShareTickList(tempByteArray.mid(6,tempByteArray.size()-8));
+                        emit getTimeShareTickFinished();
+                    }
+                }
+            }
+        }
+    });
 }
 
 void ThreadTimeShareTick::initBuySellList(QByteArray buySellData)
 {
-    m_mutex.lock();
     QJsonParseError *jsonError=new QJsonParseError;
     QJsonDocument doc = QJsonDocument::fromJson(buySellData, jsonError);
     if (jsonError->error == QJsonParseError::NoError)
     {
         QJsonObject jsonObject = doc.object();
-        GlobalVar::preClose=jsonObject.value("data").toObject().value("f60").toDouble();
-        GlobalVar::curName=jsonObject.value("data").toObject().value("f58").toString();
+        if (buySellData.contains("f60"))
+            GlobalVar::preClose=jsonObject.value("data").toObject().value("f60").toDouble();
+        if (buySellData.contains("f58"))
+            GlobalVar::curName=jsonObject.value("data").toObject().value("f58").toString();
         for (int i=0;i<10;++i)
         {
-            GlobalVar::buySellPrice[i]=jsonObject.value("data").toObject().value(price[i]).toDouble();
-            GlobalVar::buySellNum[i]=int(jsonObject.value("data").toObject().value(nums[i]).toDouble()+0.5);
-        }
+            if (buySellData.contains(price[i].toUtf8()))
+                GlobalVar::buySellPrice[i]=jsonObject.value("data").toObject().value(price[i]).toDouble();
+            if (buySellData.contains(nums[i].toUtf8()))
+                GlobalVar::buySellNum[i]=int(jsonObject.value("data").toObject().value(nums[i]).toDouble()+0.5);
+
+            }
         for (int i=0;i<14;++i)
         {
-            GlobalVar::baseInfoData[i]=jsonObject.value("data").toObject().value(baseInfo[i]).toDouble();
-            if (i==13 and (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5))
+            if (buySellData.contains(baseInfo[i].toUtf8()))
+                GlobalVar::baseInfoData[i]=jsonObject.value("data").toObject().value(baseInfo[i]).toDouble();
+            if (i==13 and (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5) and
+                    buySellData.contains("f164"))
                 GlobalVar::baseInfoData[i]=jsonObject.value("data").toObject().value("f164").toDouble();
         }
-        GlobalVar::baseInfoData[12]=jsonObject.value("data").toObject().value("f55").toDouble();
+        if (buySellData.contains("f55"))
+            GlobalVar::baseInfoData[12]=jsonObject.value("data").toObject().value("f55").toDouble();
         GlobalVar::EPSReportDate="每股收益";
         GlobalVar::PEName="市盈率";
         if ((GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4) and
-            GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399" and GlobalVar::curCode.length()!=5)
+            GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399" and
+            GlobalVar::curCode.length()!=5 and buySellData.contains("f62"))
         {
             int num=jsonObject.value("data").toObject().value("f62").toInt();
             QString n[4]={"一","二","三","四",};
@@ -84,17 +171,15 @@ void ThreadTimeShareTick::initBuySellList(QByteArray buySellData)
             GlobalVar::PEName="PE(动)";
         }
     }
-    m_mutex.unlock();
 }
 
 void ThreadTimeShareTick::initTimeShareTickList(QByteArray timeShareTickData)
 {
-    m_mutex.lock();
     QJsonParseError *jsonError=new QJsonParseError;
     QJsonDocument doc = QJsonDocument::fromJson(timeShareTickData, jsonError);
     if (jsonError->error == QJsonParseError::NoError)
     {
-        QList<timeShareTickInfo> timeShareTickList;
+//        QList<timeShareTickInfo> timeShareTickList;
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("details").toArray();
         for (int i = 0; i < data.size(); ++i)
@@ -107,11 +192,10 @@ void ThreadTimeShareTick::initTimeShareTickList(QByteArray timeShareTickData)
             info.nums=list[2].toInt();
             info.d=list[4].toInt();
             info.tick=list[3].toInt();
-            timeShareTickList.append(info);
+            GlobalVar::mTimeShareTickList.append(info);
         }
-        GlobalVar::mTimeShareTickList=timeShareTickList;
+//        GlobalVar::mTimeShareTickList=timeShareTickList;
     }
-    m_mutex.unlock();
 }
 //显示股票的区域和行业
 void ThreadTimeShareTick::findStockArea()

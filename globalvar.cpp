@@ -66,8 +66,16 @@ bool GlobalVar::isUSMarketDay(QDateTime curTime)
 //    QDateTime curTime=QDateTime::currentDateTime();
     QString cur_date=curTime.addSecs(-46800).toString("MMdd");
     int cur_time= curTime.addSecs(-46800).toString("hhmmss").toInt();
+    int startTime=83000;
+    int endTime=150010;
+    quint8 month = curTime.date().month();
+    if (int(month)>10 or int(month)<4)
+    {
+        startTime=93000;
+        endTime=160010;
+    }
     //    qDebug()<<cur_time;
-    if (not vacation.contains(cur_date) && isWorkDay(curTime) && (cur_time>=83010 and cur_time<=150010))
+    if (not vacation.contains(cur_date) && isWorkDay(curTime) && (cur_time>=startTime and cur_time<=endTime))
         return true;
     else
         return false;
@@ -211,7 +219,6 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
     }
     else
     {
-        //超时，未知状态
         QStringList s={"http://push2his.eastmoney.com/api/qt/stock/kline",
                          "http://push2.eastmoney.com/api/qt/ulist",
                          "http://futsseapi.eastmoney.com/list/block",

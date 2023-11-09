@@ -226,11 +226,20 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     int leftOffset=10;
     int textHeight=20;
     painter->setFont(QFont("微软雅黑",14,700));
-    painter->setPen(Qt::gray);
+    QPen pen=QPen(Qt::gray,1,Qt::DashLine);
+    painter->setPen(pen);
+    float zeroLocation=(height-bottom)/2*maxMinKChart[0]/(maxMinKChart[0]-maxMinKChart[1]);
+    painter->drawLine(0,zeroLocation,width/2,zeroLocation);
+    zeroLocation=height-40+325*maxMinHKChart[1]/(maxMinHKChart[0]-maxMinHKChart[1]);
+    painter->drawLine(0,zeroLocation,width/2,zeroLocation);
+
+    pen.setStyle(Qt::SolidLine);
+    painter->setPen(pen);
     painter->drawText(left,up,"实时资金流向图");
     painter->drawText(right,up,"实时成交分布图");
     painter->drawText(left,down,"盘后资金流向趋势");
     painter->drawText(right-60,down,"盘后资金流向统计(5日、20日)");
+
     painter->drawLine(0,(height-bottom)/2,width/2,(height-bottom)/2);
     painter->drawLine(width/2,0,width/2,(height-bottom)/2);
     painter->drawText(width/2,textHeight,GlobalVar::format_conversion(maxMinKChart[0]));
@@ -240,6 +249,7 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
 
     painter->drawText(width/2,height-345,GlobalVar::format_conversion(maxMinHKChart[0]));
     painter->drawText(width/2,height-40,GlobalVar::format_conversion(maxMinHKChart[1]));
+
     if (maxHNums!=0)
     {
         painter->drawText(0,height-40+textHeight,fundFlowHKChart.at(0)[0].mid(5,5));
