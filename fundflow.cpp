@@ -1332,6 +1332,8 @@ void FundFlow::getAnnoucement()
     QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
     request.setUrl(QUrl(url));
     GlobalVar::getData(allData,2,request);
+    if (allData.isEmpty())
+        return;
 //    QJsonParseError jsonError;
 //    QJsonDocument doc = QJsonDocument::fromJson(allData.mid(1,allData.size()-2), &jsonError);
 //    if (jsonError.error == QJsonParseError::NoError)
@@ -1399,6 +1401,8 @@ void FundFlow::getNews()
         QString url="http://www.stcn.com/article/search.html?search_type=news&keyword="+GlobalVar::curCode+"&page_time="+QString::number(i);
         request.setUrl(QUrl(url));
         GlobalVar::getData(allData,3,request);
+        if (allData.isEmpty())
+            return;
         QString html=QString(allData);
         QString str=GlobalVar::peelStr(html,"<ul class=\"list infinite-list\"","-1");
         while(1)

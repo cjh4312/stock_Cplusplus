@@ -2,7 +2,6 @@
 #ifndef THREADTIMESHARECHART_H
 #define THREADTIMESHARECHART_H
 
-#include "qnetworkreply.h"
 #include <QObject>
 //#include <QNetworkAccessManager>
 #include <QJsonArray>
@@ -18,7 +17,8 @@ public:
 private:
     void initTimeShareChartList(QByteArray allData);
     void initTimeShareChartList1(QByteArray allData);
-    QNetworkReply *reply=nullptr;
+
+    QString preGCode="";
     bool isFirst=true;
     float h;
     float l;

@@ -20,6 +20,9 @@ private:
     void initBuySellList(QByteArray buySellData);
     void initTimeShareTickList(QByteArray timeShareTickData);
     void findStockArea();
+    QString preGCode="";
+    QByteArray buySellData;
+    QByteArray timeShareTickData;
 
     QList<QStringList> areaData;
     QString price[10]={"f31","f33","f35","f37","f39","f19","f17","f15","f13","f11"};

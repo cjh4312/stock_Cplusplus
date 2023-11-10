@@ -43,12 +43,16 @@ void ThreadTimeShareTick::getBuySellTimeShareTick()
 
     GlobalVar::getData(timeShareTickData,0.9,QUrl("http://push2.eastmoney.com/api/qt/stock/details/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55&mpi=2000&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&pos=-0&secid="+GlobalVar::getComCode()));
     if (GlobalVar::timeOutFlag[7])
-        GlobalVar::timeOutFlag[7]=false;
+            GlobalVar::timeOutFlag[7]=false;
     else
     {
-        initTimeShareTickList(timeShareTickData);
-        emit getTimeShareTickFinished();
+            initTimeShareTickList(timeShareTickData);
+            emit getTimeShareTickFinished();
     }
+
+
+//    if (preGCode==GlobalVar::curCode)
+//        return;
 //    QString url="http://push2.eastmoney.com/api/qt/stock/sse?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=2&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963";
 //    getSSEdata(1,url);
 //    url="http://push2.eastmoney.com/api/qt/stock/details/sse?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55&mpi=2000&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&pos=-0&secid="+GlobalVar::getComCode();
@@ -60,23 +64,21 @@ void ThreadTimeShareTick::getSSEdata(int nums,QString url)
 {
     QByteArray* qByteArray=new QByteArray();
     QString preCode=GlobalVar::curCode;
+    preGCode=preCode;
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(QUrl(url));
     QNetworkAccessManager *naManager =new QNetworkAccessManager();
     QNetworkReply *reply= naManager->get(request);
+    connect(reply, &QNetworkReply::finished, this, [=](){
+        disconnect(reply);
+        reply->deleteLater();
+        delete qByteArray;
+        naManager->deleteLater();
+    });
     connect(reply, &QNetworkReply::readyRead, this, [=]()mutable{
         if (GlobalVar::curCode!=preCode)
-        {
             reply->abort();
-            disconnect(reply);
-            delete reply;
-            reply=nullptr;
-            delete qByteArray;
-            qByteArray=nullptr;
-            delete naManager;
-            naManager=nullptr;
-        }
         else
         {
             QByteArray allData=reply->readAll();
@@ -179,7 +181,7 @@ void ThreadTimeShareTick::initTimeShareTickList(QByteArray timeShareTickData)
     QJsonDocument doc = QJsonDocument::fromJson(timeShareTickData, jsonError);
     if (jsonError->error == QJsonParseError::NoError)
     {
-//        QList<timeShareTickInfo> timeShareTickList;
+        QList<timeShareTickInfo> timeShareTickList;
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("details").toArray();
         for (int i = 0; i < data.size(); ++i)
@@ -192,9 +194,9 @@ void ThreadTimeShareTick::initTimeShareTickList(QByteArray timeShareTickData)
             info.nums=list[2].toInt();
             info.d=list[4].toInt();
             info.tick=list[3].toInt();
-            GlobalVar::mTimeShareTickList.append(info);
+            timeShareTickList.append(info);
         }
-//        GlobalVar::mTimeShareTickList=timeShareTickList;
+        GlobalVar::mTimeShareTickList=timeShareTickList;
     }
 }
 //显示股票的区域和行业

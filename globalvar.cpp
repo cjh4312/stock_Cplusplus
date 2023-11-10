@@ -211,7 +211,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
     loop.exec();
 
     int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-//    QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    QObject::disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     if (statusCode == 200)
     {
         timer.stop();

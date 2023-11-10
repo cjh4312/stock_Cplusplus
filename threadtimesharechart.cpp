@@ -14,46 +14,55 @@ void ThreadTimeShareChart::getSSEData()
     QString preCode=GlobalVar::curCode;
     QString url="https://push2his.eastmoney.com/api/qt/stock/trends2/sse?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893";
     QNetworkRequest request;
+    QByteArray allData;
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(QUrl(url));
-    QNetworkAccessManager *naManager =new QNetworkAccessManager();
-    reply= naManager->get(request);
+    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
+    QNetworkReply *reply= naManager->get(request);
+    GlobalVar::mTimeShareChartList.clear();
     connect(reply, &QNetworkReply::finished, this, [=](){
         reply->disconnect();
-        delete qByteArray;
+        delete reply;
+        qByteArray->clear();
         naManager->deleteLater();
     });
-    connect(reply, &QNetworkReply::readyRead, this, [=](){
-        int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        if (statusCode == 200)
+    connect(reply, &QNetworkReply::readyRead, this, [=]()mutable{
+        if (preCode!=GlobalVar::curCode)
+            reply->abort();
+        else
         {
-            QByteArray allData=reply->readAll();
-            if (allData.contains("data:"))
+            int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            if (statusCode == 200)
             {
-                if (allData.contains("\"data\":{\""))
+                allData=reply->readAll();
+                if (allData.contains("data:"))
                 {
-                    if (allData.mid(allData.size()-2,2)=="\n\n")
+                    if (allData.contains("\"data\":{\""))
                     {
-                        initTimeShareChartList(allData);
+                        if (allData.mid(allData.size()-2,2)=="\n\n")
+                        {
+                            initTimeShareChartList(allData);
+                            emit getTimeShareChartFinished();
+                        }
+                        else
+                            qByteArray->append(allData);
+                    }
+                }
+                else
+                {
+                    qByteArray->append(allData);
+                    QByteArray tempByteArray=qByteArray->data();
+                    if (tempByteArray.mid(tempByteArray.size()-2,2)=="\n\n")
+                    {
+                        initTimeShareChartList(tempByteArray);
                         emit getTimeShareChartFinished();
                     }
-                    else
-                        qByteArray->append(allData);
                 }
             }
             else
-            {
-                qByteArray->append(allData);
-                QByteArray tempByteArray=qByteArray->data();
-                if (tempByteArray.mid(tempByteArray.size()-2,2)=="\n\n")
-                {
-                    initTimeShareChartList(tempByteArray);
-                    emit getTimeShareChartFinished();
-                }
-            }
+                reply= naManager->get(request);
         }
-        else
-            reply= naManager->get(request);
+
     });
 }
 
@@ -69,12 +78,13 @@ void ThreadTimeShareChart::getAllTimeShareChart()
 //            initTimeShareChartList1(allData);
 //            emit getTimeShareChartFinished();
 //        }
-    if (reply!=nullptr)
-        reply->abort();
+    if (preGCode==GlobalVar::curCode)
+        return;
+    preGCode=GlobalVar::curCode;
     h=0.0;
     l=100000.0;
     isFirst=true;
-    GlobalVar::mTimeShareChartList.clear();
+
     getSSEData();
 }
 
@@ -205,7 +215,6 @@ void ThreadTimeShareChart::initTimeShareChartList(QByteArray allData)
             isFirst=false;
         }
         QJsonArray data=jsonObject.value("data").toObject().value("trends").toArray();
-//        GlobalVar::mTimeShareChartList.clear();
         if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
             for (int i = 0; i < data.size(); ++i)
             {
