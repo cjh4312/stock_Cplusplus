@@ -22,8 +22,8 @@ void ThreadTimeShareChart::getSSEData()
     GlobalVar::mTimeShareChartList.clear();
     connect(reply, &QNetworkReply::finished, this, [=](){
         reply->disconnect();
-        delete reply;
-        qByteArray->clear();
+        reply->deleteLater();
+        delete qByteArray;
         naManager->deleteLater();
     });
     connect(reply, &QNetworkReply::readyRead, this, [=]()mutable{
