@@ -142,13 +142,11 @@ void MainWindow::initInterface()
     ui->ZHMarket->setChecked(true);
 //    market->addAction(ui->USzMarket);
 
-    //所有股票界面
     ui->mainLayout->setContentsMargins(2,2,2,2);
     ui->mainLayout->addWidget(mTableStock.stockTableView);
     ui->mainLayout->addWidget(drawChart.candleChart);
     drawChart.candleChart->hide();
 
-    //中间界面
     QVBoxLayout *mainLayout2 =new QVBoxLayout();
     mainLayout2->setSpacing(0);
     mainLayout2->setContentsMargins(0,0,0,0);
@@ -157,7 +155,7 @@ void MainWindow::initInterface()
     mTableStock.myStockView->setMaximumWidth(530);
     mainLayout2->addWidget(mTableStock.risingSpeedView);
     mainLayout2->addWidget(mTableStock.myStockView);
-    //右边界面
+
     rightBaseWindow=new QWidget(this);
     rightBaseWindow->setMaximumWidth(450);
     QVBoxLayout *rightLayout =new QVBoxLayout();
@@ -177,7 +175,6 @@ void MainWindow::initInterface()
     ui->mainLayout->addWidget(rightFundWindow);
     rightFundWindow->hide();
 
-    //右边界面布局
     QGridLayout *baseInfoLayout=new QGridLayout();
     baseInfoLayout->setSpacing(2);
     baseInfoLayout->setContentsMargins(10, 0, 0, 0);
@@ -239,9 +236,8 @@ void MainWindow::initInterface()
 //    instructionText->setMaximumHeight(300);
     rightFundLayout->addWidget(instructionText);
     instructionText->append(GlobalVar::settings->value("Instruction").toString());
-    //状态栏
-    circle=new QLabel(this);
 
+    circle=new QLabel(this);
     ui->statusBar->addWidget(circle);
     for(int i=1;i<=7;++i)
     {
@@ -786,13 +782,12 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     if (obj == mTableStock.stockTableView->verticalScrollBar() and event->type() == QEvent::Wheel)
     {
         QWheelEvent *event1 = static_cast<QWheelEvent *>(event);
-        int para=event1->angleDelta().y();//获得鼠标滚轮的滚动距离para，para<0向下滚动，>0向上滚动
+        int para=event1->angleDelta().y();
         int tempStep=mTableStock.stockTableView->verticalScrollBar()->value();
         int curIndex=mTableStock.stockTableView->currentIndex().row();
         int row=int(mTableStock.stockTableView->height()/22.0+0.5);
         if (para<0)
         {
-            //向下滚动，设定鼠标滚轮每滚动一个单位，滑块就移动20个单位
             mTableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep+row);
             if (curIndex>GlobalVar::mTableList.count()-row)
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
@@ -801,7 +796,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
         else
         {
-            //向上滚动
             mTableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep-row);
             if (curIndex>=row)
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex-row,0));
@@ -1347,7 +1341,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 return true;
             }
     }
-    //其它事件交基类处理
     return QMainWindow::eventFilter(obj, event);
 }
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -2009,11 +2002,9 @@ void MainWindow::fastTrade()
         fastSell->show();
     });
 }
-//交易日每5秒刷新一次数据
 void MainWindow::tradingTimeRunThread()
 {
 //    int a = timeCount % 10;
-    //每1秒，A股交易时段刷新个股买卖及每笔成交
     QDateTime curTime=QDateTime::currentDateTime();
 //    if (not ui->DLAllStockK->isEnabled() and curTime.time().toString("hh:mm")>"15:00")
 //        ui->DLAllStockK->setEnabled(true);
