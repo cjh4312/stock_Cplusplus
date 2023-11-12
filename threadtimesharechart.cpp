@@ -84,7 +84,6 @@ void ThreadTimeShareChart::getAllTimeShareChart()
     h=0.0;
     l=100000.0;
     isFirst=true;
-
     getSSEData();
 }
 

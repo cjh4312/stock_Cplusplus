@@ -24,7 +24,7 @@ public:
     FundFlow();
 //    QNetworkAccessManager *naManager;
     QList<QStringList> FundFlowList;
-    QStandardItemModel *model=new QStandardItemModel();
+    QStandardItemModel *model=new QStandardItemModel(this);
     QWidget *tableChart=new QWidget(this);
     QDialog *fundFlowChart=new QDialog(this);
     QList<QStringList> fundFlowKChart;

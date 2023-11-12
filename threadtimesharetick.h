@@ -19,6 +19,7 @@ public:
 private:
     void initBuySellList(QByteArray buySellData);
     void initTimeShareTickList(QByteArray timeShareTickData);
+    void initTimeShareTickList1(QByteArray timeShareTickData);
     void findStockArea();
     QString preGCode="";
     QByteArray buySellData;

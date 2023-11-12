@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     initInterface();
     initSettings();
     initSignals();
-    tim = new QTimer();
+    tim = new QTimer(this);
     tim->setInterval(500);
     connect(tim,SIGNAL(timeout()),this,SLOT(tradingTimeRunThread()));
     tim->start();
@@ -48,7 +48,7 @@ MainWindow::~MainWindow()
 void MainWindow::initGlobalVar()
 {
     GlobalVar::currentPath=QCoreApplication::applicationDirPath();
-    GlobalVar::settings=new QSettings(GlobalVar::currentPath+"/config.ini",QSettings::IniFormat);
+    GlobalVar::settings=new QSettings(GlobalVar::currentPath+"/config.ini",QSettings::IniFormat,this);
     GlobalVar::curCode=GlobalVar::settings->value("curCode").toString();
     GlobalVar::isSayNews=GlobalVar::settings->value("sayNews").toBool();
     GlobalVar::offsetEnd=GlobalVar::settings->value("offsetEnd").toInt();
@@ -142,37 +142,36 @@ void MainWindow::initInterface()
     ui->ZHMarket->setChecked(true);
 //    market->addAction(ui->USzMarket);
 
-    ui->mainLayout->setContentsMargins(2,2,2,2);
-    ui->mainLayout->addWidget(mTableStock.stockTableView);
-    ui->mainLayout->addWidget(drawChart.candleChart);
+    ui->horizontalLayout->addWidget(mTableStock.stockTableView);
+    ui->horizontalLayout->addWidget(drawChart.candleChart);
     drawChart.candleChart->hide();
 
-    QVBoxLayout *mainLayout2 =new QVBoxLayout();
-    mainLayout2->setSpacing(0);
-    mainLayout2->setContentsMargins(0,0,0,0);
+    QVBoxLayout *middleLayout =new QVBoxLayout;
+    middleLayout->setSpacing(0);
+    middleLayout->setContentsMargins(0,0,0,0);
     mTableStock.risingSpeedView->setMaximumWidth(530);
     mTableStock.risingSpeedView->setMaximumHeight(454);
     mTableStock.myStockView->setMaximumWidth(530);
-    mainLayout2->addWidget(mTableStock.risingSpeedView);
-    mainLayout2->addWidget(mTableStock.myStockView);
+    middleLayout->addWidget(mTableStock.risingSpeedView);
+    middleLayout->addWidget(mTableStock.myStockView);
 
     rightBaseWindow=new QWidget(this);
     rightBaseWindow->setMaximumWidth(450);
-    QVBoxLayout *rightLayout =new QVBoxLayout();
+    QVBoxLayout *rightLayout =new QVBoxLayout(rightBaseWindow);
     rightBaseWindow->setLayout(rightLayout);
     rightLayout->setSpacing(0);
     rightLayout->setContentsMargins(0,0,0,0);
     //2
     rightFundWindow=new QWidget(this);
     rightFundWindow->setMaximumWidth(250);
-    QVBoxLayout *rightFundLayout=new QVBoxLayout();
+    QVBoxLayout *rightFundLayout=new QVBoxLayout(rightFundWindow);
     rightFundWindow->setLayout(rightFundLayout);
 //    rightFundLayout->setSpacing(0);
     rightFundLayout->setContentsMargins(20,30,20,2);
 
-    ui->mainLayout->addLayout(mainLayout2);
-    ui->mainLayout->addWidget(rightBaseWindow);
-    ui->mainLayout->addWidget(rightFundWindow);
+    ui->horizontalLayout->addLayout(middleLayout);
+    ui->horizontalLayout->addWidget(rightBaseWindow);
+    ui->horizontalLayout->addWidget(rightFundWindow);
     rightFundWindow->hide();
 
     QGridLayout *baseInfoLayout=new QGridLayout();
@@ -193,7 +192,7 @@ void MainWindow::initInterface()
     QStringList periodAdjustName={"日线","周线","月线","不复权","前复权","后复权"};
     for (int i=0;i<6;++i)
     {
-        periodAdjust[i]=new QRadioButton(periodAdjustName[i]);
+        periodAdjust[i]=new QRadioButton(periodAdjustName[i],this);
         if (i<3)
             freq->addButton(periodAdjust[i]);
         freqAdjustLayout->addWidget(periodAdjust[i]);
@@ -227,7 +226,7 @@ void MainWindow::initInterface()
             rightFundLayout->addWidget(tradedetailBox);
         else if(i==9)
             rightFundLayout->addWidget(singleStockBoard);
-        fundFlow[i]=new QPushButton(fundFlowName[i]);
+        fundFlow[i]=new QPushButton(fundFlowName[i],this);
         rightFundLayout->addWidget(fundFlow[i]);
     }
     rightFundLayout->addWidget(openFundBox);
@@ -279,7 +278,7 @@ void MainWindow::initSettings()
     searchSmallWindow=new QWidget(this);
     searchSmallWindow->setWindowFlag(Qt::Popup);
     searchSmallWindow->setGeometry(1466, 645, 300, 350);
-    QVBoxLayout *search =new QVBoxLayout();
+    QVBoxLayout *search =new QVBoxLayout(searchSmallWindow);
     search->setContentsMargins(2, 2, 2, 2);
     searchSmallWindow->setLayout(search);
     search->addWidget(searchStock.searchCodeLine);
@@ -290,21 +289,21 @@ void MainWindow::initSettings()
     F10SmallWindow->setWindowFlag(Qt::Popup);
     F10SmallWindow->move(200,100);
     F10SmallWindow->hide();
-    QVBoxLayout *f10Main=new QVBoxLayout();
-    F10SmallWindow->setLayout(f10Main);
-    QHBoxLayout *f10 =new QHBoxLayout();
-    QHBoxLayout *titleLayout=new QHBoxLayout();
+    QVBoxLayout *f10MainLayout=new QVBoxLayout(F10SmallWindow);
+    F10SmallWindow->setLayout(f10MainLayout);
+    QHBoxLayout *f10ContentLayout =new QHBoxLayout();
+    QHBoxLayout *titleLayout=new QHBoxLayout(F10Title);
 
-    QPushButton *close=new QPushButton();
+    QPushButton *close=new QPushButton(F10SmallWindow);
     connect(close,&QPushButton::clicked,this,[=](){F10SmallWindow->close();});
     F10Title->setLayout(titleLayout);
     F10Title->setMaximumHeight(TITLEHEIGHT);
 //    f10Title->setStyleSheet("background-color:rgb(153, 204, 255);");
     fTitle->setStyleSheet("QLabel{font:bold 18px;font-family:微软雅黑}");
 
-    f10Main->addWidget(F10Title);
-    f10Main->addLayout(f10);
-    f10Main->setContentsMargins(0,0,0,0);
+    f10MainLayout->addWidget(F10Title);
+    f10MainLayout->addLayout(f10ContentLayout);
+    f10MainLayout->setContentsMargins(0,0,0,0);
 
     QIcon myicon;
     myicon.addFile(tr(":/new/png/png/close.png"));
@@ -315,21 +314,21 @@ void MainWindow::initSettings()
     titleLayout->addWidget(close);
 
     QWidget *navigation=new QWidget(F10SmallWindow);
-    f10->addWidget(navigation);
-    f10->addWidget(f10View.stockInfoView);
-    QVBoxLayout *navi=new QVBoxLayout();
+    f10ContentLayout->addWidget(navigation);
+    f10ContentLayout->addWidget(f10View.stockInfoView);
+    QVBoxLayout *navi=new QVBoxLayout(navigation);
     navigation->setLayout(navi);
     QStringList F10InfoName={"热度概念排名","主要指标","经营分析","资产负债表","利润表","现金流量表"};
     for (int i=0;i<6;++i)
     {
-        F10Info[i]=new QPushButton(F10InfoName[i]);
+        F10Info[i]=new QPushButton(F10InfoName[i],F10SmallWindow);
         navi->addWidget(F10Info[i]);
     }
 }
 void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
 {
-    stockCode = new QLabel();
-    stockName = new QLabel();
+    stockCode = new QLabel(this);
+    stockName = new QLabel(this);
     stockCode->setStyleSheet("QLabel{font:bold;color:blue}");
     stockName->setStyleSheet("QLabel{font:bold 26px;font-family:微软雅黑;color:red}");
     baseInfoLayout->addWidget(stockCode, 0, 0, 2, 1);
@@ -340,8 +339,8 @@ void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
 
     for (int i=0;i<16;++i)
     {
-        QLabel *name=new QLabel(lName[i]);
-        baseInfoData[i]=new QLabel();
+        QLabel *name=new QLabel(lName[i],this);
+        baseInfoData[i]=new QLabel(this);
         name->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(47,79,79)}");
         if ((i >= 2 and i <= 6) or (i >= 11 and i <= 14))
             baseInfoData[i]->setStyleSheet("QLabel{font:bold 14px;color:blue}");
@@ -368,9 +367,9 @@ void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
             baseInfoLayout->addWidget(baseInfoData[i],i-6,3);
         }
     }
-    EPSLabel=new QLabel();
+    EPSLabel=new QLabel(this);
     EPSLabel->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(47,79,79)}");
-    PELabel=new QLabel();
+    PELabel=new QLabel(this);
     PELabel->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(47,79,79)}");
     baseInfoLayout->addWidget(EPSLabel,7,2);
     baseInfoLayout->addWidget(PELabel,8,2);
@@ -381,10 +380,10 @@ void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
     QLabel *buySellName[10];
     for (int i=0;i<5;++i)
     {
-        buySellName[i]=new QLabel("卖"+n[4-i]);
-        buySellPrice[i]=new QLabel();
+        buySellName[i]=new QLabel("卖"+n[4-i],this);
+        buySellPrice[i]=new QLabel(this);
         buySellPrice[i]->setContextMenuPolicy(Qt::CustomContextMenu);
-        buySellNum[i]=new QLabel();
+        buySellNum[i]=new QLabel(this);
         buySellNum[i]->setAlignment(Qt::AlignRight);
         buySellName[i]->setStyleSheet("QLabel{font:bold 16px;font-family:微软雅黑;color:rgb(47,79,79)}");
         buySellPrice[i]->setStyleSheet("QLabel{font:16px;font-family:微软雅黑}");
@@ -393,10 +392,10 @@ void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
         BuySellLayout->addWidget(buySellPrice[i],i,1);
         BuySellLayout->addWidget(buySellNum[i],i,2);
 
-        buySellName[i+5]=new QLabel("买"+n[i]);
-        buySellPrice[5+i]=new QLabel();
+        buySellName[i+5]=new QLabel("买"+n[i],this);
+        buySellPrice[5+i]=new QLabel(this);
         buySellPrice[5+i]->setContextMenuPolicy(Qt::CustomContextMenu);
-        buySellNum[5+i]=new QLabel();
+        buySellNum[5+i]=new QLabel(this);
         buySellNum[5+i]->setAlignment(Qt::AlignRight);
         buySellName[i+5]->setStyleSheet("QLabel{font:bold 16px;font-family:微软雅黑;color:rgb(47,79,79)}");
         buySellPrice[i+5]->setStyleSheet("QLabel{font:16px;font-family:微软雅黑}");
@@ -664,7 +663,7 @@ void MainWindow::initSignals()
     connect(mPickStock,&JSPickStock::updateTableList,this,[=](){
         mTableStock.setTableView();
     });
-    connect(ui->formula,&QAction::triggered,this,[](){
+    connect(ui->formula,&QAction::triggered,this,[=](){
         QDialog *formulaDes=new QDialog();
         formulaDes->setWindowTitle("编写公式说明");
         formulaDes->setGeometry(450, 200, 1000, 700);
@@ -672,7 +671,7 @@ void MainWindow::initSignals()
         QTextBrowser *des=new QTextBrowser(formulaDes);
         des->setMinimumHeight(380);
         des->setStyleSheet("QTextBrowser{font:bold 22px;font:bold}");
-        QVBoxLayout *mainLayout =new QVBoxLayout();
+        QVBoxLayout *mainLayout =new QVBoxLayout(formulaDes);
         mainLayout->setContentsMargins(2,0,2,2);
         mainLayout->setSpacing(0);
         formulaDes->setLayout(mainLayout);
@@ -1213,9 +1212,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
         else if (event->type()==QEvent::ContextMenu)
         {
-            QMenu *menu=new QMenu();
-            QAction *moveOne=new QAction("左右移动一格");
-            QAction *moveFast=new QAction("左右快速移动");
+            QMenu *menu=new QMenu(drawChart.candleChart);
+            QAction *moveOne=new QAction("左右移动一格",menu);
+            QAction *moveFast=new QAction("左右快速移动",menu);
             QIcon icon(":/new/png/png/step.jpeg");
             moveOne->setIcon(icon);
             QIcon icon1(":/new/png/png/fast.jpg");
@@ -1646,8 +1645,8 @@ void MainWindow::addRightMenu(int num)
         else
             l = mid + 1;
     }
-    QMenu *menu=new QMenu();
-    QAction *act=new QAction("加入自选");
+    QMenu *menu=new QMenu(this);
+    QAction *act=new QAction("加入自选",menu);
     QIcon icon(":/new/png/png/join.jpg");
     act->setIcon(icon);
     menu->addAction(act);
@@ -1677,8 +1676,8 @@ void MainWindow::addRightMenu(int num)
 }
 void MainWindow::delRightMenu()
 {
-    QMenu *menu=new QMenu();
-    QAction *act=new QAction("删除自选");
+    QMenu *menu=new QMenu(this);
+    QAction *act=new QAction("删除自选",menu);
     QIcon icon(":/new/png/png/del.jpg");
     act->setIcon(icon);
     menu->addAction(act);
@@ -1760,12 +1759,12 @@ void MainWindow::fastTrade()
 {
     if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or tradePrice==0)
         return;
-    QMenu *menu=new QMenu();
-    QAction *actB=new QAction("闪电买入");
+    QMenu *menu=new QMenu(this);
+    QAction *actB=new QAction("闪电买入",menu);
     QIcon icon(":/new/png/png/buy.jpg");
     actB->setIcon(icon);
     menu->addAction(actB);
-    QAction *actS=new QAction("闪电卖出");
+    QAction *actS=new QAction("闪电卖出",menu);
     QIcon icon1(":/new/png/png/sell.jpg");
     actS->setIcon(icon1);
     menu->addAction(actS);
@@ -1838,7 +1837,7 @@ void MainWindow::fastTrade()
         QStringList proportionNums={"全仓","1/2","1/3","1/4","1/5"};
         for (int i=0;i<5;++i)
         {
-            proportionName[i]=new QRadioButton(proportionNums[i]);
+            proportionName[i]=new QRadioButton(proportionNums[i],fastBuy);
             proportion->addButton(proportionName[i]);
             group->addWidget(proportionName[i]);
             connect(proportionName[i],&QRadioButton::clicked,this,[=](){
@@ -1957,7 +1956,7 @@ void MainWindow::fastTrade()
         QStringList proportionNums={"全仓","1/2","1/3","1/4","1/5"};
         for (int i=0;i<5;++i)
         {
-            proportionName[i]=new QRadioButton(proportionNums[i]);
+            proportionName[i]=new QRadioButton(proportionNums[i],fastSell);
             proportion->addButton(proportionName[i]);
             group->addWidget(proportionName[i]);
             connect(proportionName[i],&QRadioButton::clicked,this,[=](){
@@ -2004,7 +2003,6 @@ void MainWindow::fastTrade()
 }
 void MainWindow::tradingTimeRunThread()
 {
-//    int a = timeCount % 10;
     QDateTime curTime=QDateTime::currentDateTime();
 //    if (not ui->DLAllStockK->isEnabled() and curTime.time().toString("hh:mm")>"15:00")
 //        ui->DLAllStockK->setEnabled(true);
@@ -2032,7 +2030,6 @@ void MainWindow::tradingTimeRunThread()
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
                 emit startThreadTimeShareTick();
             emit startThreadTable();
-//            emit startThreadTimeShareChart();
         }
         else if ((GlobalVar::WhichInterface==5 and GlobalVar::isUSMarketDay(curTime)) or
                  (GlobalVar::WhichInterface==2 and GlobalVar::isHKMarketDay(curTime)))
@@ -2042,7 +2039,6 @@ void MainWindow::tradingTimeRunThread()
 //                emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTable();
             emit startThreadTimeShareTick();
-//            emit startThreadTimeShareChart();
         }
         else
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);

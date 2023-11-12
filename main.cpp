@@ -26,7 +26,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    static QSharedMemory *shareMem = new QSharedMemory( "oneStock");
+    static QSharedMemory *shareMem = new QSharedMemory( "oneStock",&a);
     if ( !shareMem->create( 1 ) )
     {
         qApp->quit();

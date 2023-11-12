@@ -36,7 +36,7 @@ void JSPickStock::PickStockInterface()
     pickStockWindow->setWindowTitle("公式选股");
     pickStockWindow->setGeometry(450, 200, 1000, 650);
     pickStockWindow->show();
-    QHBoxLayout *mainLayout =new QHBoxLayout();
+    QHBoxLayout *mainLayout =new QHBoxLayout(pickStockWindow);
     pickStockWindow->setLayout(mainLayout);
 
     QTreeWidget *formulaTree=new QTreeWidget(pickStockWindow);
@@ -68,12 +68,12 @@ void JSPickStock::PickStockInterface()
     mainLayout->addWidget(formulaTree);
     mainLayout->addLayout(layout2,Qt::AlignLeft);
 
-    QLabel *formulaName=new QLabel("公式名称:");
+    QLabel *formulaName=new QLabel("公式名称:",pickStockWindow);
     QLineEdit *nameLine=new QLineEdit(pickStockWindow);
-    QLabel *formulaDes=new QLabel("公式描述:");
+    QLabel *formulaDes=new QLabel("公式描述:",pickStockWindow);
     QTextEdit *desText=new QTextEdit();
     desText->setMaximumHeight(200);
-    QLabel *area=new QLabel("选股范围:");
+    QLabel *area=new QLabel("选股范围:",pickStockWindow);
     layout2->addWidget(formulaName,0,0,1,1,Qt::AlignCenter);
     layout2->addWidget(nameLine,0,1,1,5);
     layout2->addWidget(formulaDes,1,0,Qt::AlignTop|Qt::AlignCenter);
@@ -104,7 +104,7 @@ void JSPickStock::PickStockInterface()
     QString buttonName[]={"开始选股","添加分类","添加","删除","保存"};
     for (int i=0;i<5;++i)
     {
-        button[i]=new QPushButton(buttonName[i]);
+        button[i]=new QPushButton(buttonName[i],pickStockWindow);
         layout3->addWidget(button[i]);
     }
     connect(formulaTree,&QTreeWidget::itemClicked,this,[=](QTreeWidgetItem */*item*/){
@@ -249,7 +249,7 @@ void JSPickStock::PickStockInterface()
         if (GlobalVar::settings->value("isDownloadK").toString()!=
                     GlobalVar::curRecentWorkDay(0).toString("yyyy-MM-dd"))
             QMessageBox::information(this,"提示", "确保数据是最新的", QMessageBox::Ok);
-        JSPickStock* object = new JSPickStock();
+        JSPickStock* object = new JSPickStock(this);
         QJSEngine myEngine;
         QJSValue jsObject = myEngine.newQObject(object);
         myEngine.globalObject().setProperty("JS", jsObject);

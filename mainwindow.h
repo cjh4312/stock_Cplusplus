@@ -77,7 +77,7 @@ private:
     RequestsToCsv requestsToCsv;
     F10View f10View;
     FundFlow mFundFlow;
-    JSPickStock *mPickStock=new JSPickStock();
+    JSPickStock *mPickStock=new JSPickStock;
     ThreadTable *threadTable;
     ThreadIndex *threadIndex;
     ThreadTimeShareTick *threadTimeShareTick;
@@ -116,7 +116,7 @@ private:
     QString preCode="";
     QLabel *EPSLabel;
     QLabel *PELabel;
-    QLabel *fTitle=new QLabel("标题栏");
+    QLabel *fTitle=new QLabel("标题栏",this);
     QComboBox *periodBox=new QComboBox(this);
     QDateEdit *dateEdit=new QDateEdit(this);
     QComboBox *northBox=new QComboBox(this);

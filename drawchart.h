@@ -18,12 +18,12 @@ class DrawChart : public QWidget
     Q_OBJECT
 public:
     explicit DrawChart(QWidget *parent = nullptr);
-    QWidget *timeShareChart=new QWidget();
-    QWidget *candleChart=new QWidget();
-    QWidget *hisTimeShareChart=new QWidget();
+    QWidget *timeShareChart=new QWidget(this);
+    QWidget *candleChart=new QWidget(this);
+    QWidget *hisTimeShareChart=new QWidget(this);
     QWidget *hisTimeShareChartTitle=new QWidget(hisTimeShareChart);
     QWidget *hisTimeShareChartView=new QWidget(hisTimeShareChart);
-    QLabel *title=new QLabel("标题栏");
+    QLabel *title=new QLabel("标题栏",hisTimeShareChartTitle);
     float candleHighLowPoint[5];
     float hisTimeShareHighLowPoint[3];
     bool isMoveHisTimeShareChart=false;

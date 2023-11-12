@@ -11,7 +11,7 @@ DrawChart::DrawChart(QWidget *parent)
 //    hisTimeShareChart->setWindowFlags(hisTimeShareChart->windowFlags() | Qt::WindowStaysOnTopHint);
 //    hisTimeShareChart->setWindowFlag(Qt::Popup);
 
-    QHBoxLayout *titleLayout=new QHBoxLayout();
+    QHBoxLayout *titleLayout=new QHBoxLayout(hisTimeShareChartTitle);
     hisTimeShareChartTitle->setLayout(titleLayout);
     hisTimeShareChartTitle->setMaximumHeight(TITLEHEIGHT);
     hisTimeShareChartTitle->setStyleSheet("background-color:rgb(153, 204, 255);");
@@ -81,7 +81,7 @@ DrawChart::DrawChart(QWidget *parent)
     annoucementWindow->setWindowFlag(Qt::Popup);
     annoucementWindow->resize(1000,600);
     annTitle->setMaximumWidth(300);
-    QHBoxLayout *annLayout=new QHBoxLayout();
+    QHBoxLayout *annLayout=new QHBoxLayout(annoucementWindow);
     annoucementWindow->setLayout(annLayout);
 //    annTitle->setStyleSheet("QListView::item{height:60px}");
     QFont list_font;
