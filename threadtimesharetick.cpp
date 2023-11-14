@@ -27,13 +27,14 @@ void ThreadTimeShareTick::getBuySellTimeShareTick()
 {
     if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.length()==5)
     {
-        if (preGCode==GlobalVar::curCode)
+        if (preCode==GlobalVar::curCode)
             return;
+        preCode=GlobalVar::curCode;
         QString url="http://push2.eastmoney.com/api/qt/stock/sse?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=2&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963";
-        getSSEdata(1,url);
+        getSSEData(1,url);
         url="http://push2.eastmoney.com/api/qt/stock/details/sse?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55&mpi=2000&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&pos=-0&secid="+GlobalVar::getComCode();
         GlobalVar::mTimeShareTickList.clear();
-        getSSEdata(2,url);
+        getSSEData(2,url);
 
     }
     else
@@ -65,11 +66,10 @@ void ThreadTimeShareTick::getBuySellTimeShareTick()
     }
 }
 
-void ThreadTimeShareTick::getSSEdata(int nums,QString url)
+void ThreadTimeShareTick::getSSEData(int nums,QString url)
 {
     QByteArray* qByteArray=new QByteArray();
     QString preCode=GlobalVar::curCode;
-    preGCode=preCode;
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(QUrl(url));
@@ -86,16 +86,45 @@ void ThreadTimeShareTick::getSSEdata(int nums,QString url)
             reply->abort();
         else
         {
-            QByteArray allData=reply->readAll();
-            if (allData.contains("data:"))
+            int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            if (statusCode == 200)
             {
-                if (allData.contains("\"data\":{\""))
+                mRetries=0;
+                QByteArray allData=reply->readAll();
+                if (allData.contains("data:"))
                 {
-                    if (allData.mid(allData.size()-2,2)=="\n\n")
+                    if (allData.contains("\"data\":{\""))
+                    {
+                        if (allData.mid(allData.size()-2,2)=="\n\n")
+                        {
+                            if (nums==1)
+                            {
+                                initBuySellList(allData.mid(6,allData.size()-8));
+                                QString l=GlobalVar::curCode.left(1);
+                                if (l=="3" or l=="6" or l=="0")
+                                    findStockArea();
+                                emit getBuySellFinished();
+                            }
+                            else
+                            {
+                                initTimeShareTickList1(allData.mid(6,allData.size()-8));
+                                emit getTimeShareTickFinished();
+                            }
+                        }
+                        else
+                            qByteArray->append(allData);
+                    }
+                }
+                else
+                {
+                    qByteArray->append(allData);
+                    QByteArray tempByteArray=qByteArray->data();
+    //                qDebug()<<tempByteArray;
+                    if (tempByteArray.mid(tempByteArray.size()-2,2)=="\n\n")
                     {
                         if (nums==1)
                         {
-                            initBuySellList(allData.mid(6,allData.size()-8));
+                            initBuySellList(tempByteArray.mid(6,tempByteArray.size()-8));
                             QString l=GlobalVar::curCode.left(1);
                             if (l=="3" or l=="6" or l=="0")
                                 findStockArea();
@@ -103,36 +132,18 @@ void ThreadTimeShareTick::getSSEdata(int nums,QString url)
                         }
                         else
                         {
-                            initTimeShareTickList1(allData.mid(6,allData.size()-8));
+                            initTimeShareTickList1(tempByteArray.mid(6,tempByteArray.size()-8));
                             emit getTimeShareTickFinished();
                         }
                     }
-                    else
-                        qByteArray->append(allData);
                 }
             }
             else
-            {
-                qByteArray->append(allData);
-                QByteArray tempByteArray=qByteArray->data();
-//                qDebug()<<tempByteArray;
-                if (tempByteArray.mid(tempByteArray.size()-2,2)=="\n\n")
+                if(mRetries < MAX_RETRIES)
                 {
-                    if (nums==1)
-                    {
-                        initBuySellList(tempByteArray.mid(6,tempByteArray.size()-8));
-                        QString l=GlobalVar::curCode.left(1);
-                        if (l=="3" or l=="6" or l=="0")
-                            findStockArea();
-                        emit getBuySellFinished();
-                    }
-                    else
-                    {
-                        initTimeShareTickList1(tempByteArray.mid(6,tempByteArray.size()-8));
-                        emit getTimeShareTickFinished();
-                    }
+                    mRetries++;
+                    getSSEData(nums,url);
                 }
-            }
         }
     });
 }

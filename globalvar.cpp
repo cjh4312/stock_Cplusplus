@@ -253,11 +253,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
                 qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
         }
     }
-    if (reply!=nullptr)
-    {
-        delete reply;
-        reply=nullptr;
-    }
+    delete reply;
 }
 
 void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest request)
@@ -284,11 +280,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest reques
 
         qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<request.url()<<timeOut;
     }
-    if (reply!=nullptr)
-    {
-        delete reply;
-        reply=nullptr;
-    }
+    delete reply;
 }
 
 void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float timeOut, const QUrl &url)
@@ -318,11 +310,7 @@ void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float t
 
         qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
     }
-    if (reply!=nullptr)
-    {
-        delete reply;
-        reply=nullptr;
-    }
+    delete reply;
 }
 
 QString GlobalVar::format_conversion(float data)

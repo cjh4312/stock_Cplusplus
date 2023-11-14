@@ -34,6 +34,7 @@ void ThreadTimeShareChart::getSSEData()
             int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
             if (statusCode == 200)
             {
+                mRetries=0;
                 allData=reply->readAll();
                 if (allData.contains("data:"))
                 {
@@ -60,7 +61,11 @@ void ThreadTimeShareChart::getSSEData()
                 }
             }
             else
-                reply= naManager->get(request);
+                if(mRetries < MAX_RETRIES)
+                {
+                    mRetries++;
+                    getSSEData();
+                }
         }
 
     });

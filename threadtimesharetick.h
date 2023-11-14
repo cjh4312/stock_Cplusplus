@@ -14,16 +14,17 @@ class ThreadTimeShareTick : public QObject
 public:
     explicit ThreadTimeShareTick(QObject *parent = nullptr);
     void getBuySellTimeShareTick();
-    void getSSEdata(int nums,QString url);
+    void getSSEData(int nums,QString url);
 
 private:
     void initBuySellList(QByteArray buySellData);
     void initTimeShareTickList(QByteArray timeShareTickData);
     void initTimeShareTickList1(QByteArray timeShareTickData);
     void findStockArea();
-    QString preGCode="";
+    QString preCode="";
     QByteArray buySellData;
     QByteArray timeShareTickData;
+    int mRetries=0;
 
     QList<QStringList> areaData;
     QString price[10]={"f31","f33","f35","f37","f39","f19","f17","f15","f13","f11"};

@@ -38,9 +38,9 @@ MainWindow::~MainWindow()
     delete threadTimeShareChart;
     delete threadNewsReport;
     delete threadCandleChart;
-    if (m_process) {
-        m_process->close();
-        delete m_process;
+    if (QMTProcess) {
+        QMTProcess->close();
+        delete QMTProcess;
     }
     delete ui;
 }
@@ -747,11 +747,11 @@ void MainWindow::initSignals()
         connect(buySellPrice[i],&QLabel::customContextMenuRequested,this,&MainWindow::fastTrade);
     }
     connect(ui->login,&QAction::triggered,this,[=](){
-        if (m_process->state()==QProcess::NotRunning)
+        if (QMTProcess->state()==QProcess::NotRunning)
         {
             QString str = "D:\\Program Files\\Finance\\国金证券QMT交易端\\bin.x64\\XtMiniQmt.exe";
             QString tagDir = "\"" + str + "\"";
-            m_process->start(tagDir);
+            QMTProcess->start(tagDir);
         }
         else
             QMessageBox::information(this,"提示", "交易已经启动", QMessageBox::Ok);
@@ -1757,7 +1757,8 @@ void MainWindow::dealWithFundFlow()
 }
 void MainWindow::fastTrade()
 {
-    if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or tradePrice==0)
+    if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or tradePrice==0 or
+        GlobalVar::curCode.left(1)=="1")
         return;
     QMenu *menu=new QMenu(this);
     QAction *actB=new QAction("闪电买入",menu);

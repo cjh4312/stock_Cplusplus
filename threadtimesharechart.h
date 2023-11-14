@@ -19,6 +19,7 @@ private:
     void initTimeShareChartList1(QByteArray allData);
 
     QString preGCode="";
+    int mRetries=0;
     bool isFirst=true;
     float h;
     float l;

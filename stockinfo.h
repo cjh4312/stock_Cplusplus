@@ -19,6 +19,7 @@
 #define TITLEHEIGHT 40
 #define TIPWIDTH 15
 #define PI 3.1415926
+#define MAX_RETRIES 3
 
 struct StockInfo
 {

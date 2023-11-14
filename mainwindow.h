@@ -70,7 +70,7 @@ signals:
 
 private:
     Ui::MainWindow *ui;
-    QProcess *m_process=new QProcess(this);
+    QProcess *QMTProcess=new QProcess(this);
     TableStock mTableStock;
     DrawChart drawChart;
     SearchStock searchStock;
