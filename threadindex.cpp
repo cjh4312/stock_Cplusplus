@@ -26,7 +26,7 @@ void ThreadIndex::getAllIndex()
         GlobalVar::timeOutFlag[1]=false;
     else
         {
-            GlobalVar::getData(futuresData,2,QUrl("http://futsseapi.eastmoney.com/list/block?orderBy=name&sort=desc&pageSize=20&pageIndex=0&blockName=financial&_=1666243575249"));
+            GlobalVar::getData(futuresData,2,QUrl("https://futsseapi.eastmoney.com/list/block?orderBy=name&sort=desc&pageSize=20&pageIndex=0&token=58b2fa8f54638b60b87d69b31969089c&field=%2Cname%2Cp%2Czdf&blockName=financial&_=1700020202870"));
             if (GlobalVar::timeOutFlag[2])
                 GlobalVar::timeOutFlag[2]=false;
             else
