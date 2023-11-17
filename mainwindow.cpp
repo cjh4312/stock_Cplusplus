@@ -116,7 +116,7 @@ void MainWindow::initThread()
     });
     connect(this,&MainWindow::startThreadTimeShareChart,threadTimeShareChart,&ThreadTimeShareChart::getAllTimeShareChart);
     thread[4]->start();
-    emit startThreadTimeShareChart();
+    emit startThreadTimeShareChart(false);
 
     threadCandleChart=new ThreadCandleChart;
     threadCandleChart->moveToThread(thread[5]);
@@ -446,7 +446,7 @@ void MainWindow::initSignals()
         else
         {
             GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
-            emit startThreadTimeShareChart();
+            emit startThreadTimeShareChart(false);
             emit startThreadTimeShareTick();
         }
     });
@@ -454,13 +454,13 @@ void MainWindow::initSignals()
         int curRow=index.row();
         GlobalVar::curCode=GlobalVar::mRisingSpeedList.at(curRow).code;
 //        GlobalVar::curName=GlobalVar::mRisingSpeedList.at(curRow).name;
-        emit startThreadTimeShareChart();
+        emit startThreadTimeShareChart(false);
         emit startThreadTimeShareTick();
     });
     connect(mTableStock.myStockView, &QTableView::clicked, this, [this](const QModelIndex &index){
         int curRow=index.row();
         GlobalVar::curCode=GlobalVar::mMyStockList.at(curRow).code;
-        emit startThreadTimeShareChart();
+        emit startThreadTimeShareChart(false);
         emit startThreadTimeShareTick();
     });
     connect(ui->ZHMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
@@ -484,7 +484,7 @@ void MainWindow::initSignals()
                 GlobalVar::isKState=true;
                 emit startThreadCandleChart(freq,adjustFlag,true);
                 emit startThreadTimeShareTick();
-                emit startThreadTimeShareChart();
+                emit startThreadTimeShareChart(false);
                 toInterFace("k");
             }
             else
@@ -585,7 +585,7 @@ void MainWindow::initSignals()
             GlobalVar::curName=bb->text();
             resetKParameter();
             emit startThreadCandleChart(freq,adjustFlag,true);
-            emit startThreadTimeShareChart();
+            emit startThreadTimeShareChart(false);
             emit startThreadTimeShareTick();
             toInterFace("k");
         });
@@ -1402,7 +1402,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curRow,0));
             }
             emit startThreadCandleChart(freq,adjustFlag,true);
-            emit startThreadTimeShareChart();
+            emit startThreadTimeShareChart(false);
             emit startThreadTimeShareTick();
             mFundFlow.initAllNews();
             drawChart.candleChart->update();
@@ -1434,7 +1434,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curRow,0));
             }
             emit startThreadCandleChart(freq,adjustFlag,true);
-            emit startThreadTimeShareChart();
+            emit startThreadTimeShareChart(false);
             emit startThreadTimeShareTick();
             mFundFlow.initAllNews();
             drawChart.candleChart->update();
@@ -1605,7 +1605,7 @@ void MainWindow::setMarket()
     resetKParameter();
     toInterFace("main");
     emit startThreadTable();
-    emit startThreadTimeShareChart();
+    emit startThreadTimeShareChart(false);
     emit startThreadTimeShareTick();
     emit startThreadIndex();
 }
@@ -1718,7 +1718,7 @@ void MainWindow::showSearchResult()
         resetKParameter();
         searchSmallWindow->hide();
         emit startThreadCandleChart(freq,adjustFlag,true);
-        emit startThreadTimeShareChart();
+        emit startThreadTimeShareChart(false);
         emit startThreadTimeShareTick();
         toInterFace("k");
     }
@@ -2057,7 +2057,7 @@ void MainWindow::tradingTimeRunThread()
                 {
                     requestsToCsv.downStockIndexPlateInfo();
                     GlobalVar::settings->setValue("curTime",d);
-                    emit startThreadTimeShareChart();
+                    emit startThreadTimeShareChart(true);
                 }
             }
         }
@@ -2507,7 +2507,7 @@ void MainWindow::downUpLookStock(QWheelEvent *event)
         }
         //            qDebug()<<GlobalVar::curCode;
         emit startThreadCandleChart(freq,adjustFlag,true);
-        emit startThreadTimeShareChart();
+        emit startThreadTimeShareChart(false);
         emit startThreadTimeShareTick();
         mFundFlow.initAllNews();
         drawChart.candleChart->update();

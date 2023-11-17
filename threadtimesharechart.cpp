@@ -11,67 +11,60 @@ ThreadTimeShareChart::ThreadTimeShareChart(QObject *parent)
 void ThreadTimeShareChart::getSSEData()
 {
     QByteArray* qByteArray=new QByteArray();
-    QString preCode=GlobalVar::curCode;
     QString url="https://push2his.eastmoney.com/api/qt/stock/trends2/sse?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893";
     QNetworkRequest request;
     QByteArray allData;
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(QUrl(url));
     QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
-    QNetworkReply *reply= naManager->get(request);
+    reply= naManager->get(request);
     GlobalVar::mTimeShareChartList.clear();
     connect(reply, &QNetworkReply::finished, this, [=](){
         reply->disconnect();
-        reply->deleteLater();
         delete qByteArray;
         naManager->deleteLater();
     });
     connect(reply, &QNetworkReply::readyRead, this, [=]()mutable{
-        if (preCode!=GlobalVar::curCode)
-            reply->abort();
-        else
+        int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (statusCode == 200)
         {
-            int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            if (statusCode == 200)
+            mRetries=0;
+            allData=reply->readAll();
+            if (allData.contains("data:"))
             {
-                mRetries=0;
-                allData=reply->readAll();
-                if (allData.contains("data:"))
+                if (allData.contains("\"data\":{\""))
                 {
-                    if (allData.contains("\"data\":{\""))
+                    if (allData.mid(allData.size()-2,2)=="\n\n")
                     {
-                        if (allData.mid(allData.size()-2,2)=="\n\n")
-                        {
-                            initTimeShareChartList(allData);
-                            emit getTimeShareChartFinished();
-                        }
-                        else
-                            qByteArray->append(allData);
-                    }
-                }
-                else
-                {
-                    qByteArray->append(allData);
-                    QByteArray tempByteArray=qByteArray->data();
-                    if (tempByteArray.mid(tempByteArray.size()-2,2)=="\n\n")
-                    {
-                        initTimeShareChartList(tempByteArray);
+                        initTimeShareChartList(allData);
                         emit getTimeShareChartFinished();
                     }
+                    else
+                        qByteArray->append(allData);
                 }
             }
             else
-                if(mRetries < MAX_RETRIES)
+            {
+                qByteArray->append(allData);
+                QByteArray tempByteArray=qByteArray->data();
+                if (tempByteArray.mid(tempByteArray.size()-2,2)=="\n\n")
                 {
-                    mRetries++;
-                    getSSEData();
+                    initTimeShareChartList(tempByteArray);
+                    emit getTimeShareChartFinished();
                 }
+            }
         }
+        else
+            if(mRetries < MAX_RETRIES)
+            {
+                mRetries++;
+                getSSEData();
+            }
 
     });
 }
 
-void ThreadTimeShareChart::getAllTimeShareChart()
+void ThreadTimeShareChart::getAllTimeShareChart(bool reset)
 {
 //    QByteArray allData;
 
@@ -83,8 +76,10 @@ void ThreadTimeShareChart::getAllTimeShareChart()
 //            initTimeShareChartList1(allData);
 //            emit getTimeShareChartFinished();
 //        }
-    if (preGCode==GlobalVar::curCode)
+    if (preGCode==GlobalVar::curCode and not reset)
         return;
+    if (preGCode!="")
+        reply->abort();
     preGCode=GlobalVar::curCode;
     h=0.0;
     l=100000.0;

@@ -64,7 +64,7 @@ signals:
     void startThreadTable();
     void startThreadIndex();
     void startThreadTimeShareTick();
-    void startThreadTimeShareChart();
+    void startThreadTimeShareChart(bool reset);
     void startThreadGetNews();
     void startThreadCandleChart(QString freq,QString adjustFlag,bool isFirst);
 

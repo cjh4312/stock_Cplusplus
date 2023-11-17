@@ -25,7 +25,7 @@ ThreadTimeShareTick::ThreadTimeShareTick(QObject *parent)
 
 void ThreadTimeShareTick::getBuySellTimeShareTick()
 {
-    if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.length()==5)
+    if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399")
     {
         if (preCode==GlobalVar::curCode)
             return;
@@ -35,10 +35,10 @@ void ThreadTimeShareTick::getBuySellTimeShareTick()
         url="http://push2.eastmoney.com/api/qt/stock/details/sse?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55&mpi=2000&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&pos=-0&secid="+GlobalVar::getComCode();
         GlobalVar::mTimeShareTickList.clear();
         getSSEData(2,url);
-
     }
     else
     {
+        preCode=GlobalVar::curCode;
         QByteArray buySellData;
         QByteArray timeShareTickData;
 
