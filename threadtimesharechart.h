@@ -18,7 +18,7 @@ public:
 private:
     void initTimeShareChartList(QByteArray allData);
     void initTimeShareChartList1(QByteArray allData);
-    QNetworkReply *reply;
+    QNetworkReply *reply=nullptr;
 
     QString preGCode="";
     int mRetries=0;

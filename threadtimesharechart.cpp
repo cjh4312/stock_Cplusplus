@@ -21,6 +21,7 @@ void ThreadTimeShareChart::getSSEData()
     GlobalVar::mTimeShareChartList.clear();
     connect(reply, &QNetworkReply::finished, this, [=](){
         reply->disconnect();
+        reply=nullptr;
         delete qByteArray;
         naManager->deleteLater();
     });
@@ -78,7 +79,7 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool reset)
 //        }
     if (preGCode==GlobalVar::curCode and not reset)
         return;
-    if (preGCode!="")
+    if (reply!=nullptr)
         reply->abort();
     preGCode=GlobalVar::curCode;
     h=0.0;
