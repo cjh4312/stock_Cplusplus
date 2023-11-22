@@ -5,32 +5,21 @@
 ThreadTimeShareChart::ThreadTimeShareChart(QObject *parent)
     : QObject{parent}
 {
-    //    naManager = new QNetworkAccessManager(this);
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
 }
 
 void ThreadTimeShareChart::getSSEData()
 {
-    QByteArray* qByteArray=new QByteArray();
     QString url="https://push2his.eastmoney.com/api/qt/stock/trends2/sse?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893";
-    QNetworkRequest request;
-    QByteArray allData;
-    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(QUrl(url));
-    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
     reply= naManager->get(request);
     GlobalVar::mTimeShareChartList.clear();
-    connect(reply, &QNetworkReply::finished, this, [=](){
-        reply->disconnect();
-        reply=nullptr;
-        delete qByteArray;
-        naManager->deleteLater();
-    });
-    connect(reply, &QNetworkReply::readyRead, this, [=]()mutable{
+    connect(reply, &QNetworkReply::readyRead, this, [=](){
         int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (statusCode == 200)
         {
             mRetries=0;
-            allData=reply->readAll();
+            QByteArray allData=reply->readAll();
             if (allData.contains("data:"))
             {
                 if (allData.contains("\"data\":{\""))
@@ -52,6 +41,7 @@ void ThreadTimeShareChart::getSSEData()
                 {
                     initTimeShareChartList(tempByteArray);
                     emit getTimeShareChartFinished();
+                    qByteArray->clear();
                 }
             }
         }
@@ -79,7 +69,7 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool reset)
 //        }
     if (preGCode==GlobalVar::curCode and not reset)
         return;
-    if (reply!=nullptr)
+    if (preGCode!="")
         reply->abort();
     preGCode=GlobalVar::curCode;
     h=0.0;
@@ -90,13 +80,10 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool reset)
 
 void ThreadTimeShareChart::initTimeShareChartList1(QByteArray allData)
 {
-//    m_mutex.lock();
-
-    QJsonParseError *jsonError=new QJsonParseError;
-    QJsonDocument doc = QJsonDocument::fromJson(allData, jsonError);
-    if (jsonError->error == QJsonParseError::NoError)
+    QJsonParseError jsonError;
+    QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
+    if (jsonError.error == QJsonParseError::NoError)
     {
-//        QList<timeShartChartInfo> timeShareChartList;
         QJsonObject jsonObject = doc.object();
         GlobalVar::preClose=jsonObject.value("data").toObject().value("preClose").toDouble();
         int ph=110;
@@ -119,11 +106,12 @@ void ThreadTimeShareChart::initTimeShareChartList1(QByteArray allData)
         GlobalVar::timeShareHighLowPoint[2]=0;
         float pp=GlobalVar::preClose;
         GlobalVar::mTimeShareChartList.clear();
+        timeShartChartInfo info;
+        QStringList list;
         if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
             for (int i = 0; i < data.size(); ++i)
             {
-                timeShartChartInfo info;
-                QStringList list=data.at(i).toString().split(",");
+                list=data.at(i).toString().split(",");
                 if (pp<list[2].toFloat())
                     info.direct=2;
                 else if (pp>list[2].toFloat())
@@ -151,8 +139,7 @@ void ThreadTimeShareChart::initTimeShareChartList1(QByteArray allData)
         else
             for (int i = 0; i < data.size(); ++i)
             {
-                timeShartChartInfo info;
-                QStringList list=data.at(i).toString().split(",");
+                list=data.at(i).toString().split(",");
                 if (pp<list[2].toFloat())
                     info.direct=2;
                 else if (pp>list[2].toFloat())
@@ -173,7 +160,6 @@ void ThreadTimeShareChart::initTimeShareChartList1(QByteArray allData)
                     GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
                 GlobalVar::mTimeShareChartList.append(info);
             }
-//        GlobalVar::mTimeShareChartList=timeShareChartList;
         GlobalVar::timeShareHighLowPoint[0]=per(h);
         if (GlobalVar::timeShareHighLowPoint[0]<0)
             GlobalVar::timeShareHighLowPoint[0]=0;
@@ -181,19 +167,15 @@ void ThreadTimeShareChart::initTimeShareChartList1(QByteArray allData)
         if (GlobalVar::timeShareHighLowPoint[1]>0)
             GlobalVar::timeShareHighLowPoint[1]=0;
     }
-//    m_mutex.unlock();
 }
 
 void ThreadTimeShareChart::initTimeShareChartList(QByteArray allData)
 {
-    //    m_mutex.lock();
-
-    QJsonParseError *jsonError=new QJsonParseError;
-    QJsonDocument doc = QJsonDocument::fromJson(allData.mid(6,allData.size()-6), jsonError);
+    QJsonParseError jsonError;
+    QJsonDocument doc = QJsonDocument::fromJson(allData.mid(6,allData.size()-6), &jsonError);
     float backPP=0.0;
-    if (jsonError->error == QJsonParseError::NoError)
+    if (jsonError.error == QJsonParseError::NoError)
     {
-        //        QList<timeShartChartInfo> timeShareChartList;
         QJsonObject jsonObject = doc.object();
         if (isFirst)
         {
@@ -215,11 +197,12 @@ void ThreadTimeShareChart::initTimeShareChartList(QByteArray allData)
             isFirst=false;
         }
         QJsonArray data=jsonObject.value("data").toObject().value("trends").toArray();
+        timeShartChartInfo info;
+        QStringList list;
         if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
             for (int i = 0; i < data.size(); ++i)
             {
-                timeShartChartInfo info;
-                QStringList list=data.at(i).toString().split(",");
+                list=data.at(i).toString().split(",");
 
                 info.time=list[0];
                 info.price=per(list[2].toFloat());
@@ -262,8 +245,7 @@ void ThreadTimeShareChart::initTimeShareChartList(QByteArray allData)
         else
             for (int i = 0; i < data.size(); ++i)
             {
-                timeShartChartInfo info;
-                QStringList list=data.at(i).toString().split(",");
+                list=data.at(i).toString().split(",");
 
                 info.time=list[0];
                 info.price=per(list[2].toFloat());
@@ -301,7 +283,6 @@ void ThreadTimeShareChart::initTimeShareChartList(QByteArray allData)
                     GlobalVar::mTimeShareChartList.replace(GlobalVar::mTimeShareChartList.size()-1,info);
                 }
             }
-        //        GlobalVar::mTimeShareChartList=timeShareChartList;
         GlobalVar::timeShareHighLowPoint[0]=per(h);
         if (GlobalVar::timeShareHighLowPoint[0]<0)
             GlobalVar::timeShareHighLowPoint[0]=0;
@@ -309,9 +290,4 @@ void ThreadTimeShareChart::initTimeShareChartList(QByteArray allData)
         if (GlobalVar::timeShareHighLowPoint[1]>0)
             GlobalVar::timeShareHighLowPoint[1]=0;
     }
-//    for (int i=0;i<GlobalVar::mTimeShareChartList.count();++i)
-//    {
-//        qDebug()<<GlobalVar::mTimeShareChartList.at(i).time;
-//    }
-    //    m_mutex.unlock();
 }

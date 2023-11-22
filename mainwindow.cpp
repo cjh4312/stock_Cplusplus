@@ -1774,11 +1774,11 @@ void MainWindow::fastTrade()
     connect(actB,&QAction::triggered,this,[=](){
         PyGILState_STATE state=PyGILState_Ensure();
         PyObject* pModule = PyImport_ImportModule("qmt");
-        if(!pModule)
-            qDebug()<<"import failure";
+//        if(!pModule)
+//            qDebug()<<"import failure";
         PyObject* pFunTrade = PyObject_GetAttrString(pModule,"getAsset");
-        if(!pFunTrade)
-            qDebug()<<"get function failed";
+//        if(!pFunTrade)
+//            qDebug()<<"get function failed";
         PyObject* args = PyTuple_New(1);
         PyTuple_SetItem(args,0,Py_BuildValue("s",account.toStdString().c_str()));
         PyObject* outcome=PyObject_CallFunction(pFunTrade,"O",args);
@@ -1887,12 +1887,11 @@ void MainWindow::fastTrade()
     connect(actS,&QAction::triggered,this,[=](){
         PyGILState_STATE state=PyGILState_Ensure();
         PyObject* pModule = PyImport_ImportModule("qmt");
-        if(!pModule)
-            qDebug()<<"import failure";
+//        if(!pModule)
+//            qDebug()<<"import failure";
         PyObject* pFunTrade = PyObject_GetAttrString(pModule,"getPositions");
-        if(!pFunTrade)
-            qDebug()<<"get function failed";
-
+//        if(!pFunTrade)
+//            qDebug()<<"get function failed";
         PyObject* args = PyTuple_New(1);
         PyTuple_SetItem(args,0,Py_BuildValue("s",account.toStdString().c_str()));
         PyObject* outcome=PyObject_CallFunction(pFunTrade, "O",args);

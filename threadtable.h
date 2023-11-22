@@ -2,12 +2,9 @@
 #ifndef THREADTABLE_H
 #define THREADTABLE_H
 
-
 #include <QObject>
-//#include <QNetworkAccessManager>
 #include <QFile>
 #include <QTextCodec>
-#include <QMutex>
 
 class ThreadTable : public QObject
 {
@@ -17,11 +14,10 @@ public:
     void getTableData();
 
 private:
-    void initTableList(QByteArray allData);
+    void initTableList();
     void readMyStock();
     void reFlaseMyStock();
-
-    QMutex m_mutex;
+    QByteArray allData;
 
 signals:
     void getTableDataFinished();

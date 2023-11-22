@@ -2,9 +2,7 @@
 #ifndef THREADCANDLECHART_H
 #define THREADCANDLECHART_H
 
-
 #include <QObject>
-//#include <QNetworkAccessManager>
 #include <QJsonArray>
 
 class ThreadCandleChart : public QObject
@@ -14,7 +12,8 @@ public:
     explicit ThreadCandleChart(QObject *parent = nullptr);
     void getAllCandleChart(QString freq,QString adjustFlag,bool isFirst);
 private:
-    void initCandleChartList(QByteArray allData);
+    QByteArray allData;
+    void initCandleChartList();
 
 signals:
     void getCandleChartFinished();

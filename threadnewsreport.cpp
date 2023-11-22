@@ -21,28 +21,22 @@ void ThreadNewsReport::getNewsData()
 
     if (tts->state() == QTextToSpeech::Speaking)
         return;
-//    m_mutex.lock();
-    getEastNews();
-    QByteArray allData;
+    GlobalVar::getData(allData,2,QUrl("https://finance.eastmoney.com/yaowen.html"));
     if (GlobalVar::timeOutFlag[4])
         GlobalVar::timeOutFlag[4]=false;
     else
         {
+            initEastNews();
             GlobalVar::getData(allData,2,QUrl("https://www.jin10.com/flash_newest.js?t=1667528593473"));
             if (GlobalVar::timeOutFlag[3])
                 GlobalVar::timeOutFlag[3]=false;
             else
-                initNewsReport(allData);
+                initNewsReport();
         }
-//    m_mutex.unlock();
 }
 
-void ThreadNewsReport::getEastNews()
+void ThreadNewsReport::initEastNews()
 {
-    QByteArray allData;
-    GlobalVar::getData(allData,2,QUrl("https://finance.eastmoney.com/yaowen.html"));
-    if (GlobalVar::timeOutFlag[4])
-        return;
     QString s=GlobalVar::peelStr(QString(allData),"id=\"artitileList1\"","-1");
     QPair<QString, QString> pair;
     eastNewsList.clear();
@@ -64,7 +58,7 @@ void ThreadNewsReport::getEastNews()
     });
 }
 
-void ThreadNewsReport::initNewsReport(QByteArray allData)
+void ThreadNewsReport::initNewsReport()
 {
     QString cur_time=QDateTime::currentDateTime().toString("yyyyMMddhhmmss").mid(10,2);
     if (cur_time <= "01")
@@ -88,10 +82,10 @@ void ThreadNewsReport::initNewsReport(QByteArray allData)
     else
         count = 0;
     QByteArray temp=allData.mid(13,allData.size()-14);
-    QJsonParseError *jsonError=new QJsonParseError;
-    QJsonDocument doc = QJsonDocument::fromJson(temp, jsonError);
+    QJsonParseError jsonError;
+    QJsonDocument doc = QJsonDocument::fromJson(temp, &jsonError);
 
-    if (jsonError->error == QJsonParseError::NoError)
+    if (jsonError.error == QJsonParseError::NoError)
     {
         QJsonArray array = doc.array();
         int eastNums=eastNewsList.count()-1;

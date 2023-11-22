@@ -5,13 +5,16 @@
 ThreadTable::ThreadTable(QObject *parent)
     : QObject{parent}
 {
-//    naManager = new QNetworkAccessManager(this);
+    StockInfo info;
+    info.code="";
+    for (int i=0;i<20;++i)
+        GlobalVar::mRisingSpeedList.append(info);
     readMyStock();
 }
 
 void ThreadTable::getTableData()
 {
-    QByteArray allData;
+//    QByteArray allData;
 //    QTime t=QDateTime::currentDateTime().time();
     if (GlobalVar::WhichInterface==1)
     {
@@ -22,9 +25,9 @@ void ThreadTable::getTableData()
             GlobalVar::timeOutFlag[5]=false;
         else
             {
-                initTableList(allData);
-                emit getTableDataFinished();
+                initTableList();
                 reFlaseMyStock();
+                emit getTableDataFinished();
             }
     }
     else if (GlobalVar::WhichInterface==2)
@@ -34,7 +37,7 @@ void ThreadTable::getTableData()
             GlobalVar::timeOutFlag[5]=false;
         else
             {
-                initTableList(allData);
+                initTableList();
                 emit getTableDataFinished();
             }
     }
@@ -51,37 +54,34 @@ void ThreadTable::getTableData()
             GlobalVar::timeOutFlag[5]=false;
         else
             {
-                initTableList(allData);
+                initTableList();
                 emit getTableDataFinished();
             }
     }
 //    qDebug()<<t.msecsTo(QDateTime::currentDateTime().time());
 }
 
-void ThreadTable::initTableList(QByteArray allData)
+void ThreadTable::initTableList()
 {
-    m_mutex.lock();
-//    qDebug()<<QDateTime::currentDateTime()<<allData.size();
-//    qDebug()<<QString(allData.mid(0,200));
-
-    QJsonParseError *jsonError=new QJsonParseError;
-    QJsonDocument doc = QJsonDocument::fromJson(allData, jsonError);
-//    qDebug()<<jsonError->error<<"\n";
-    if (jsonError->error == QJsonParseError::NoError)
+    QJsonParseError jsonError;
+    QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
+    if (jsonError.error == QJsonParseError::NoError)
     {
         GlobalVar::upNums=0;
         GlobalVar::downNums=0;
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("diff").toArray();
-        QList<StockInfo> tableList;
+        QJsonValue value;
+        QVariantMap ceilMap;
+        StockInfo info;
         if (GlobalVar::WhichInterface==1)
         {
+            GlobalVar::mTableListCopy.clear();
             for (int i = 0; i < data.size(); ++i)
             {
-                QJsonValue value = data.at(i);
-                QVariantMap ceilMap = value.toVariant().toMap();
+                value = data.at(i);
+                ceilMap = value.toVariant().toMap();
 
-                StockInfo info;
                 info.name = ceilMap.value("f14").toString();
                 if (info.name.contains("退"))
                     continue;
@@ -105,25 +105,22 @@ void ThreadTable::initTableList(QByteArray allData)
                 info.low = ceilMap.value("f16").toFloat();
                 info.open=ceilMap.value("f17").toFloat();
                 info.preClose=ceilMap.value("f18").toFloat();
-                tableList.append(info);
+                GlobalVar::mTableListCopy.append(info);
             }
-            GlobalVar::mTableListCopy=tableList;
             if (not GlobalVar::isBoard)
                 GlobalVar::mTableList=GlobalVar::mTableListCopy;
-            QList<StockInfo> risingSpeedList;
-            for (int i=0;i<=19;++i)
-                risingSpeedList.append(GlobalVar::mTableListCopy.at(i));
-            GlobalVar::mRisingSpeedList=risingSpeedList;
+            for (int i=0;i<20;++i)
+                GlobalVar::mRisingSpeedList.replace(i,GlobalVar::mTableListCopy.at(i));
             GlobalVar::sortByColumn(&GlobalVar::mTableListCopy,0,true);
         }
         else
         {
+            GlobalVar::mTableList.clear();
             for (int i = 0; i < data.size(); ++i)
             {
-                QJsonValue value = data.at(i);
-                QVariantMap ceilMap = value.toVariant().toMap();
+                value = data.at(i);
+                ceilMap = value.toVariant().toMap();
 
-                StockInfo info;
                 info.name = ceilMap.value("f14").toString();
                 if (GlobalVar::WhichInterface==5)
                     info.code = ceilMap.value("f13").toString()+"."+ceilMap.value("f12").toString();
@@ -148,21 +145,19 @@ void ThreadTable::initTableList(QByteArray allData)
                 info.low = ceilMap.value("f16").toFloat();
                 info.open=ceilMap.value("f17").toFloat();
                 info.preClose=ceilMap.value("f18").toFloat();
-                tableList.append(info);
+                GlobalVar::mTableList.append(info);
             }
-            GlobalVar::mTableList=tableList;
         }
         GlobalVar::sortByColumn(&GlobalVar::mTableList,GlobalVar::curSortNum,GlobalVar::is_asc);
     }
-    m_mutex.unlock();
 }
 
 void ThreadTable::readMyStock()
 {
     GlobalVar::mMyStockCode=GlobalVar::settings->value("myStock").toStringList();
+    StockInfo info;
     for(int i=0;i<GlobalVar::mMyStockCode.count();++i)
     {
-        StockInfo info;
         info.code=GlobalVar::mMyStockCode.at(i);
         GlobalVar::mMyStockList.append(info);
     }

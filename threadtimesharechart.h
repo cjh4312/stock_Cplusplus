@@ -4,7 +4,6 @@
 
 #include "qnetworkreply.h"
 #include <QObject>
-//#include <QNetworkAccessManager>
 #include <QJsonArray>
 
 class ThreadTimeShareChart : public QObject
@@ -19,6 +18,9 @@ private:
     void initTimeShareChartList(QByteArray allData);
     void initTimeShareChartList1(QByteArray allData);
     QNetworkReply *reply=nullptr;
+    QByteArray* qByteArray=new QByteArray();
+    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
+    QNetworkRequest request;
 
     QString preGCode="";
     int mRetries=0;
