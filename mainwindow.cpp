@@ -548,7 +548,13 @@ void MainWindow::initSignals()
         addRightMenu(2);
     });
     connect(mTableStock.myStockView,&QTableView::customContextMenuRequested,this,[=](QPoint){
-        delRightMenu();
+        QMenu *menu=new QMenu(this);
+        QAction *act=new QAction("删除自选",menu);
+        QIcon icon(":/new/png/png/del.jpg");
+        act->setIcon(icon);
+        menu->addAction(act);
+        menu->popup(QCursor::pos());
+        connect(act,&QAction::triggered,this,&MainWindow::delMyStock);
     });
     for (int i = 2; i<=14; i=i+2)
     {
@@ -1687,16 +1693,6 @@ void MainWindow::addRightMenu(int num)
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
     });
 
-}
-void MainWindow::delRightMenu()
-{
-    QMenu *menu=new QMenu(this);
-    QAction *act=new QAction("删除自选",menu);
-    QIcon icon(":/new/png/png/del.jpg");
-    act->setIcon(icon);
-    menu->addAction(act);
-    menu->popup(QCursor::pos());
-    connect(act,&QAction::triggered,this,&MainWindow::delMyStock);
 }
 void MainWindow::showSearchResult()
 {

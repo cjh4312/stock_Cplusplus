@@ -54,7 +54,6 @@ private slots:
     void reFlashBuySellBaseInfo();
     void setMarket();
     void addRightMenu(int num);
-    void delRightMenu();
     void showSearchResult();
     void resetKParameter();
     void dealWithFundFlow();
