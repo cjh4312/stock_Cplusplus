@@ -89,7 +89,7 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
                 {
                     if (m_modelData.count()!=GlobalVar::mMyStockCode.count())
                         return QColor(255,140,0);
-                    else
+                    else if (m_modelData.count()==20)
                     {
                         if (m_modelData.at(0).code!=GlobalVar::mMyStockCode[0])
                             return QColor(255,140,0);

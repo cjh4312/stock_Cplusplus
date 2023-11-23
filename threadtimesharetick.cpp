@@ -55,6 +55,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick()
             GlobalVar::timeOutFlag[7]=false;
         else
         {
+            GlobalVar::mTimeShareTickList.clear();
             initTimeShareTickList();
             emit getTimeShareTickFinished();
         }
@@ -90,16 +91,16 @@ void ThreadTimeShareTick::getSSEData(int nums,QString url)
             if (statusCode == 200)
             {
                 mRetries=0;
-                QByteArray allData=reply->readAll();
-                if (allData.contains("data:"))
+                QByteArray tempData=reply->readAll();
+                if (tempData.contains("data:"))
                 {
-                    if (allData.contains("\"data\":{\""))
+                    if (tempData.contains("\"data\":{\""))
                     {
-                        if (allData.mid(allData.size()-2,2)=="\n\n")
+                        if (tempData.mid(tempData.size()-2,2)=="\n\n")
                         {
                             if (nums==1)
                             {
-                                buySellData=allData.mid(6,allData.size()-8);
+                                buySellData=tempData.mid(6,tempData.size()-8);
                                 initBuySellList();
                                 QString l=GlobalVar::curCode.left(1);
                                 if (l=="3" or l=="6" or l=="0")
@@ -108,17 +109,18 @@ void ThreadTimeShareTick::getSSEData(int nums,QString url)
                             }
                             else
                             {
-                                initTimeShareTickList1(allData.mid(6,allData.size()-8));
+                                timeShareTickData=tempData.mid(6,tempData.size()-8);
+                                initTimeShareTickList();
                                 emit getTimeShareTickFinished();
                             }
                         }
                         else
-                            qByteArray->append(allData);
+                            qByteArray->append(tempData);
                     }
                 }
                 else
                 {
-                    qByteArray->append(allData);
+                    qByteArray->append(tempData);
                     QByteArray tempByteArray=qByteArray->data();
     //                qDebug()<<tempByteArray;
                     if (tempByteArray.mid(tempByteArray.size()-2,2)=="\n\n")
@@ -134,7 +136,8 @@ void ThreadTimeShareTick::getSSEData(int nums,QString url)
                         }
                         else
                         {
-                            initTimeShareTickList1(tempByteArray.mid(6,tempByteArray.size()-8));
+                            timeShareTickData=tempByteArray.mid(6,tempByteArray.size()-8);
+                            initTimeShareTickList();
                             emit getTimeShareTickFinished();
                         }
                         qByteArray->clear();
@@ -202,7 +205,6 @@ void ThreadTimeShareTick::initTimeShareTickList()
     {
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("details").toArray();
-        GlobalVar::mTimeShareTickList.clear();
         timeShareTickInfo info;
         QStringList list;
         for (int i = 0; i < data.size(); ++i)
@@ -219,29 +221,6 @@ void ThreadTimeShareTick::initTimeShareTickList()
     }
 }
 
-void ThreadTimeShareTick::initTimeShareTickList1(QByteArray timeShareTickData)
-{
-    QJsonParseError jsonError;
-    QJsonDocument doc = QJsonDocument::fromJson(timeShareTickData, &jsonError);
-    if (jsonError.error == QJsonParseError::NoError)
-    {
-        QJsonObject jsonObject = doc.object();
-        QJsonArray data=jsonObject.value("data").toObject().value("details").toArray();
-        timeShareTickInfo info;
-        QStringList list;
-        for (int i = 0; i < data.size(); ++i)
-        {
-            list=data.at(i).toString().split(",");
-
-            info.time=list[0];
-            info.price=list[1].toFloat();
-            info.nums=list[2].toInt();
-            info.d=list[4].toInt();
-            info.tick=list[3].toInt();
-            GlobalVar::mTimeShareTickList.append(info);
-        }
-    }
-}
 
 //显示股票的区域和行业
 void ThreadTimeShareTick::findStockArea()

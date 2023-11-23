@@ -20,14 +20,20 @@ TableStock::TableStock()
 void TableStock::setTableView()
 {
     int curIndex=stockTableView->currentIndex().row();
+    if (curIndex==-1)
+        curIndex=0;
     m_tableModel->setModelData(GlobalVar::mTableList);
     stockTableView->setModel(m_tableModel);
     stockTableView->setCurrentIndex(m_tableModel->index(curIndex,0));
     curIndex=risingSpeedView->currentIndex().row();
+    if (curIndex==-1)
+        curIndex=0;
     m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
     risingSpeedView->setModel(m_risingSpeedModel);
     risingSpeedView->setCurrentIndex(m_risingSpeedModel->index(curIndex,0));
     curIndex=myStockView->currentIndex().row();
+    if (curIndex==-1)
+        curIndex=0;
     m_myStockModel->setModelData(GlobalVar::mMyStockList);
     myStockView->setModel(m_myStockModel);
     myStockView->setCurrentIndex(m_myStockModel->index(curIndex,0));

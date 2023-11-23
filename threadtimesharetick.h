@@ -19,7 +19,6 @@ public:
 private:
     void initBuySellList();
     void initTimeShareTickList();
-    void initTimeShareTickList1(QByteArray timeShareTickData);
     void findStockArea();
     QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
     QString preCode="";

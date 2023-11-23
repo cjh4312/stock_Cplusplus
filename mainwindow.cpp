@@ -273,7 +273,8 @@ void MainWindow::initSettings()
     setFocusPolicy(Qt::StrongFocus);
     mTableStock.stockTableView->setFocusPolicy(Qt::NoFocus);
     mTableStock.risingSpeedView->setFocusPolicy(Qt::NoFocus);
-    mTableStock.myStockView->setFocusPolicy(Qt::NoFocus);
+    mTableStock.myStockView->setFocusPolicy(Qt::ClickFocus);
+    mTableStock.myStockView->horizontalHeader()->setHighlightSections(false);
 
     searchSmallWindow=new QWidget(this);
     searchSmallWindow->setWindowFlag(Qt::Popup);
@@ -803,6 +804,17 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
 //        qDebug()<<mTableStock.stockTableView->height();
         return true;
+    }
+    else if (obj==mTableStock.myStockView and event->type()==QEvent::KeyPress)
+    {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        if ((keyEvent->key() >= 48 and keyEvent->key() <= 57) or (keyEvent->key() >= 65 and keyEvent->key() <= 90))
+        {
+            searchSmallWindow->show();
+            searchStock.searchCodeLine->setText(keyEvent->text());
+            searchStock.searchCodeLine->setFocus();
+            searchStock.matchCodeText->moveCursor(QTextCursor::Start);
+        }
     }
     else if (obj==drawChart.timeShareChart)
     {
@@ -1528,6 +1540,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         toInterFace("f3");
     else if (key==Qt::Key_F10)
         toInterFace("f10");
+    else if (key==Qt::Key_Delete and mTableStock.myStockView->hasFocus())
+        delMyStock();
 }
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
@@ -1682,20 +1696,7 @@ void MainWindow::delRightMenu()
     act->setIcon(icon);
     menu->addAction(act);
     menu->popup(QCursor::pos());
-    connect(act,&QAction::triggered,this,[=](){
-        GlobalVar::mMyStockList.removeAt(mTableStock.myStockView->currentIndex().row());
-        mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList);
-        mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
-        saveMyStock();
-        int curIndex=mTableStock.risingSpeedView->currentIndex().row();
-        mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
-        mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
-        mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
-        curIndex=mTableStock.stockTableView->currentIndex().row();
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
-        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
-    });
+    connect(act,&QAction::triggered,this,&MainWindow::delMyStock);
 }
 void MainWindow::showSearchResult()
 {
@@ -2000,6 +2001,27 @@ void MainWindow::fastTrade()
         mainLayout->addSpacing(15);
         fastSell->show();
     });
+}
+void MainWindow::delMyStock()
+{
+    int curIndex=mTableStock.myStockView->currentIndex().row();
+    if (curIndex==-1)
+        return;
+    GlobalVar::mMyStockList.removeAt(curIndex);
+    if (curIndex==mTableStock.m_myStockModel->rowCount()-1)
+        curIndex-=1;
+    mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList);
+    mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
+    mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
+    saveMyStock();
+    curIndex=mTableStock.risingSpeedView->currentIndex().row();
+    mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
+    mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
+    mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
+    curIndex=mTableStock.stockTableView->currentIndex().row();
+    mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+    mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+    mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
 }
 void MainWindow::tradingTimeRunThread()
 {

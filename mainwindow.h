@@ -59,6 +59,7 @@ private slots:
     void resetKParameter();
     void dealWithFundFlow();
     void fastTrade();
+    void delMyStock();
 
 signals:
     void startThreadTable();

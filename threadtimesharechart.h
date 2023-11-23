@@ -15,12 +15,13 @@ public:
     void getAllTimeShareChart(bool reset);
 
 private:
-    void initTimeShareChartList(QByteArray allData);
-    void initTimeShareChartList1(QByteArray allData);
+    void initTimeShareChartList();
+    void initSSETimeShareChartList();
     QNetworkReply *reply=nullptr;
     QByteArray* qByteArray=new QByteArray();
     QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
     QNetworkRequest request;
+    QByteArray allData;
 
     QString preGCode="";
     int mRetries=0;
