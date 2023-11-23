@@ -24,7 +24,7 @@ ThreadTimeShareTick::ThreadTimeShareTick(QObject *parent)
 
 void ThreadTimeShareTick::getBuySellTimeShareTick()
 {
-    if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399")
+    if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.left(3)=="899")
     {
         if (preCode==GlobalVar::curCode)
             return;
@@ -49,6 +49,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick()
                 findStockArea();
             emit getBuySellFinished();
         }
+
 
         GlobalVar::getData(timeShareTickData,0.9,QUrl("http://push2.eastmoney.com/api/qt/stock/details/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55&mpi=2000&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&pos=-0&secid="+GlobalVar::getComCode()));
         if (GlobalVar::timeOutFlag[7])
@@ -187,7 +188,8 @@ void ThreadTimeShareTick::initBuySellList()
         GlobalVar::PEName="市盈率";
         if ((GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4) and
             GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399" and
-            GlobalVar::curCode.length()!=5 and buySellData.contains("f62"))
+            GlobalVar::curCode.left(3)!="899" and GlobalVar::curCode.length()!=5 and
+            buySellData.contains("f62"))
         {
             int num=jsonObject.value("data").toObject().value("f62").toInt();
             QString n[4]={"一","二","三","四",};
