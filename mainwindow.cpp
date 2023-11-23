@@ -2342,6 +2342,11 @@ void MainWindow::toInterFace(QString which)
             QMessageBox::information(this,"提示", "只能查看A股", QMessageBox::Ok);
             return;
         }
+        if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.left(3)=="899")
+        {
+            QMessageBox::information(this,"提示", "只能查看个股", QMessageBox::Ok);
+            return;
+        }
         F10SmallWindow->setFixedSize(675,500);
         fTitle->setText(GlobalVar::curCode+" "+GlobalVar::curName.left(GlobalVar::curName.indexOf("(")));
         F10SmallWindow->show();
@@ -2349,6 +2354,11 @@ void MainWindow::toInterFace(QString which)
     }
     else if(which=="f10")
     {
+        if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.left(3)=="899")
+        {
+            QMessageBox::information(this,"提示", "只能查看个股", QMessageBox::Ok);
+            return;
+        }
         if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5)
         {
             QMessageBox::information(this,"提示", "只能查看A股", QMessageBox::Ok);

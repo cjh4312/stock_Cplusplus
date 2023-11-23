@@ -91,12 +91,9 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
                         return QColor(255,140,0);
                     else if (m_modelData.count()==20)
                     {
-                        if (m_modelData.at(0).code!=GlobalVar::mMyStockCode[0])
-                            return QColor(255,140,0);
-                        else if(m_modelData.at(1).code!=GlobalVar::mMyStockCode[1])
-                            return QColor(255,140,0);
-                        else if(m_modelData.at(2).code!=GlobalVar::mMyStockCode[2])
-                            return QColor(255,140,0);
+                        for (int j =0;j<20;++j)
+                            if (m_modelData.at(j).code!=GlobalVar::mMyStockCode[j])
+                                return QColor(255,140,0);
                     }
                 }
             }

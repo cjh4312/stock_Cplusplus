@@ -2,7 +2,6 @@
 #ifndef THREADTIMESHARETICK_H
 #define THREADTIMESHARETICK_H
 
-#include "qnetworkaccessmanager.h"
 #include <QObject>
 #include <QJsonArray>
 #include <QFile>
@@ -20,7 +19,6 @@ private:
     void initBuySellList();
     void initTimeShareTickList();
     void findStockArea();
-    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
     QString preCode="";
     QByteArray buySellData;
     QByteArray timeShareTickData;

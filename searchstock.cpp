@@ -90,7 +90,7 @@ void SearchStock::compare(QStringList Data,QString strUpper,int col)
             matchNum=mid;
             QString class_;
             QString s=strLine.at(0);
-            if (s.right(1)=="G" or s.left(3)=="399")
+            if (s.right(1)=="G" or s.left(3)=="399" or s.left(3)=="899")
                 class_="指数";
             else if(s.left(1)=="B")
                 class_="板块";
