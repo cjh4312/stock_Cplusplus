@@ -201,9 +201,9 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(url);
-    QNetworkAccessManager naManager =QNetworkAccessManager();
+    QNetworkAccessManager *naManager =new QNetworkAccessManager();
     QEventLoop loop;
-    QNetworkReply *reply = naManager.get(request);
+    QNetworkReply *reply = naManager->get(request);
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QTimer timer;
     timer.singleShot(timeOut*1000, &loop, SLOT(quit()));
@@ -254,6 +254,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
         }
     }
     delete reply;
+    delete naManager;
 }
 
 void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest request)

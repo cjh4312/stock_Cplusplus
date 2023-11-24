@@ -94,7 +94,7 @@ void MainWindow::initThread()
     connect(threadTimeShareTick,SIGNAL(getBuySellFinished()),this,SLOT(reFlashBuySellBaseInfo()));
     connect(this,&MainWindow::startThreadTimeShareTick,threadTimeShareTick,&ThreadTimeShareTick::getBuySellTimeShareTick);
     thread[2]->start();
-    emit startThreadTimeShareTick();
+    emit startThreadTimeShareTick(false);
 
     threadNewsReport=new ThreadNewsReport;
     threadNewsReport->moveToThread(thread[3]);
@@ -448,7 +448,7 @@ void MainWindow::initSignals()
         {
             GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
             emit startThreadTimeShareChart(false);
-            emit startThreadTimeShareTick();
+            emit startThreadTimeShareTick(false);
         }
     });
     connect(mTableStock.risingSpeedView, &QTableView::clicked, this, [this](const QModelIndex &index){
@@ -456,13 +456,13 @@ void MainWindow::initSignals()
         GlobalVar::curCode=GlobalVar::mRisingSpeedList.at(curRow).code;
 //        GlobalVar::curName=GlobalVar::mRisingSpeedList.at(curRow).name;
         emit startThreadTimeShareChart(false);
-        emit startThreadTimeShareTick();
+        emit startThreadTimeShareTick(false);
     });
     connect(mTableStock.myStockView, &QTableView::clicked, this, [this](const QModelIndex &index){
         int curRow=index.row();
         GlobalVar::curCode=GlobalVar::mMyStockList.at(curRow).code;
         emit startThreadTimeShareChart(false);
-        emit startThreadTimeShareTick();
+        emit startThreadTimeShareTick(false);
     });
     connect(ui->ZHMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
     connect(ui->HKMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
@@ -484,7 +484,7 @@ void MainWindow::initSignals()
             {
                 GlobalVar::isKState=true;
                 emit startThreadCandleChart(freq,adjustFlag,true);
-                emit startThreadTimeShareTick();
+                emit startThreadTimeShareTick(false);
                 emit startThreadTimeShareChart(false);
                 toInterFace("k");
             }
@@ -593,7 +593,7 @@ void MainWindow::initSignals()
             resetKParameter();
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart(false);
-            emit startThreadTimeShareTick();
+            emit startThreadTimeShareTick(false);
             toInterFace("k");
         });
     }
@@ -1421,7 +1421,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             }
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart(false);
-            emit startThreadTimeShareTick();
+            emit startThreadTimeShareTick(false);
             mFundFlow.initAllNews();
             drawChart.candleChart->update();
         }
@@ -1453,7 +1453,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             }
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart(false);
-            emit startThreadTimeShareTick();
+            emit startThreadTimeShareTick(false);
             mFundFlow.initAllNews();
             drawChart.candleChart->update();
         }
@@ -1626,7 +1626,7 @@ void MainWindow::setMarket()
     toInterFace("main");
     emit startThreadTable();
     emit startThreadTimeShareChart(false);
-    emit startThreadTimeShareTick();
+    emit startThreadTimeShareTick(false);
     emit startThreadIndex();
 }
 void MainWindow::addRightMenu(int num)
@@ -1716,7 +1716,7 @@ void MainWindow::showSearchResult()
         searchSmallWindow->hide();
         emit startThreadCandleChart(freq,adjustFlag,true);
         emit startThreadTimeShareChart(false);
-        emit startThreadTimeShareTick();
+        emit startThreadTimeShareTick(false);
         toInterFace("k");
     }
 }
@@ -2028,7 +2028,7 @@ void MainWindow::tradingTimeRunThread()
     {
         if (GlobalVar::WhichInterface==1 and GlobalVar::isZhMarketDay(curTime))
             if (GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
-                emit startThreadTimeShareTick();
+                emit startThreadTimeShareTick(false);
     }
     else if (timeCount==8 or timeCount==18)
     {
@@ -2046,7 +2046,7 @@ void MainWindow::tradingTimeRunThread()
 //            if (GlobalVar::isKState)
 //                emit startThreadCandleChart(freq,adjustFlag,true);
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
-                emit startThreadTimeShareTick();
+                emit startThreadTimeShareTick(false);
             emit startThreadTable();
         }
         else if ((GlobalVar::WhichInterface==5 and GlobalVar::isUSMarketDay(curTime)) or
@@ -2056,7 +2056,7 @@ void MainWindow::tradingTimeRunThread()
 //            if (GlobalVar::isKState)
 //                emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTable();
-            emit startThreadTimeShareTick();
+            emit startThreadTimeShareTick(false);
         }
         else
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
@@ -2075,6 +2075,7 @@ void MainWindow::tradingTimeRunThread()
                     requestsToCsv.downStockIndexPlateInfo();
                     GlobalVar::settings->setValue("curTime",d);
                     emit startThreadTimeShareChart(true);
+                    emit startThreadTimeShareTick(true);
                 }
             }
         }
@@ -2535,7 +2536,7 @@ void MainWindow::downUpLookStock(QWheelEvent *event)
         //            qDebug()<<GlobalVar::curCode;
         emit startThreadCandleChart(freq,adjustFlag,true);
         emit startThreadTimeShareChart(false);
-        emit startThreadTimeShareTick();
+        emit startThreadTimeShareTick(false);
         mFundFlow.initAllNews();
         drawChart.candleChart->update();
     }

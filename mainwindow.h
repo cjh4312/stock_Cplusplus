@@ -63,7 +63,7 @@ private slots:
 signals:
     void startThreadTable();
     void startThreadIndex();
-    void startThreadTimeShareTick();
+    void startThreadTimeShareTick(bool reset);
     void startThreadTimeShareChart(bool reset);
     void startThreadGetNews();
     void startThreadCandleChart(QString freq,QString adjustFlag,bool isFirst);

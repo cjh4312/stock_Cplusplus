@@ -12,12 +12,13 @@ class ThreadTimeShareTick : public QObject
     Q_OBJECT
 public:
     explicit ThreadTimeShareTick(QObject *parent = nullptr);
-    void getBuySellTimeShareTick();
-    void getSSEData(int nums,QString url);
+    void getBuySellTimeShareTick(bool reset);
+    void getSSEData(int nums,QString url,bool reset);
 
 private:
     void initBuySellList();
-    void initTimeShareTickList();
+    void initTimeShareTickList(QString pos);
+    void initSSETimeShareTickList();
     void findStockArea();
     QString preCode="";
     QByteArray buySellData;
