@@ -13,9 +13,7 @@ public:
     void getAllIndex();
 private:
     void initIndexList();
-    void initFuturesList();
     QByteArray indexData;
-    QByteArray futuresData;
 
 signals:
     void getIndexFinished();

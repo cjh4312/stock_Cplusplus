@@ -44,7 +44,6 @@ struct StockInfo
 
 struct IndexInfo
 {
-    QString code="1000";
     QString name="name";
     QString close="1";
     QString pctChg="0.01";

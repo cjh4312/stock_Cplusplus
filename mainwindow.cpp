@@ -781,7 +781,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         int para=event1->angleDelta().y();
         int tempStep=mTableStock.stockTableView->verticalScrollBar()->value();
         int curIndex=mTableStock.stockTableView->currentIndex().row();
-        int row=int(mTableStock.stockTableView->height()/22.0+0.5);
+        int row=mTableStock.stockTableView->height()/22;
         if (para<0)
         {
             mTableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep+row);
