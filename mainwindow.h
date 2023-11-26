@@ -133,7 +133,6 @@ private:
     void initBaseInfoLayout(QGridLayout *baseInfoLayout);
     void initBuySellLayout(QGridLayout *BuySellLayout);
     void initSignals();
-    void saveMyStock();
     void saveCode();
     void flashOldCandleInfo(QMouseEvent *mouseEvent);
     void toInterFace(QString which);

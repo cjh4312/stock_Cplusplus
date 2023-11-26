@@ -12,6 +12,8 @@ ThreadTable::ThreadTable(QObject *parent)
     readMyStock();
 }
 
+//QString url="https://6.push2.eastmoney.com/api/qt/ulist/get?pi=0&pz=500&secids=0.301295,0.300059&ut=6d2ffaa6a585d612eda28417681d58fb&fltt=2&invt=1&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22";
+
 void ThreadTable::getTableData()
 {
 //    QByteArray allData;

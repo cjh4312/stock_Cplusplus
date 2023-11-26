@@ -764,16 +764,6 @@ void MainWindow::initSignals()
             QMessageBox::information(this,"提示", "交易已经启动", QMessageBox::Ok);
     });
 }
-void MainWindow::saveMyStock()
-{
-    QStringList s;
-    for(int i=0;i<GlobalVar::mMyStockList.count();++i)
-    {
-        s<<GlobalVar::mMyStockList.at(i).code;
-    }
-    GlobalVar::settings->setValue("myStock",s);
-    GlobalVar::mMyStockCode=s;
-}
 void MainWindow::saveCode()
 {
     if (GlobalVar::curCode.length()!=5 and GlobalVar::curCode.left(1)!="1")
@@ -1678,11 +1668,11 @@ void MainWindow::addRightMenu(int num)
                 return;
         }
         GlobalVar::mMyStockList.append(info);
+        GlobalVar::mMyStockCode.append(info.code);
         int curIndex=mTableStock.myStockView->currentIndex().row();
         mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList);
         mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
         mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
-        saveMyStock();
         curIndex=mTableStock.risingSpeedView->currentIndex().row();
         mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
         mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
@@ -1691,6 +1681,7 @@ void MainWindow::addRightMenu(int num)
         mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
+        GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
     });
 
 }
@@ -2004,12 +1995,12 @@ void MainWindow::delMyStock()
     if (curIndex==-1)
         return;
     GlobalVar::mMyStockList.removeAt(curIndex);
+    GlobalVar::mMyStockCode.removeAt(curIndex);
     if (curIndex==mTableStock.m_myStockModel->rowCount()-1)
         curIndex-=1;
     mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList);
     mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
     mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
-    saveMyStock();
     curIndex=mTableStock.risingSpeedView->currentIndex().row();
     mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
     mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
@@ -2018,6 +2009,7 @@ void MainWindow::delMyStock()
     mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
     mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
     mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
+    GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
 }
 void MainWindow::tradingTimeRunThread()
 {
@@ -2536,7 +2528,7 @@ void MainWindow::downUpLookStock(QWheelEvent *event)
         //            qDebug()<<GlobalVar::curCode;
         emit startThreadCandleChart(freq,adjustFlag,true);
         emit startThreadTimeShareChart(false);
-        emit startThreadTimeShareTick(false);
+        emit startThreadTimeShareTick(true);
         mFundFlow.initAllNews();
         drawChart.candleChart->update();
     }
