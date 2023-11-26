@@ -12,7 +12,7 @@ ThreadTable::ThreadTable(QObject *parent)
     readMyStock();
 }
 
-//QString url="https://6.push2.eastmoney.com/api/qt/ulist/get?pi=0&pz=500&secids=0.301295,0.300059&ut=6d2ffaa6a585d612eda28417681d58fb&fltt=2&invt=1&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22";
+//QString url="https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_CORETHEME_BOARDTYPE&columns=SECUCODE%2CSECURITY_CODE%2CSECURITY_NAME_ABBR%2CBOARD_CODE%2CBOARD_NAME%2CIS_PRECISE%2CBOARD_RANK&source=WEB&client=WEB&filter=(SECURITY_CODE%3D%22300364%22)&sortColumns=BOARD_RANK&sortTypes=1&_=1701002504740";
 
 void ThreadTable::getTableData()
 {

@@ -743,36 +743,38 @@ void DrawChart::annClicked(const QModelIndex index)
     }
     else
     {
-        QString html;
-        QByteArray allData;
-        QNetworkRequest request;
-        QString url=GlobalVar::annoucementList.at(index.row())[3];
-        request.setUrl(QUrl(url));
-        request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
-        GlobalVar::getData(allData,2,request);
-        if (GlobalVar::annoucementList.at(index.row())[1]=="[证券时报]")
-        {
-            QTextCodec *codec = QTextCodec::codecForName("utf-8");
-            html=codec->toUnicode(allData);
-            html=retain(html,"<div class=\"detail-info\"","div")+retain(html,"<div class=\"detail-content\"","div");
-            html=peer(html,"<div class=\"fenlei1\"","div");
-            html=peer(html,"<div class=\"fenlei2\"","div");
+//        QString html;
+//        QByteArray allData;
+//        QNetworkRequest request;
+//        QString url=GlobalVar::annoucementList.at(index.row())[3];
+//        request.setUrl(QUrl(url));
+//        request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+//        GlobalVar::getData(allData,2,request);
 
-    //        html=peer(html,"<div class=\"social-bar\"","div");
-    //        html=retain(html,"<div class=\"main-content text-large\"","div");
-    //        html=peer(html,"<div class=\"bullet\"","div");
-    //        html=peer(html,"<div class=\"bullet\"","div");
-        }
-        else if (GlobalVar::annoucementList.at(index.row())[1]=="[公告]")
-        {
-            QTextCodec *codec = QTextCodec::codecForName("gbk");
-            html=codec->toUnicode(allData);
-            html=peer(html,"<div class=\"head\"","div");
-            html=peer(html,"<div class=\"search\"","div");
-            html=peer(html,"<div class=\"w1200 center\"","div");
-            html=peer(html,"<div class=\"footer mg0\"","div");
-        }
-        annText->setText(html);
+//        if (GlobalVar::annoucementList.at(index.row())[1]=="[证券时报]")
+//        {
+//            QTextCodec *codec = QTextCodec::codecForName("utf-8");
+//            html=codec->toUnicode(allData);
+//            html=retain(html,"<div class=\"detail-info\"","div")+retain(html,"<div class=\"detail-content\"","div");
+//            html=peer(html,"<div class=\"fenlei1\"","div");
+//            html=peer(html,"<div class=\"fenlei2\"","div");
+
+//    //        html=peer(html,"<div class=\"social-bar\"","div");
+//    //        html=retain(html,"<div class=\"main-content text-large\"","div");
+//    //        html=peer(html,"<div class=\"bullet\"","div");
+//    //        html=peer(html,"<div class=\"bullet\"","div");
+//        }
+//        else if (GlobalVar::annoucementList.at(index.row())[1]=="[公告]")
+//        {
+//            QTextCodec *codec = QTextCodec::codecForName("gbk");
+//            html=codec->toUnicode(allData);
+//            html=peer(html,"<div class=\"head\"","div");
+//            html=peer(html,"<div class=\"search\"","div");
+//            html=peer(html,"<div class=\"w1200 center\"","div");
+//            html=peer(html,"<div class=\"footer mg0\"","div");
+//        }
+        annText->setText("<span> <a href="+GlobalVar::annoucementList.at(index.row())[3]+">"+
+                        "<font size=\"4\">"+GlobalVar::annoucementList.at(index.row())[0]+"</font>"+"</a> </span>");
     }
 }
 
