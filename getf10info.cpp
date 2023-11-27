@@ -71,6 +71,11 @@ void GetF10Info::getStockHotRank()
                         f10QList.append(dataList);
                     }
             }
+            if (size==0)
+            {
+                dataList<<""<<""<<ceilMap.value("BOARD_NAME").toString()<<s;
+                f10QList.append(dataList);
+            }
         }
     }
 }
