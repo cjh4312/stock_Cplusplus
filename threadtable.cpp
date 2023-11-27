@@ -12,8 +12,6 @@ ThreadTable::ThreadTable(QObject *parent)
     readMyStock();
 }
 
-//QString url="https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_CORETHEME_BOARDTYPE&columns=SECUCODE%2CSECURITY_CODE%2CSECURITY_NAME_ABBR%2CBOARD_CODE%2CBOARD_NAME%2CIS_PRECISE%2CBOARD_RANK&source=WEB&client=WEB&filter=(SECURITY_CODE%3D%22300364%22)&sortColumns=BOARD_RANK&sortTypes=1&_=1701002504740";
-
 void ThreadTable::getTableData()
 {
 //    QByteArray allData;

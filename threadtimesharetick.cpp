@@ -191,7 +191,7 @@ void ThreadTimeShareTick::initBuySellList()
         if (buySellData.contains("f62"))
         {
             int num=jsonObject.value("data").toObject().value("f62").toInt();
-            if (num-1>=0)
+            if (num>0)
             {
                 QString n[4]={"一","二","三","四"};
                 GlobalVar::EPSReportDate="收益("+n[num-1]+")";

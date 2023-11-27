@@ -725,7 +725,7 @@ QString peer(QString s,QString b,QString e)
 void DrawChart::annClicked(const QModelIndex index)
 {
 
-    if (GlobalVar::annoucementList.at(index.row())[1]=="[东方]")
+    if (GlobalVar::annoucementList.at(index.row())[1]=="[新闻]")
     {
         QString s="<font size=\"4\" color=blue>"+GlobalVar::annoucementList.at(index.row())[4]
                 +/*GlobalVar::annoucementList.at(index.row())[2]+*/"\r\n"+"</font>"

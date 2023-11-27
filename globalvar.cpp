@@ -259,10 +259,10 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
 
 void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest request)
 {
-    QNetworkAccessManager naManager =QNetworkAccessManager();
+    QNetworkAccessManager *naManager =new QNetworkAccessManager();
     QEventLoop loop;
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
-    QNetworkReply *reply = naManager.get(request);
+    QNetworkReply *reply = naManager->get(request);
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QTimer timer;
     timer.singleShot(timeOut*1000, &loop, SLOT(quit()));
@@ -282,17 +282,18 @@ void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest reques
         qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<request.url()<<timeOut;
     }
     delete reply;
+    delete naManager;
 }
 
 void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float timeOut, const QUrl &url)
 {
     QNetworkRequest request;
-    QNetworkAccessManager naManager=QNetworkAccessManager();
+    QNetworkAccessManager *naManager=new QNetworkAccessManager();
     request.setUrl(url);
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QEventLoop loop;
-    QNetworkReply *reply = naManager.post(request,postArray);
+    QNetworkReply *reply = naManager->post(request,postArray);
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QTimer timer;
     timer.singleShot(timeOut*1000, &loop, SLOT(quit()));
@@ -312,6 +313,7 @@ void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float t
         qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
     }
     delete reply;
+    delete naManager;
 }
 
 QString GlobalVar::format_conversion(float data)

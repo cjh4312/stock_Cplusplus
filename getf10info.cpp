@@ -42,6 +42,37 @@ void GetF10Info::getStockHotRank()
             f10QList.append(dataList);
         }
     }
+    QString url="https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_CORETHEME_BOARDTYPE&columns=SECUCODE%2CSECURITY_CODE%2CSECURITY_NAME_ABBR%2CBOARD_CODE%2CBOARD_NAME%2CIS_PRECISE%2CBOARD_RANK&source=WEB&client=WEB&filter=(SECURITY_CODE%3D%22"+GlobalVar::curCode+"%22)&sortColumns=BOARD_RANK&sortTypes=1&_=1701002504740";
+    GlobalVar::getData(allData,1,QUrl(url));
+    doc = QJsonDocument::fromJson(allData, &jsonError);
+    if (jsonError.error == QJsonParseError::NoError)
+    {
+        QJsonObject jsonObject = doc.object();
+        QJsonArray data=jsonObject.value("result").toObject().value("data").toArray();
+        int size=f10QList.size();
+        for (int i = 0; i < data.size(); ++i)
+        {
+            QJsonValue value = data.at(i);
+            QVariantMap ceilMap = value.toVariant().toMap();
+            QStringList dataList;
+            int code=ceilMap.value("BOARD_CODE").toInt();
+            QString s=QString::number(code);
+            if (code<1000)
+                s="0"+s;
+            s="BK"+s;
+            for (int j=0;j<size;++j)
+            {
+                if (f10QList.at(j)[3]==s)
+                    break;
+                else
+                    if (j==size-1)
+                    {
+                        dataList<<""<<""<<ceilMap.value("BOARD_NAME").toString()<<s;
+                        f10QList.append(dataList);
+                    }
+            }
+        }
+    }
 }
 
 void GetF10Info::getMainIndex()
