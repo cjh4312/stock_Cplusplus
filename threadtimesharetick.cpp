@@ -37,7 +37,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
     }
     else
     {
-        GlobalVar::getData(buySellData,0.9,QUrl("http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=2&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963"));
+        GlobalVar::getData(buySellData,0.9,QUrl("http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=1&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963"));
         if (GlobalVar::timeOutFlag[8])
             GlobalVar::timeOutFlag[8]=false;
         else
@@ -188,10 +188,7 @@ void ThreadTimeShareTick::initBuySellList()
             GlobalVar::baseInfoData[12]=jsonObject.value("data").toObject().value("f55").toDouble();
         GlobalVar::EPSReportDate="每股收益";
         GlobalVar::PEName="市盈率";
-        if ((GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4) and
-            GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(1)!="9" and
-            GlobalVar::curCode.left(3)!="399" and GlobalVar::curCode.left(3)!="899" and
-            GlobalVar::curCode.length()!=5 and buySellData.contains("f62"))
+        if (buySellData.contains("f62"))
         {
             int num=jsonObject.value("data").toObject().value("f62").toInt();
             if (num-1>=0)

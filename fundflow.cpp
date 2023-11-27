@@ -1328,32 +1328,26 @@ void FundFlow::getAnnoucement()
 {
     QByteArray allData;
     QNetworkRequest request;
-    QString name;
-    if (GlobalVar::curName.contains("-"))
-        name=GlobalVar::curName.split("-")[0];
-    else
-        name=GlobalVar::curName.left(GlobalVar::curName.indexOf("("));
-
-    QString url="https://search-api-web.eastmoney.com/search/jsonp?cb=&param=%7B%22uid%22%3A%227111416627128474%22%2C%22keyword%22%3A%22"+name+"%22%2C%22type%22%3A%5B%22noticeWeb%22%5D%2C%22client%22%3A%22web%22%2C%22clientVersion%22%3A%22curr%22%2C%22clientType%22%3A%22web%22%2C%22param%22%3A%7B%22noticeWeb%22%3A%7B%22preTag%22%3A%22%3Cem%20class%3D%5C%22red%5C%22%3E%22%2C%22postTag%22%3A%22%3C%2Fem%3E%22%2C%22pageSize%22%3A20%2C%22pageIndex%22%3A1%7D%7D%7D&_=1687659060958";
+    QString url="https://np-anotice-stock.eastmoney.com/api/security/ann?sr=-1&page_size=50&page_index=1&ann_type=A&client_source=web&stock_list="+GlobalVar::curCode+"&f_node=0&s_node=0";
 //    QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
     request.setUrl(QUrl(url));
     GlobalVar::getData(allData,2,request);
+    GlobalVar::annoucementList.clear();
     if (allData.isEmpty())
         return;
     QJsonParseError jsonError;
-    QJsonDocument doc = QJsonDocument::fromJson(allData.mid(1,allData.size()-2), &jsonError);
+    QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
     if (jsonError.error == QJsonParseError::NoError)
     {
         QJsonObject jsonObject = doc.object();
-        QJsonArray data=jsonObject.value("result").toObject().value("noticeWeb").toArray();
+        QJsonArray data=jsonObject.value("data").toObject().value("list").toArray();
         for (int i = 0; i < data.size(); ++i)
         {
             QStringList l;
             QJsonValue value = data.at(i);
             QVariantMap ceilMap = value.toVariant().toMap();
-            l<<ceilMap.value("title").toString()<<"[公告]"
-            <<"("+ceilMap.value("date").toString().left(10)+")"<<ceilMap.value("url").toString();
-
+            l<<ceilMap.value("title").toString()<<"[公告]"<<"("+ceilMap.value("notice_date").toString()
+              <<"https://data.eastmoney.com/notices/detail/"+GlobalVar::curCode+"/"+ceilMap.value("art_code").toString()+".html";
             GlobalVar::annoucementList.append(l);
         }
     }
