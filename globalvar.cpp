@@ -106,11 +106,11 @@ QString GlobalVar::getComCode()
 //    qDebug()<<GlobalVar::curCode;
     if (curCode.length()==5 && isInt(curCode))
         return "116."+curCode;
-    else if (curCode.left(1)=="1")
+    else if (curCode.left(1)=="1" or curCode.left(1)=="9")
         return curCode;
     else
     {
-        if (GlobalVar::curCode.left(1)=="6" or GlobalVar::curCode.left(1)=="5")
+        if (curCode.left(1)=="6" or curCode.left(1)=="5")
             return "1."+curCode;
         else
             return "0."+curCode;

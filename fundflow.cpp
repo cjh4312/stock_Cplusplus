@@ -1351,8 +1351,9 @@ void FundFlow::getAnnoucement()
             QStringList l;
             QJsonValue value = data.at(i);
             QVariantMap ceilMap = value.toVariant().toMap();
-            l<<ceilMap.value("title").toString().split(":")[1]<<"[公告]"
+            l<<ceilMap.value("title").toString()<<"[公告]"
             <<"("+ceilMap.value("date").toString().left(10)+")"<<ceilMap.value("url").toString();
+
             GlobalVar::annoucementList.append(l);
         }
     }
