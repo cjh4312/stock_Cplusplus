@@ -77,7 +77,7 @@ bool RequestsToCsv::getIndexList()
             file.write(dataList.join(",").toLocal8Bit()+"\n");
         }
         QStringList dataList;
-        dataList<<"899050.xs"<<"北证50"<<""<<""<<"BZ50";
+        dataList<<"899050"<<"北证50"<<""<<""<<"BZ50";
         file.write(dataList.join(",").toLocal8Bit()+"\n");
     }
     file.close();
@@ -134,7 +134,8 @@ bool RequestsToCsv::getStockList()
 {
     QJsonObject json;
     json.insert("api_name", "stock_basic");
-    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
+//    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
+    json.insert("token", "bbe1d68e9a152f87296960ffd981449ed98fff7cfd13b3cf2a50be79");
     json.insert("fields", "ts_code,symbol,name,area,industry,list_date,cnspell");
 
     QJsonDocument doc;

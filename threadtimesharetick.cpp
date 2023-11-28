@@ -26,13 +26,13 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
 {
     if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(1)=="9" or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.left(3)=="899")
     {
-        if (preCode==GlobalVar::curCode and not reset)
+        if (preCode==GlobalVar::curCode)
             return;
         QString url="http://push2.eastmoney.com/api/qt/stock/sse?mpi=2000&ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=1&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963";
-        getSSEData(1,url,reset);
+        getSSEData(1,url);
         url="http://push2.eastmoney.com/api/qt/stock/details/sse?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55&mpi=2000&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&pos=-0&secid="+GlobalVar::getComCode();
         GlobalVar::mTimeShareTickList.clear();
-        getSSEData(2,url,reset);
+        getSSEData(2,url);
         preCode=GlobalVar::curCode;
     }
     else
@@ -70,7 +70,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
     }
 }
 
-void ThreadTimeShareTick::getSSEData(int nums,QString url,bool reset)
+void ThreadTimeShareTick::getSSEData(int nums,QString url)
 {
     QByteArray* qByteArray=new QByteArray();
     QString preCode=GlobalVar::curCode;
@@ -86,7 +86,7 @@ void ThreadTimeShareTick::getSSEData(int nums,QString url,bool reset)
         naManager->deleteLater();
     });
     connect(reply, &QNetworkReply::readyRead, this, [=](){
-        if (GlobalVar::curCode!=preCode or reset)
+        if (GlobalVar::curCode!=preCode)
             reply->abort();
         else
         {
@@ -151,7 +151,7 @@ void ThreadTimeShareTick::getSSEData(int nums,QString url,bool reset)
                 if(mRetries < MAX_RETRIES)
                 {
                     mRetries++;
-                    getSSEData(nums,url,reset);
+                    getSSEData(nums,url);
                 }
         }
     });

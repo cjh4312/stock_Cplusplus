@@ -103,7 +103,8 @@ private:
     int hisTimeShareN;
     QString account;
 
-    int timeCount=0;
+    int timeCount=-3;
+    QString downloadDate;
     bool changeInTurn=true;
     bool isAsia=true;
     bool isTraversalMyStock=false;

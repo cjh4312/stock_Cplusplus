@@ -20,7 +20,6 @@ MainWindow::MainWindow(QWidget *parent)
     tim->setInterval(500);
     connect(tim,SIGNAL(timeout()),this,SLOT(tradingTimeRunThread()));
     tim->start();
-
 }
 
 MainWindow::~MainWindow()
@@ -52,6 +51,7 @@ void MainWindow::initGlobalVar()
     GlobalVar::curCode=GlobalVar::settings->value("curCode").toString();
     GlobalVar::isSayNews=GlobalVar::settings->value("sayNews").toBool();
     GlobalVar::offsetEnd=GlobalVar::settings->value("offsetEnd").toInt();
+    downloadDate=GlobalVar::settings->value("curTime").toString();
     account=GlobalVar::settings->value("account").toString();
 //    QString path=GlobalVar::currentPath+"/python/";
 //    Py_SetPythonHome((wchar_t *)(reinterpret_cast<const wchar_t *>(path.utf16())));
@@ -238,6 +238,7 @@ void MainWindow::initInterface()
 
     circle=new QLabel(this);
     ui->statusBar->addWidget(circle);
+    circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
     for(int i=1;i<=7;++i)
     {
 //        QHBoxLayout *statusBarLayout=new QHBoxLayout(ui->statusBar);
@@ -2016,67 +2017,67 @@ void MainWindow::tradingTimeRunThread()
     QDateTime curTime=QDateTime::currentDateTime();
 //    if (not ui->DLAllStockK->isEnabled() and curTime.time().toString("hh:mm")>"15:00")
 //        ui->DLAllStockK->setEnabled(true);
-    if (timeCount%2==1)
+    if (timeCount%2==0 and GlobalVar::WhichInterface==1 and GlobalVar::isZhMarketDay(curTime))
+        if (GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
+            emit startThreadTimeShareTick(false);
+    if (timeCount%6==1 and GlobalVar::WhichInterface==1)
     {
-        if (GlobalVar::WhichInterface==1 and GlobalVar::isZhMarketDay(curTime))
-            if (GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
-                emit startThreadTimeShareTick(false);
-    }
-    else if (timeCount==8 or timeCount==18)
-    {
-        if (GlobalVar::WhichInterface==1 and GlobalVar::isZhMarketDay(curTime))
+        if (GlobalVar::isZhMarketDay(curTime))
         {
             circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
             if (GlobalVar::isBoard)
-            {
                 searchStock.getBoardData();
-//                mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
-//                mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-//                mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
-            }
-
-//            if (GlobalVar::isKState)
-//                emit startThreadCandleChart(freq,adjustFlag,true);
-            if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
-                emit startThreadTimeShareTick(false);
             emit startThreadTable();
-        }
-        else if ((GlobalVar::WhichInterface==5 and GlobalVar::isUSMarketDay(curTime)) or
-                 (GlobalVar::WhichInterface==2 and GlobalVar::isHKMarketDay(curTime)))
-        {
-            circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
-//            if (GlobalVar::isKState)
-//                emit startThreadCandleChart(freq,adjustFlag,true);
-            emit startThreadTable();
-            emit startThreadTimeShareTick(false);
         }
         else
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
-
+    }
+    else if (timeCount%10==4)
+    {
         if (GlobalVar::isWorkDay(curTime))
-        {
             emit startThreadIndex();
-            QString d=curTime.date().toString("yyyy-MM-dd");
-            if (curTime.time().toString("hh:mm")>="09:00" and
-                d>GlobalVar::settings->value("curTime").toString())
-            {
-                QStringList vacation=GlobalVar::settings->value("Vacation_ZH").toStringList();
-                QString cur_date=curTime.toString("MMdd");
-                if (not vacation.contains(cur_date))
-                {
-                    requestsToCsv.downStockIndexPlateInfo();
-                    GlobalVar::settings->setValue("curTime",d);
-                    emit startThreadTimeShareChart(true);
-                    emit startThreadTimeShareTick(true);
-                }
-            }
-        }
         else
             reFlashIndex();
+        if (GlobalVar::WhichInterface==5)
+        {
+            if (GlobalVar::isUSMarketDay(curTime))
+            {
+                circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
+                emit startThreadTable();
+                emit startThreadTimeShareTick(false);
+            }
+            else
+                circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
+        }
+        else if (GlobalVar::WhichInterface==2)
+        {
+            if (GlobalVar::isHKMarketDay(curTime))
+            {
+                circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
+                emit startThreadTable();
+                emit startThreadTimeShareTick(false);
+            }
+            else
+                circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
+        }
     }
-    else if (timeCount==20)
+    else if (timeCount==30)
     {
         emit startThreadGetNews();
+        QString d=curTime.date().toString("yyyy-MM-dd");
+        if (d>downloadDate and curTime.time().toString("hh:mm")>="09:00")
+        {
+            QStringList vacation=GlobalVar::settings->value("Vacation_ZH").toStringList();
+            QString cur_date=curTime.toString("MMdd");
+            if (not vacation.contains(cur_date))
+            {
+                requestsToCsv.downStockIndexPlateInfo();
+                GlobalVar::settings->setValue("curTime",d);
+                downloadDate=d;
+                emit startThreadTimeShareChart(true);
+                emit startThreadTimeShareTick(true);
+            }
+        }
         timeCount=0;
     }
     timeCount+=1;

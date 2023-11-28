@@ -13,7 +13,7 @@ class ThreadTimeShareTick : public QObject
 public:
     explicit ThreadTimeShareTick(QObject *parent = nullptr);
     void getBuySellTimeShareTick(bool reset);
-    void getSSEData(int nums,QString url,bool reset);
+    void getSSEData(int nums,QString url);
 
 private:
     void initBuySellList();

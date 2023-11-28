@@ -220,7 +220,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
     else
     {
         QStringList s={"http://push2his.eastmoney.com/api/qt/stock/kline",
-                         "http://push2.eastmoney.com/api/qt/ulist",
+                         "https://push2.eastmoney.com/api/qt/ulist",
                          "http://futsseapi.eastmoney.com/list/block",
                          "https://www.jin10.com",
                          "https://finance.eastmoney.com",
