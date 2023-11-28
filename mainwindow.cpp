@@ -2301,6 +2301,7 @@ void MainWindow::toInterFace(QString which)
         drawChart.candleChart->hide();
         rightBaseWindow->show();
         mTableStock.stockTableView->show();
+//        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
 //        mTableStock.stockTableView->setFocus();
     }
     else if (which=="k")

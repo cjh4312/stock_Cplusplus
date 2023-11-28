@@ -15,12 +15,9 @@ TableStock::TableStock()
     m_risingSpeedModel= new ModelTableStock(this);
     m_myStockModel= new ModelTableStock(this);
     m_timeShareTickModel= new ModelTimeShare(this);
-    stockTableView->setModel(m_tableModel);
-    risingSpeedView->setModel(m_risingSpeedModel);
-    myStockView->setModel(m_myStockModel);
-    connect(m_tableModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), stockTableView, SLOT(update()));
-    connect(m_risingSpeedModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), risingSpeedView, SLOT(update()));
-    connect(m_myStockModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), myStockView, SLOT(update()));
+//    connect(m_tableModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), stockTableView, SLOT(update()));
+//    connect(m_risingSpeedModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), risingSpeedView, SLOT(update()));
+//    connect(m_myStockModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), myStockView, SLOT(update()));
 }
 
 void TableStock::setTableView()
@@ -29,19 +26,19 @@ void TableStock::setTableView()
     if (curIndex==-1)
         curIndex=0;
     m_tableModel->setModelData(GlobalVar::mTableList);
-
+    stockTableView->setModel(m_tableModel);
     stockTableView->setCurrentIndex(m_tableModel->index(curIndex,0));
     curIndex=risingSpeedView->currentIndex().row();
     if (curIndex==-1)
         curIndex=0;
     m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
-
+    risingSpeedView->setModel(m_risingSpeedModel);
     risingSpeedView->setCurrentIndex(m_risingSpeedModel->index(curIndex,0));
     curIndex=myStockView->currentIndex().row();
     if (curIndex==-1)
         curIndex=0;
     m_myStockModel->setModelData(GlobalVar::mMyStockList);
-
+    myStockView->setModel(m_myStockModel);
     myStockView->setCurrentIndex(m_myStockModel->index(curIndex,0));
 
     QTableView *tl[3]={stockTableView,risingSpeedView,myStockView};
