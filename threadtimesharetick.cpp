@@ -188,7 +188,7 @@ void ThreadTimeShareTick::initBuySellList()
             GlobalVar::baseInfoData[12]=jsonObject.value("data").toObject().value("f55").toDouble();
         GlobalVar::EPSReportDate="每股收益";
         GlobalVar::PEName="市盈率";
-        if (buySellData.contains("f62"))
+        if (buySellData.contains("f62") and GlobalVar::WhichInterface==1)
         {
             int num=jsonObject.value("data").toObject().value("f62").toInt();
             if (num>0)
