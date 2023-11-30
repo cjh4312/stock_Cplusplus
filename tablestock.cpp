@@ -10,14 +10,12 @@ TableStock::TableStock()
     risingSpeedView=new QTableView(this);
     myStockView=new QTableView(this);
     timeShareTickView=new QTableView(this);
-    initTableView();
+
     m_tableModel= new ModelTableStock(this);
     m_risingSpeedModel= new ModelTableStock(this);
     m_myStockModel= new ModelTableStock(this);
     m_timeShareTickModel= new ModelTimeShare(this);
-//    connect(m_tableModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), stockTableView, SLOT(update()));
-//    connect(m_risingSpeedModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), risingSpeedView, SLOT(update()));
-//    connect(m_myStockModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), myStockView, SLOT(update()));
+    initTableView();
 }
 
 void TableStock::setTableView()
@@ -26,21 +24,23 @@ void TableStock::setTableView()
     if (curIndex==-1)
         curIndex=0;
     m_tableModel->setModelData(GlobalVar::mTableList);
-    stockTableView->setModel(m_tableModel);
+//    stockTableView->setModel(m_tableModel);
     stockTableView->setCurrentIndex(m_tableModel->index(curIndex,0));
-    curIndex=risingSpeedView->currentIndex().row();
-    if (curIndex==-1)
-        curIndex=0;
-    m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
-    risingSpeedView->setModel(m_risingSpeedModel);
-    risingSpeedView->setCurrentIndex(m_risingSpeedModel->index(curIndex,0));
-    curIndex=myStockView->currentIndex().row();
-    if (curIndex==-1)
-        curIndex=0;
-    m_myStockModel->setModelData(GlobalVar::mMyStockList);
-    myStockView->setModel(m_myStockModel);
-    myStockView->setCurrentIndex(m_myStockModel->index(curIndex,0));
-
+    if (GlobalVar::WhichInterface==1)
+    {
+        curIndex=risingSpeedView->currentIndex().row();
+        if (curIndex==-1)
+            curIndex=0;
+        m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
+//        risingSpeedView->setModel(m_risingSpeedModel);
+        risingSpeedView->setCurrentIndex(m_risingSpeedModel->index(curIndex,0));
+        curIndex=myStockView->currentIndex().row();
+        if (curIndex==-1)
+            curIndex=0;
+        m_myStockModel->setModelData(GlobalVar::mMyStockList);
+//        myStockView->setModel(m_myStockModel);
+        myStockView->setCurrentIndex(m_myStockModel->index(curIndex,0));
+    }
     QTableView *tl[3]={stockTableView,risingSpeedView,myStockView};
     for (int i=0;i<3;++i)
     {
@@ -70,16 +70,14 @@ void TableStock::setTableView()
 void TableStock::setTimeShareTickView()
 {
     m_timeShareTickModel->setModelData(GlobalVar::mTimeShareTickList);
-    timeShareTickView->horizontalHeader()->setMinimumSectionSize(1);
-    timeShareTickView->setModel(m_timeShareTickModel);
+    timeShareTickView->scrollToBottom();
     timeShareTickView->setColumnWidth(0,60);
     timeShareTickView->setColumnWidth(1,85);
     timeShareTickView->setColumnWidth(2,75);
     timeShareTickView->setColumnWidth(3,12);
     timeShareTickView->setColumnWidth(4,48);
 //    timeShareTickView->resizeColumnsToContents();
-    timeShareTickView->scrollToBottom();
-    timeShareTickView->setFrameStyle(0);
+
 }
 
 void TableStock::initTableView()
@@ -93,6 +91,7 @@ void TableStock::initTableView()
     QHeaderView *header=myStockView->verticalHeader();
     //拖拽交换行
     header->setSectionsMovable(true);
+
     connect(header,&QHeaderView::sectionMoved,this,[=](int /*logicIndex*/,int oldIndex,int newIndex){
         StockInfo info=GlobalVar::mMyStockList.at(oldIndex);
         GlobalVar::mMyStockList.remove(oldIndex);
@@ -136,5 +135,16 @@ void TableStock::initTableView()
     timeShareTickView->verticalHeader()->setMinimumSectionSize(18);
     timeShareTickView->verticalHeader()->setDefaultSectionSize(18);
     timeShareTickView->setSelectionMode(QAbstractItemView::NoSelection);
+    timeShareTickView->horizontalHeader()->setMinimumSectionSize(1);
+    timeShareTickView->setFrameStyle(0);
 //    timeShareTickView->verticalScrollBar()->setStyleSheet("QScrollBar{width:15px;}");
+
+    stockTableView->setModel(m_tableModel);
+    risingSpeedView->setModel(m_risingSpeedModel);
+    myStockView->setModel(m_myStockModel);
+    timeShareTickView->setModel(m_timeShareTickModel);
+    connect(m_tableModel, &ModelTableStock::dataChanged, stockTableView, [=](){viewport()->update();});
+    connect(m_risingSpeedModel, &ModelTableStock::dataChanged, risingSpeedView, [=](){viewport()->update();});
+    connect(m_myStockModel, &ModelTableStock::dataChanged, myStockView, [=](){viewport()->update();});
+    connect(m_timeShareTickModel, &ModelTableStock::dataChanged, timeShareTickView, [=](){viewport()->update();});
 }

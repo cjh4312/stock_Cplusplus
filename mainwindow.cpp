@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     Py_Initialize();
+    pModule=PyImport_ImportModule("qmt");
 
     initGlobalVar();
     initThread();
@@ -1546,6 +1547,7 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 }
 void MainWindow::setMarket()
 {
+    timeCount=-3;
     QObject* obj = sender();
     if (obj->objectName()=="ZHMarket")
     {
@@ -1762,7 +1764,7 @@ void MainWindow::fastTrade()
 
     connect(actB,&QAction::triggered,this,[=](){
         PyGILState_STATE state=PyGILState_Ensure();
-        PyObject* pModule = PyImport_ImportModule("qmt");
+//        PyObject* pModule = PyImport_ImportModule("qmt");
 //        if(!pModule)
 //            qDebug()<<"import failure";
         PyObject* pFunTrade = PyObject_GetAttrString(pModule,"getAsset");
@@ -1875,7 +1877,7 @@ void MainWindow::fastTrade()
     });
     connect(actS,&QAction::triggered,this,[=](){
         PyGILState_STATE state=PyGILState_Ensure();
-        PyObject* pModule = PyImport_ImportModule("qmt");
+//        PyObject* pModule = PyImport_ImportModule("qmt");
 //        if(!pModule)
 //            qDebug()<<"import failure";
         PyObject* pFunTrade = PyObject_GetAttrString(pModule,"getPositions");
@@ -2060,6 +2062,8 @@ void MainWindow::tradingTimeRunThread()
             else
                 circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
         }
+        else if (GlobalVar::WhichInterface==4)
+            circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
     }
     else if (timeCount==30)
     {
@@ -2301,7 +2305,7 @@ void MainWindow::toInterFace(QString which)
         drawChart.candleChart->hide();
         rightBaseWindow->show();
         mTableStock.stockTableView->show();
-//        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
 //        mTableStock.stockTableView->setFocus();
     }
     else if (which=="k")

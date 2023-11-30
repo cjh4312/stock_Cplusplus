@@ -85,6 +85,7 @@ private:
     ThreadNewsReport *threadNewsReport;
     ThreadCandleChart *threadCandleChart;
     bool isThreadRunning=false;
+    PyObject* pModule;
 
     QThread *thread[6];
     QTimer *tim;
