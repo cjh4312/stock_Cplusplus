@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+
     Py_Initialize();
     pModule=PyImport_ImportModule("qmt");
 
@@ -476,7 +477,7 @@ void MainWindow::initSignals()
             if (ifCanClick==0)
             {
                 mFundFlow.getBoardStock(mFundFlow.FundFlowList.at(index.row())[0]);
-                mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+                mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
                 mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
                 for (int i=0;i<16;++i)
                     mTableStock.stockTableView->setColumnWidth(i,90);
@@ -531,7 +532,7 @@ void MainWindow::initSignals()
                 GlobalVar::is_asc = not preSort;
             GlobalVar::sortByColumn(&GlobalVar::mTableList,logicalIndex,GlobalVar::is_asc);
             preSort=GlobalVar::is_asc;
-            mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+            mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
             mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
             mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
         }
@@ -659,7 +660,7 @@ void MainWindow::initSignals()
         GlobalVar::curBoard=f10View.model->item(index.row(),3)->text();
         GlobalVar::isBoard=true;
         searchStock.getBoardData();
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
         toInterFace("main");
@@ -1673,15 +1674,15 @@ void MainWindow::addRightMenu(int num)
         GlobalVar::mMyStockList.append(info);
         GlobalVar::mMyStockCode.append(info.code);
         int curIndex=mTableStock.myStockView->currentIndex().row();
-        mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList);
+        mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
         mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
         mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
         curIndex=mTableStock.risingSpeedView->currentIndex().row();
-        mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
+        mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false);
         mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
         mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
         curIndex=mTableStock.stockTableView->currentIndex().row();
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
         GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
@@ -1695,7 +1696,7 @@ void MainWindow::showSearchResult()
         resetKParameter();
         searchSmallWindow->hide();
         GlobalVar::WhichInterface=1;
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
         emit startThreadTable();
@@ -2001,15 +2002,15 @@ void MainWindow::delMyStock()
     GlobalVar::mMyStockCode.removeAt(curIndex);
     if (curIndex==mTableStock.m_myStockModel->rowCount()-1)
         curIndex-=1;
-    mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList);
+    mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
     mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
     mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
     curIndex=mTableStock.risingSpeedView->currentIndex().row();
-    mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
+    mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false);
     mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
     mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
     curIndex=mTableStock.stockTableView->currentIndex().row();
-    mTableStock.m_tableModel->setModelData(GlobalVar::mTableList);
+    mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
     mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
     mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
     GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
@@ -2069,7 +2070,7 @@ void MainWindow::tradingTimeRunThread()
     {
         emit startThreadGetNews();
         QString d=curTime.date().toString("yyyy-MM-dd");
-        if (d>downloadDate and curTime.time().toString("hh:mm")>="09:00")
+        if (GlobalVar::isWorkDay(curTime) and d>downloadDate and curTime.time().toString("hh:mm")>="09:00")
         {
             QStringList vacation=GlobalVar::settings->value("Vacation_ZH").toStringList();
             QString cur_date=curTime.toString("MMdd");
@@ -2306,6 +2307,7 @@ void MainWindow::toInterFace(QString which)
         rightBaseWindow->show();
         mTableStock.stockTableView->show();
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,true);
 //        mTableStock.stockTableView->setFocus();
     }
     else if (which=="k")

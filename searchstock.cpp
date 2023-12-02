@@ -183,7 +183,7 @@ void SearchStock::compare(QStringList Data,QString strUpper,int col)
 void SearchStock::getBoardData()
 {
     QByteArray allData;
-    GlobalVar::getData(allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=6000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&fid=f3&fs=b:"+GlobalVar::curBoard+"+f:!50&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667954879297"));
+    GlobalVar::getData(allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=6000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&fid="+GlobalVar::columns[GlobalVar::curSortNum]+"&fs=b:"+GlobalVar::curBoard+"+f:!50&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667954879297"));
     GlobalVar::mTableList.clear();
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);

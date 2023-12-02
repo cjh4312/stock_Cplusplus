@@ -5,6 +5,9 @@
 #include <QDateTime>
 #include <QTimeZone>
 #include <QSettings>
+//#include "modeltablestock.h"
+//#include "modeltablestock.h"
+//#include "modeltimeshare.h"
 #include "stockinfo.h"
 #include <QPalette>
 #include <QNetworkAccessManager>
@@ -58,6 +61,10 @@ public:
     static QString circle_green_SheetStyle;
     static QString circle_red_SheetStyle;
     static QSettings *settings;
+//    static ModelTableStock *m_tableModel;
+//    static ModelTableStock *m_risingSpeedModel;
+//    static ModelTableStock *m_myStockModel;
+//    static ModelTimeShare *m_timeShareTickModel;
     static QList<StockInfo> mTableList;
     static QList<StockInfo> mTableListCopy;
     static QList<StockInfo> mRisingSpeedList;
@@ -77,6 +84,7 @@ public:
     static float buySellNum[10];
     static float baseInfoData[14];
     static int curSortNum;
+    static QString columns[17];
     static bool is_asc;
     static QPalette pRed;
     static QPalette pGreen;

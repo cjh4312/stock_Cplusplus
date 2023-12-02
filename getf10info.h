@@ -12,7 +12,7 @@ class GetF10Info : public QObject
     Q_OBJECT
 public:
     GetF10Info(QObject *parent = nullptr);
-//    QNetworkAccessManager *naManager;
+//    QNetworkAccessManager *naManager=new QNetworkAccessManager(this);
     QList<QStringList> f10QList;
     QStringList colList;
     QStringList period={};

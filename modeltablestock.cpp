@@ -9,11 +9,19 @@ ModelTableStock::ModelTableStock(QObject *parent)
     tableHeader<<"代码"<<"名称"<<"最新价"<<"涨跌幅"<<"换手率"<<"成交额"<<"涨速"<<"市盈率"<<"总市值"<<"流通市值"<<"今年"<<"60日"<<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收";
 }
 
-void ModelTableStock::setModelData(const QList<StockInfo> &data)
+void ModelTableStock::setModelData(const QList<StockInfo> &data,bool forced)
 {
-    beginResetModel();
-    m_modelData = data;
-    endResetModel();
+    if (m_modelData.size()!=data.size() or forced)
+    {
+        beginResetModel();
+        m_modelData = data;
+        endResetModel();
+    }
+    else
+    {
+        m_modelData = data;
+        emit dataChanged(index(0,0),index(rowCount()-1,columnCount()-1));
+    }
 }
 
 int ModelTableStock::rowCount(const QModelIndex &parent) const

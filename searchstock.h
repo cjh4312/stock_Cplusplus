@@ -22,7 +22,7 @@ public:
 signals:
     void showSearch();
 private:
-//    QNetworkAccessManager *naManager;
+//    QNetworkAccessManager *naManager=new QNetworkAccessManager(this);
     void matchInput();
     void searchFinished();
     void compare(QStringList Data,QString s,int col);

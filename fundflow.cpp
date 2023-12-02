@@ -1166,7 +1166,7 @@ void FundFlow::getTimeShareMin(QString code,QString date)
     func = myEngine.globalObject().property("decode");
 
     QByteArray allData;
-    QNetworkAccessManager naManager =QNetworkAccessManager();
+//    QNetworkAccessManager naManager =QNetworkAccessManager();
     QString url="https://finance.sina.com.cn/realstock/company/"+code+"/hisdata/"+date.left(4)+"/"+date.mid(5,2)+".js?d="+date;
     GlobalVar::getData(allData,2,QUrl(url));
 

@@ -2,6 +2,7 @@
 #ifndef THREADTIMESHARETICK_H
 #define THREADTIMESHARETICK_H
 
+//#include "qnetworkaccessmanager.h"
 #include <QObject>
 #include <QJsonArray>
 #include <QFile>

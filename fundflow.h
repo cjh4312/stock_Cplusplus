@@ -3,7 +3,6 @@
 #define FUNDFLOW_H
 
 #include "qlabel.h"
-#include "stockinfo.h"
 #include <QTableView>
 #include <QStandardItemModel>
 //#include <QNetworkAccessManager>
@@ -22,7 +21,7 @@ class FundFlow : public QTableView
 {
 public:
     FundFlow();
-//    QNetworkAccessManager *naManager;
+//    QNetworkAccessManager *naManager=new QNetworkAccessManager(this);
     QList<QStringList> FundFlowList;
     QStandardItemModel *model=new QStandardItemModel(this);
     QWidget *tableChart=new QWidget(this);

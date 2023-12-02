@@ -22,6 +22,7 @@ public:
     ModelTimeShare *m_timeShareTickModel;
     void setTableView();
     void setTimeShareTickView();
+    void setColumnWidth(QTableView *TV);
 
 private:
     void initTableView();

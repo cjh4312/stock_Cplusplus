@@ -112,6 +112,7 @@ void ThreadTable::initTableList()
             for (int i=0;i<20;++i)
                 GlobalVar::mRisingSpeedList.replace(i,GlobalVar::mTableListCopy.at(i));
             GlobalVar::sortByColumn(&GlobalVar::mTableListCopy,0,true);
+//            GlobalVar::m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false);
         }
         else
         {
@@ -149,6 +150,7 @@ void ThreadTable::initTableList()
             }
         }
         GlobalVar::sortByColumn(&GlobalVar::mTableList,GlobalVar::curSortNum,GlobalVar::is_asc);
+//        GlobalVar::m_tableModel->setModelData(GlobalVar::mTableList,false);
     }
 }
 
@@ -188,5 +190,6 @@ void ThreadTable::reFlaseMyStock()
                 l = mid + 1;
         }
     }
+//    GlobalVar::m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
 }
 

@@ -3,6 +3,7 @@
 #define THREADNEWSREPORT_H
 
 
+//#include "qnetworkaccessmanager.h"
 #include <QObject>
 #include <QJsonArray>
 #include <QTextToSpeech>
@@ -19,6 +20,7 @@ public:
 
 private:
     QByteArray allData;
+//    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
     QString jinShiNewsReportCurTime;
     int eastNewsReportCurTime;
     QList<QStringList> eastNewsList;

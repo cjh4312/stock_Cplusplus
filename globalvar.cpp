@@ -201,9 +201,9 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(url);
-    QNetworkAccessManager *naManager =new QNetworkAccessManager();
+    QNetworkAccessManager naManager =QNetworkAccessManager();
     QEventLoop loop;
-    QNetworkReply *reply = naManager->get(request);
+    QNetworkReply *reply = naManager.get(request);
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QTimer timer;
     timer.singleShot(timeOut*1000, &loop, SLOT(quit()));
@@ -254,15 +254,14 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
         }
     }
     delete reply;
-    delete naManager;
 }
 
 void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest request)
 {
-    QNetworkAccessManager *naManager =new QNetworkAccessManager();
+    QNetworkAccessManager naManager =QNetworkAccessManager();
     QEventLoop loop;
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
-    QNetworkReply *reply = naManager->get(request);
+    QNetworkReply *reply = naManager.get(request);
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QTimer timer;
     timer.singleShot(timeOut*1000, &loop, SLOT(quit()));
@@ -282,18 +281,17 @@ void GlobalVar::getData(QByteArray &allData,float timeOut,QNetworkRequest reques
         qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<request.url()<<timeOut;
     }
     delete reply;
-    delete naManager;
 }
 
 void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float timeOut, const QUrl &url)
 {
     QNetworkRequest request;
-    QNetworkAccessManager *naManager=new QNetworkAccessManager();
+    QNetworkAccessManager naManager=QNetworkAccessManager();
     request.setUrl(url);
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QEventLoop loop;
-    QNetworkReply *reply = naManager->post(request,postArray);
+    QNetworkReply *reply = naManager.post(request,postArray);
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QTimer timer;
     timer.singleShot(timeOut*1000, &loop, SLOT(quit()));
@@ -313,7 +311,6 @@ void GlobalVar::postData(const QByteArray &postArray,QByteArray &allData,float t
         qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
     }
     delete reply;
-    delete naManager;
 }
 
 QString GlobalVar::format_conversion(float data)
@@ -418,6 +415,10 @@ bool GlobalVar::isUsZhStock=false;
 QString GlobalVar::circle_green_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:green";
 QString GlobalVar::circle_red_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:red";
 QSettings *GlobalVar::settings;
+//ModelTableStock *GlobalVar::m_tableModel=new ModelTableStock();
+//ModelTableStock *GlobalVar::m_risingSpeedModel=new ModelTableStock();
+//ModelTableStock *GlobalVar::m_myStockModel=new ModelTableStock();
+//ModelTimeShare *GlobalVar::m_timeShareTickModel=new ModelTimeShare();
 QList<StockInfo> GlobalVar::mTableList;
 QList<StockInfo> GlobalVar::mTableListCopy;
 QList<IndexInfo> GlobalVar::mIndexList;
@@ -457,3 +458,4 @@ int GlobalVar::mTableListNum;
 QString GlobalVar::mCandleListCode;
 QList<QStringList> GlobalVar::formula;
 QList<QStringList> GlobalVar::annoucementList;
+QString GlobalVar::columns[17]={"f12","f14","f2","f3","f8","f6","f22","f9","f20","f21","f25","f24","f5","f15","f16","f17","f18"};

@@ -11,10 +11,10 @@ TableStock::TableStock()
     myStockView=new QTableView(this);
     timeShareTickView=new QTableView(this);
 
-    m_tableModel= new ModelTableStock(this);
-    m_risingSpeedModel= new ModelTableStock(this);
-    m_myStockModel= new ModelTableStock(this);
-    m_timeShareTickModel= new ModelTimeShare(this);
+    m_tableModel= new ModelTableStock(stockTableView);
+    m_risingSpeedModel= new ModelTableStock(risingSpeedView);
+    m_myStockModel= new ModelTableStock(myStockView);
+    m_timeShareTickModel= new ModelTimeShare(timeShareTickView);
     initTableView();
 }
 
@@ -23,50 +23,70 @@ void TableStock::setTableView()
     int curIndex=stockTableView->currentIndex().row();
     if (curIndex==-1)
         curIndex=0;
-    m_tableModel->setModelData(GlobalVar::mTableList);
-//    stockTableView->setModel(m_tableModel);
+    m_tableModel->setModelData(GlobalVar::mTableList,false);
     stockTableView->setCurrentIndex(m_tableModel->index(curIndex,0));
     if (GlobalVar::WhichInterface==1)
     {
         curIndex=risingSpeedView->currentIndex().row();
         if (curIndex==-1)
             curIndex=0;
-        m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList);
-//        risingSpeedView->setModel(m_risingSpeedModel);
+        m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false);
         risingSpeedView->setCurrentIndex(m_risingSpeedModel->index(curIndex,0));
         curIndex=myStockView->currentIndex().row();
         if (curIndex==-1)
             curIndex=0;
-        m_myStockModel->setModelData(GlobalVar::mMyStockList);
-//        myStockView->setModel(m_myStockModel);
+        m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
         myStockView->setCurrentIndex(m_myStockModel->index(curIndex,0));
     }
-    QTableView *tl[3]={stockTableView,risingSpeedView,myStockView};
-    for (int i=0;i<3;++i)
-    {
-        tl[i]->setColumnWidth(0, 70);
-        if (i==0 && (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5))
-            tl[i]->setColumnWidth(1, 200);
-        else
-            tl[i]->setColumnWidth(1, 95);
-        tl[i]->setColumnWidth(2, 70);
-        tl[i]->setColumnWidth(3, 70);
-        tl[i]->setColumnWidth(4, 60);
-        tl[i]->setColumnWidth(5, 85);
-        tl[i]->setColumnWidth(6, 65);
-        tl[i]->setColumnWidth(7, 70);
-        tl[i]->setColumnWidth(8, 80);
-        tl[i]->setColumnWidth(9, 90);
-        tl[i]->setColumnWidth(10, 65);
-        tl[i]->setColumnWidth(11, 65);
-        tl[i]->setColumnWidth(12, 70);
-        tl[i]->setColumnWidth(13, 70);
-        tl[i]->setColumnWidth(14, 70);
-        tl[i]->setColumnWidth(15, 70);
-        tl[i]->setColumnWidth(16, 70);
-    }
+//    QTableView *tl[3]={stockTableView,risingSpeedView,myStockView};
+//    for (int i=0;i<tableNums;++i)
+//    {
+//        tl[i]->setColumnWidth(0, 70);
+//        if (i==0 && (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5))
+//            tl[i]->setColumnWidth(1, 200);
+//        else
+//            tl[i]->setColumnWidth(1, 95);
+//        tl[i]->setColumnWidth(2, 70);
+//        tl[i]->setColumnWidth(3, 70);
+//        tl[i]->setColumnWidth(4, 60);
+//        tl[i]->setColumnWidth(5, 85);
+//        tl[i]->setColumnWidth(6, 65);
+//        tl[i]->setColumnWidth(7, 70);
+//        tl[i]->setColumnWidth(8, 80);
+//        tl[i]->setColumnWidth(9, 90);
+//        tl[i]->setColumnWidth(10, 65);
+//        tl[i]->setColumnWidth(11, 65);
+//        tl[i]->setColumnWidth(12, 70);
+//        tl[i]->setColumnWidth(13, 70);
+//        tl[i]->setColumnWidth(14, 70);
+//        tl[i]->setColumnWidth(15, 70);
+//        tl[i]->setColumnWidth(16, 70);
+//    }
 }
 
+void TableStock::setColumnWidth(QTableView *TV)
+{
+    TV->setColumnWidth(0, 70);
+    if (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5)
+        TV->setColumnWidth(1, 200);
+    else
+        TV->setColumnWidth(1, 95);
+    TV->setColumnWidth(2, 70);
+    TV->setColumnWidth(3, 70);
+    TV->setColumnWidth(4, 60);
+    TV->setColumnWidth(5, 85);
+    TV->setColumnWidth(6, 65);
+    TV->setColumnWidth(7, 70);
+    TV->setColumnWidth(8, 80);
+    TV->setColumnWidth(9, 90);
+    TV->setColumnWidth(10, 65);
+    TV->setColumnWidth(11, 65);
+    TV->setColumnWidth(12, 70);
+    TV->setColumnWidth(13, 70);
+    TV->setColumnWidth(14, 70);
+    TV->setColumnWidth(15, 70);
+    TV->setColumnWidth(16, 70);
+}
 void TableStock::setTimeShareTickView()
 {
     m_timeShareTickModel->setModelData(GlobalVar::mTimeShareTickList);
@@ -102,8 +122,8 @@ void TableStock::initTableView()
         GlobalVar::settings->setValue("myStock",s);
         GlobalVar::mMyStockCode=s;
         QList<StockInfo> t;
-        m_myStockModel->setModelData(t);
-        m_myStockModel->setModelData(GlobalVar::mMyStockList);
+        m_myStockModel->setModelData(t,false);
+        m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
         myStockView->setModel(m_myStockModel);
         myStockView->setCurrentIndex(m_myStockModel->index(newIndex,0));
     });
@@ -143,8 +163,17 @@ void TableStock::initTableView()
     risingSpeedView->setModel(m_risingSpeedModel);
     myStockView->setModel(m_myStockModel);
     timeShareTickView->setModel(m_timeShareTickModel);
-    connect(m_tableModel, &ModelTableStock::dataChanged, stockTableView, [=](){viewport()->update();});
-    connect(m_risingSpeedModel, &ModelTableStock::dataChanged, risingSpeedView, [=](){viewport()->update();});
-    connect(m_myStockModel, &ModelTableStock::dataChanged, myStockView, [=](){viewport()->update();});
-    connect(m_timeShareTickModel, &ModelTableStock::dataChanged, timeShareTickView, [=](){viewport()->update();});
+    connect(m_tableModel, &ModelTableStock::dataChanged, stockTableView, [=](){update();});
+    connect(m_risingSpeedModel, &ModelTableStock::dataChanged, risingSpeedView, [=](){update();});
+    connect(m_myStockModel, &ModelTableStock::dataChanged, myStockView, [=](){update();});
+    connect(m_timeShareTickModel, &ModelTableStock::dataChanged, timeShareTickView, [=](){update();});
+    connect(m_tableModel,&ModelTableStock::modelReset,stockTableView,[=](){
+        setColumnWidth(stockTableView);
+    });
+    connect(m_risingSpeedModel,&ModelTableStock::modelReset,stockTableView,[=](){
+        setColumnWidth(risingSpeedView);
+    });
+    connect(m_myStockModel,&ModelTableStock::modelReset,stockTableView,[=](){
+        setColumnWidth(myStockView);
+    });
 }

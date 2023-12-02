@@ -2,6 +2,7 @@
 #ifndef THREADCANDLECHART_H
 #define THREADCANDLECHART_H
 
+//#include "qnetworkaccessmanager.h"
 #include <QObject>
 #include <QJsonArray>
 
@@ -13,6 +14,7 @@ public:
     void getAllCandleChart(QString freq,QString adjustFlag,bool isFirst);
 private:
     QByteArray allData;
+//    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
     void initCandleChartList();
 
 signals:

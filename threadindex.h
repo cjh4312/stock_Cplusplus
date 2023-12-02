@@ -2,6 +2,7 @@
 #ifndef THREADINDEX_H
 #define THREADINDEX_H
 
+//#include "qnetworkaccessmanager.h"
 #include <QObject>
 #include <QJsonArray>
 
@@ -14,6 +15,7 @@ public:
 private:
     void initIndexList();
     QByteArray indexData;
+//    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
 
 signals:
     void getIndexFinished();

@@ -11,7 +11,7 @@ class ModelTableStock : public QAbstractTableModel
 
 public:
     explicit ModelTableStock(QObject *parent = nullptr);
-    void setModelData(const QList<StockInfo> &data);
+    void setModelData(const QList<StockInfo> &data,bool forced);
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
