@@ -1,6 +1,5 @@
 
 #include "threadindex.h"
-#include "globalvar.h"
 
 ThreadIndex::ThreadIndex(QObject *parent)
     : QObject{parent}

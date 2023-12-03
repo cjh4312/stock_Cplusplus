@@ -20,6 +20,7 @@ public:
     ModelTableStock *m_risingSpeedModel;
     ModelTableStock *m_myStockModel;
     ModelTimeShare *m_timeShareTickModel;
+    int tableRow=0;
     void setTableView();
     void setTimeShareTickView();
     void setColumnWidth(QTableView *TV);

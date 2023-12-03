@@ -515,8 +515,7 @@ void FundFlow::getIntervalHighLow()
         {
             QJsonValue value = data.at(i);
             QVariantMap ceilMap = value.toVariant().toMap();
-
-            model->setItem(i,0,new QStandardItem(QDateTime::fromSecsSinceEpoch(ceilMap.value("date").toString().left(10).toInt()).toString("yyyy-MM-dd")));
+            model->setItem(i,0,new QStandardItem(QDateTime::fromSecsSinceEpoch(ceilMap.value("date").toLongLong()/1000).toString("yyyy-MM-dd")));
             for (int j=1;j<8;++j)
                 model->setItem(i,j,new QStandardItem(ceilMap.value(name[j]).toString()));
         }
@@ -1011,7 +1010,7 @@ void FundFlow::getRoyalFlushFundFlow()
     func = myEngine.globalObject().property("v");
 
     QNetworkRequest request;
-    QNetworkAccessManager naManager =QNetworkAccessManager();
+//    QNetworkAccessManager naManager =QNetworkAccessManager();
     model->clear();
     model->setHorizontalHeaderLabels(RoyalFlushCol);
 

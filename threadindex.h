@@ -2,9 +2,7 @@
 #ifndef THREADINDEX_H
 #define THREADINDEX_H
 
-//#include "qnetworkaccessmanager.h"
-#include <QObject>
-#include <QJsonArray>
+#include "globalvar.h"
 
 class ThreadIndex : public QObject
 {

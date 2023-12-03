@@ -423,24 +423,24 @@ void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
 void MainWindow::initSignals()
 {
     connect(mTableStock.stockTableView, &QTableView::clicked, this, [this](const QModelIndex &index){
-        int curRow=index.row();
+        mTableStock.tableRow=index.row();
         if (GlobalVar::WhichInterface==4)
         {
             if(ifCanClick==1)
             {
-                GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
-                GlobalVar::curName=GlobalVar::mTableList.at(curRow).name;
+                GlobalVar::curCode=GlobalVar::mTableList.at(mTableStock.tableRow).code;
+                GlobalVar::curName=GlobalVar::mTableList.at(mTableStock.tableRow).name;
             }
             else if(ifCanClick==2)
             {
-                GlobalVar::curCode=mFundFlow.model->item(curRow,0)->text();
-                GlobalVar::curName=mFundFlow.model->item(curRow,1)->text();
+                GlobalVar::curCode=mFundFlow.model->item(mTableStock.tableRow,0)->text();
+                GlobalVar::curName=mFundFlow.model->item(mTableStock.tableRow,1)->text();
             }
             else if(ifCanClick==0)
             {
                 mFundFlow.isClick=true;
-                mFundFlow.getFundFlowChartData(mFundFlow.model->item(curRow,13)->text());
-                mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(curRow,0)->text()+" 资金流图表");
+                mFundFlow.getFundFlowChartData(mFundFlow.model->item(mTableStock.tableRow,13)->text());
+                mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(mTableStock.tableRow,0)->text()+" 资金流图表");
                 mFundFlow.fundFlowChart->show();
                 mFundFlow.fundFlowChart->update();
                 mFundFlow.fundFlowChart->move(649,150);
@@ -449,7 +449,7 @@ void MainWindow::initSignals()
         }
         else
         {
-            GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
+            GlobalVar::curCode=GlobalVar::mTableList.at(mTableStock.tableRow).code;
             emit startThreadTimeShareChart(false);
             emit startThreadTimeShareTick(false);
         }
@@ -2308,7 +2308,7 @@ void MainWindow::toInterFace(QString which)
         mTableStock.stockTableView->show();
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,true);
-//        mTableStock.stockTableView->setFocus();
+        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(mTableStock.tableRow,0));
     }
     else if (which=="k")
     {

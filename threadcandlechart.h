@@ -2,9 +2,7 @@
 #ifndef THREADCANDLECHART_H
 #define THREADCANDLECHART_H
 
-//#include "qnetworkaccessmanager.h"
-#include <QObject>
-#include <QJsonArray>
+#include "globalvar.h"
 
 class ThreadCandleChart : public QObject
 {

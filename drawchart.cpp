@@ -3,7 +3,7 @@
 #include "globalvar.h"
 #include "qboxlayout.h"
 #include "qpushbutton.h"
-#include "qtextcodec.h"
+//#include "qtextcodec.h"
 
 DrawChart::DrawChart(QWidget *parent)
     : QWidget{parent}

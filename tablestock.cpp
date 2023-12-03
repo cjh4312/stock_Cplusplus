@@ -20,48 +20,13 @@ TableStock::TableStock()
 
 void TableStock::setTableView()
 {
-    int curIndex=stockTableView->currentIndex().row();
-    if (curIndex==-1)
-        curIndex=0;
     m_tableModel->setModelData(GlobalVar::mTableList,false);
-    stockTableView->setCurrentIndex(m_tableModel->index(curIndex,0));
+    stockTableView->setCurrentIndex(m_tableModel->index(tableRow,0));
     if (GlobalVar::WhichInterface==1)
     {
-        curIndex=risingSpeedView->currentIndex().row();
-        if (curIndex==-1)
-            curIndex=0;
         m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false);
-        risingSpeedView->setCurrentIndex(m_risingSpeedModel->index(curIndex,0));
-        curIndex=myStockView->currentIndex().row();
-        if (curIndex==-1)
-            curIndex=0;
         m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
-        myStockView->setCurrentIndex(m_myStockModel->index(curIndex,0));
     }
-//    QTableView *tl[3]={stockTableView,risingSpeedView,myStockView};
-//    for (int i=0;i<tableNums;++i)
-//    {
-//        tl[i]->setColumnWidth(0, 70);
-//        if (i==0 && (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5))
-//            tl[i]->setColumnWidth(1, 200);
-//        else
-//            tl[i]->setColumnWidth(1, 95);
-//        tl[i]->setColumnWidth(2, 70);
-//        tl[i]->setColumnWidth(3, 70);
-//        tl[i]->setColumnWidth(4, 60);
-//        tl[i]->setColumnWidth(5, 85);
-//        tl[i]->setColumnWidth(6, 65);
-//        tl[i]->setColumnWidth(7, 70);
-//        tl[i]->setColumnWidth(8, 80);
-//        tl[i]->setColumnWidth(9, 90);
-//        tl[i]->setColumnWidth(10, 65);
-//        tl[i]->setColumnWidth(11, 65);
-//        tl[i]->setColumnWidth(12, 70);
-//        tl[i]->setColumnWidth(13, 70);
-//        tl[i]->setColumnWidth(14, 70);
-//        tl[i]->setColumnWidth(15, 70);
-//        tl[i]->setColumnWidth(16, 70);
-//    }
 }
 
 void TableStock::setColumnWidth(QTableView *TV)
@@ -124,7 +89,6 @@ void TableStock::initTableView()
         QList<StockInfo> t;
         m_myStockModel->setModelData(t,false);
         m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
-        myStockView->setModel(m_myStockModel);
         myStockView->setCurrentIndex(m_myStockModel->index(newIndex,0));
     });
 
@@ -170,10 +134,12 @@ void TableStock::initTableView()
     connect(m_tableModel,&ModelTableStock::modelReset,stockTableView,[=](){
         setColumnWidth(stockTableView);
     });
-    connect(m_risingSpeedModel,&ModelTableStock::modelReset,stockTableView,[=](){
+    connect(m_risingSpeedModel,&ModelTableStock::modelReset,risingSpeedView,[=](){
+        risingSpeedView->setCurrentIndex(m_risingSpeedModel->index(0,0));
         setColumnWidth(risingSpeedView);
     });
-    connect(m_myStockModel,&ModelTableStock::modelReset,stockTableView,[=](){
+    connect(m_myStockModel,&ModelTableStock::modelReset,myStockView,[=](){
+        myStockView->setCurrentIndex(m_myStockModel->index(0,0));
         setColumnWidth(myStockView);
     });
 }

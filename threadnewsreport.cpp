@@ -1,6 +1,5 @@
 
 #include "threadnewsreport.h"
-#include "globalvar.h"
 
 ThreadNewsReport::ThreadNewsReport(QObject *parent)
     : QObject{parent}
@@ -18,7 +17,6 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
 
 void ThreadNewsReport::getNewsData()
 {
-
     if (tts->state() == QTextToSpeech::Speaking)
         return;
     GlobalVar::getData(allData,2,QUrl("https://finance.eastmoney.com/yaowen.html"));

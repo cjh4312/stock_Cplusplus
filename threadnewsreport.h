@@ -2,10 +2,7 @@
 #ifndef THREADNEWSREPORT_H
 #define THREADNEWSREPORT_H
 
-
-//#include "qnetworkaccessmanager.h"
-#include <QObject>
-#include <QJsonArray>
+#include "globalvar.h"
 #include <QTextToSpeech>
 //#include <QRegularExpression>
 //#include <QRegularExpressionMatch>

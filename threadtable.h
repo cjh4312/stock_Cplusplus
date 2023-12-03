@@ -2,8 +2,7 @@
 #ifndef THREADTABLE_H
 #define THREADTABLE_H
 
-//#include "qnetworkaccessmanager.h"
-#include <QObject>
+#include "globalvar.h"
 #include <QFile>
 #include <QTextCodec>
 

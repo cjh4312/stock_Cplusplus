@@ -1,6 +1,5 @@
 
 #include "threadtable.h"
-#include "globalvar.h"
 
 ThreadTable::ThreadTable(QObject *parent)
     : QObject{parent}
