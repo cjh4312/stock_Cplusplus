@@ -9,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-
     Py_Initialize();
     pModule=PyImport_ImportModule("qmt");
 
@@ -142,8 +141,8 @@ void MainWindow::initInterface()
     market->addAction(ui->USMarket);
     market->addAction(ui->ZHMarket);
     ui->ZHMarket->setChecked(true);
-//    market->addAction(ui->USzMarket);
 
+    ui->horizontalLayout->setSpacing(0);
     ui->horizontalLayout->addWidget(mTableStock.stockTableView);
     ui->horizontalLayout->addWidget(drawChart.candleChart);
     drawChart.candleChart->hide();
@@ -535,6 +534,7 @@ void MainWindow::initSignals()
             mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
             mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
             mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
+            mTableStock.tableRow=0;
         }
 //        else if (GlobalVar::WhichInterface==4 and ifCanClick==2)
 //        {
@@ -789,17 +789,29 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         {
             mTableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep+row);
             if (curIndex>GlobalVar::mTableList.count()-row)
+            {
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
+                mTableStock.tableRow=0;
+            }
             else
+            {
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex+row,0));
+                mTableStock.tableRow=curIndex+row;
+            }
         }
         else
         {
             mTableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep-row);
             if (curIndex>=row)
+            {
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex-row,0));
+                mTableStock.tableRow=curIndex-row;
+            }
             else
+            {
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(GlobalVar::mTableList.count()-1,0));
+                mTableStock.tableRow=GlobalVar::mTableList.count()-1;
+            }
         }
 //        qDebug()<<mTableStock.stockTableView->height();
         return true;

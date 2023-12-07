@@ -5,7 +5,6 @@
 
 TableStock::TableStock()
 {
-//    qDebug()<<"ok";
     stockTableView=new QTableView(this);
     risingSpeedView=new QTableView(this);
     myStockView=new QTableView(this);
