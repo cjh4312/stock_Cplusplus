@@ -422,24 +422,24 @@ void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
 void MainWindow::initSignals()
 {
     connect(mTableStock.stockTableView, &QTableView::clicked, this, [this](const QModelIndex &index){
-        mTableStock.tableRow=index.row();
+        int row=index.row();
         if (GlobalVar::WhichInterface==4)
         {
             if(ifCanClick==1)
             {
-                GlobalVar::curCode=GlobalVar::mTableList.at(mTableStock.tableRow).code;
-                GlobalVar::curName=GlobalVar::mTableList.at(mTableStock.tableRow).name;
+                GlobalVar::curCode=GlobalVar::mTableList.at(row).code;
+                GlobalVar::curName=GlobalVar::mTableList.at(row).name;
             }
             else if(ifCanClick==2)
             {
-                GlobalVar::curCode=mFundFlow.model->item(mTableStock.tableRow,0)->text();
-                GlobalVar::curName=mFundFlow.model->item(mTableStock.tableRow,1)->text();
+                GlobalVar::curCode=mFundFlow.model->item(row,0)->text();
+                GlobalVar::curName=mFundFlow.model->item(row,1)->text();
             }
             else if(ifCanClick==0)
             {
                 mFundFlow.isClick=true;
-                mFundFlow.getFundFlowChartData(mFundFlow.model->item(mTableStock.tableRow,13)->text());
-                mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(mTableStock.tableRow,0)->text()+" 资金流图表");
+                mFundFlow.getFundFlowChartData(mFundFlow.model->item(row,13)->text());
+                mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(row,0)->text()+" 资金流图表");
                 mFundFlow.fundFlowChart->show();
                 mFundFlow.fundFlowChart->update();
                 mFundFlow.fundFlowChart->move(649,150);
@@ -448,7 +448,7 @@ void MainWindow::initSignals()
         }
         else
         {
-            GlobalVar::curCode=GlobalVar::mTableList.at(mTableStock.tableRow).code;
+            GlobalVar::curCode=GlobalVar::mTableList.at(row).code;
             emit startThreadTimeShareChart(false);
             emit startThreadTimeShareTick(false);
         }
@@ -534,7 +534,6 @@ void MainWindow::initSignals()
             mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
             mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
             mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
-            mTableStock.tableRow=0;
         }
 //        else if (GlobalVar::WhichInterface==4 and ifCanClick==2)
 //        {
@@ -789,29 +788,18 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         {
             mTableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep+row);
             if (curIndex>GlobalVar::mTableList.count()-row)
-            {
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
-                mTableStock.tableRow=0;
-            }
             else
-            {
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex+row,0));
-                mTableStock.tableRow=curIndex+row;
-            }
         }
         else
         {
             mTableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep-row);
             if (curIndex>=row)
-            {
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex-row,0));
-                mTableStock.tableRow=curIndex-row;
-            }
             else
-            {
                 mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(GlobalVar::mTableList.count()-1,0));
-                mTableStock.tableRow=GlobalVar::mTableList.count()-1;
-            }
+
         }
 //        qDebug()<<mTableStock.stockTableView->height();
         return true;
@@ -2318,9 +2306,12 @@ void MainWindow::toInterFace(QString which)
         drawChart.candleChart->hide();
         rightBaseWindow->show();
         mTableStock.stockTableView->show();
+        int index=mTableStock.stockTableView->currentIndex().row();
+        if (index==-1)
+            index=0;
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,true);
-        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(mTableStock.tableRow,0));
+        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(index,0));
     }
     else if (which=="k")
     {

@@ -19,8 +19,11 @@ TableStock::TableStock()
 
 void TableStock::setTableView()
 {
+    int index=stockTableView->currentIndex().row();
+    if (index==-1)
+        index=0;
     m_tableModel->setModelData(GlobalVar::mTableList,false);
-    stockTableView->setCurrentIndex(m_tableModel->index(tableRow,0));
+    stockTableView->setCurrentIndex(m_tableModel->index(index,0));
     if (GlobalVar::WhichInterface==1)
     {
         m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false);
