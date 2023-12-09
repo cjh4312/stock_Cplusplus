@@ -2306,12 +2306,12 @@ void MainWindow::toInterFace(QString which)
         drawChart.candleChart->hide();
         rightBaseWindow->show();
         mTableStock.stockTableView->show();
-        int index=mTableStock.stockTableView->currentIndex().row();
-        if (index==-1)
-            index=0;
+        int row=mTableStock.stockTableView->currentIndex().row();
+        if (row==-1)
+            row=0;
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,true);
-        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(index,0));
+        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(row,0));
     }
     else if (which=="k")
     {

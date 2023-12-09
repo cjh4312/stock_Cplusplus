@@ -207,24 +207,41 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
     if (jsonError.error == QJsonParseError::NoError)
     {
         QJsonObject jsonObject = doc.object();
+        QString code=jsonObject.value("data").toObject().value("code").toString();
         QJsonArray data=jsonObject.value("data").toObject().value("details").toArray();
         timeShareTickInfo info;
         QStringList list;
+        int j=0;
         if (pos=="-0")
             GlobalVar::mTimeShareTickList.clear();
-        for (int i = 0; i < data.size(); ++i)
+        else
+        {
+            if (code!=GlobalVar::curCode)
+                return;
+            if (GlobalVar::mTimeShareTickList.empty())
+                j=0;
+            else
+                for (int i = 0; i < data.size(); ++i)
+                {
+                    list=data.at(i).toString().split(",");
+                    info.time=list[0];
+                    if (info.time<=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time)
+                        continue;
+                    else
+                    {
+                        j=i;
+                        break;
+                    }
+                }
+        }
+        for (int i = j; i < data.size(); ++i)
         {
             list=data.at(i).toString().split(",");
-
             info.time=list[0];
-            if (pos!="-0")
-                if (not GlobalVar::mTimeShareTickList.empty() and info.time<=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time)
-                    continue;
             info.price=list[1].toFloat();
             info.nums=list[2].toInt();
             info.d=list[4].toInt();
             info.tick=list[3].toInt();
-
             GlobalVar::mTimeShareTickList.append(info);
         }
     }
