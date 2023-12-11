@@ -226,7 +226,11 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
                     list=data.at(i).toString().split(",");
                     info.time=list[0];
                     if (info.time<=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time)
+                    {
+                        if (i==data.size()-1)
+                            j=data.size();
                         continue;
+                    }
                     else
                     {
                         j=i;

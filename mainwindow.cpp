@@ -1393,6 +1393,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         if (isThreadRunning)
             return;
         isThreadRunning=true;
+        drawChart.hisTimeShareChart->close();
+        drawChart.annoucementWindow->close();
         if (GlobalVar::isKState)
         {
             resetKParameter();
@@ -1425,6 +1427,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         if (isThreadRunning)
             return;
         isThreadRunning=true;
+        drawChart.hisTimeShareChart->close();
+        drawChart.annoucementWindow->close();
         if (GlobalVar::isKState)
         {
             resetKParameter();
