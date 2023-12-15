@@ -81,6 +81,23 @@ bool GlobalVar::isUSMarketDay(QDateTime curTime)
         return false;
 }
 
+bool GlobalVar::isUKMarketDay(QDateTime curTime)
+{
+    QStringList vacation=GlobalVar::settings->value("Vacation_UK").toStringList();
+    //    QDateTime curTime=QDateTime::currentDateTime();
+    QString cur_date=curTime.addSecs(-28800).toString("MMdd");
+    int cur_time= curTime.addSecs(-28800).toString("hhmmss").toInt();
+    int startTime=70000;
+    int endTime=173010;
+    quint8 month = curTime.date().month();
+    if (int(month)>10 or int(month)<4)
+        startTime=80000;
+    if (not vacation.contains(cur_date) && isWorkDay(curTime) && (cur_time>=startTime and cur_time<=endTime))
+        return true;
+    else
+        return false;
+}
+
 bool GlobalVar::isHKMarketDay(QDateTime curTime)
 {
     QStringList vacation=GlobalVar::settings->value("Vacation_HK").toStringList();

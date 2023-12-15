@@ -57,6 +57,18 @@ void ThreadTable::getTableData()
                 emit getTableDataFinished();
             }
     }
+    else if (GlobalVar::WhichInterface==6)
+    {
+        QString s="http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f6&fs=m:155+t:1,m:155+t:2,m:155+t:3,m:156+t:1,m:156+t:2,m:156+t:5,m:156+t:6,m:156+t:7,m:156+t:8&fields=f2,f3,f5,f6,f8,f9,f12,f13,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667962034515";
+        GlobalVar::getData(allData,3.5,QUrl(s));
+        if (GlobalVar::timeOutFlag[5])
+            GlobalVar::timeOutFlag[5]=false;
+        else
+        {
+            initTableList();
+            emit getTableDataFinished();
+        }
+    }
 //    qDebug()<<t.msecsTo(QDateTime::currentDateTime().time());
 }
 
@@ -122,7 +134,7 @@ void ThreadTable::initTableList()
                 ceilMap = value.toVariant().toMap();
 
                 info.name = ceilMap.value("f14").toString();
-                if (GlobalVar::WhichInterface==5)
+                if (GlobalVar::WhichInterface==5 or GlobalVar::WhichInterface==6)
                     info.code = ceilMap.value("f13").toString()+"."+ceilMap.value("f12").toString();
                 else
                     info.code = ceilMap.value("f12").toString();

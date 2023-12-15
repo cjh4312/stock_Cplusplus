@@ -218,17 +218,14 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
         {
             if (code!=GlobalVar::curCode)
                 return;
-            if (GlobalVar::mTimeShareTickList.empty())
-                j=0;
-            else
+            if (not GlobalVar::mTimeShareTickList.empty())
                 for (int i = 0; i < data.size(); ++i)
                 {
                     list=data.at(i).toString().split(",");
-                    info.time=list[0];
-                    if (info.time<=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time)
+                    if (list[0]<=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time)
                     {
                         if (i==data.size()-1)
-                            j=data.size();
+                            return;
                         continue;
                     }
                     else

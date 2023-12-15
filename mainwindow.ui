@@ -67,6 +67,7 @@
     <addaction name="USMarket"/>
     <addaction name="HKMarket"/>
     <addaction name="USzMarket"/>
+    <addaction name="UKMarket"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="font">
@@ -296,6 +297,15 @@
    </property>
    <property name="text">
     <string>普通交易</string>
+   </property>
+  </action>
+  <action name="UKMarket">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/new/png/png/UK.png</normaloff>:/new/png/png/UK.png</iconset>
+   </property>
+   <property name="text">
+    <string>英股</string>
    </property>
   </action>
  </widget>

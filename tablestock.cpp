@@ -34,7 +34,7 @@ void TableStock::setTableView()
 void TableStock::setColumnWidth(QTableView *TV)
 {
     TV->setColumnWidth(0, 70);
-    if (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5)
+    if (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5 || GlobalVar::WhichInterface==6)
         TV->setColumnWidth(1, 200);
     else
         TV->setColumnWidth(1, 95);

@@ -26,5 +26,6 @@
         <file>png/hots.jpg</file>
         <file>png/no_report.png</file>
         <file>png/report.png</file>
+        <file>png/UK.png</file>
     </qresource>
 </RCC>

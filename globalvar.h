@@ -29,6 +29,7 @@ public:
     static QDateTime curRecentWorkDay(int select);
     static bool isZhMarketDay(QDateTime curTime);
     static bool isUSMarketDay(QDateTime curTime);
+    static bool isUKMarketDay(QDateTime curTime);
     static bool isHKMarketDay(QDateTime curTime);
     static QString getComCode();
     static QString getStockSymbol();

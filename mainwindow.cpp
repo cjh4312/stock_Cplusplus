@@ -3,7 +3,6 @@
 #include "qspinbox.h"
 #include "stockinfo.h"
 #include "ui_mainwindow.h"
-#include "globalvar.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -470,6 +469,7 @@ void MainWindow::initSignals()
     connect(ui->HKMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
     connect(ui->USMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
     connect(ui->USzMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
+    connect(ui->UKMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
     connect(mTableStock.stockTableView, &QTableView::doubleClicked, this, [this](const QModelIndex &index){
         if (GlobalVar::WhichInterface==4)
         {
@@ -1155,7 +1155,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         else if (event->type()==QEvent::MouseButtonDblClick)
         {
             if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or
-                GlobalVar::curCode.left(2)=="10")
+                GlobalVar::curCode.left(2)=="10" or GlobalVar::WhichInterface==6)
             {
                 QMessageBox::information(this,"提示", "只能查看A股", QMessageBox::Ok);
                 return false;
@@ -1468,7 +1468,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
 //        qDebug()<<event->text();
 //        searchCode+=event->text();
-        if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5)
+        if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or GlobalVar::WhichInterface==6)
             return;
         searchSmallWindow->show();
         searchStock.searchCodeLine->setText(event->text());
@@ -1618,6 +1618,22 @@ void MainWindow::setMarket()
         GlobalVar::curCode="106.BABA";
         GlobalVar::curName="阿里巴巴";
     }
+    else if (obj->objectName()=="UKMarket")
+    {
+        saveCode();
+        ifCanClick=-1;
+        GlobalVar::WhichInterface=6;
+        GlobalVar::curSortNum=5;
+        isAsia=false;
+        mTableStock.risingSpeedView->hide();
+        mTableStock.myStockView->hide();
+        //        ui->HKMarket->setChecked(true);
+        //        ui->USMarket->setChecked(false);
+        //        ui->ZHMarket->setChecked(false);
+        ui->USzMarket->setChecked(false);
+        GlobalVar::curCode="155.SHEL";
+        GlobalVar::curName="壳牌";
+    }
     GlobalVar::isBoard=false;
     mTableStock.stockTableView->clearSpans();
     resetKParameter();
@@ -1753,7 +1769,7 @@ void MainWindow::dealWithFundFlow()
 }
 void MainWindow::fastTrade()
 {
-    if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or tradePrice==0 or
+    if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or GlobalVar::WhichInterface==6 or tradePrice==0 or
         GlobalVar::curCode.left(1)=="1")
         return;
     QMenu *menu=new QMenu(this);
@@ -2067,6 +2083,17 @@ void MainWindow::tradingTimeRunThread()
             else
                 circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
         }
+        else if (GlobalVar::WhichInterface==6)
+        {
+            if (GlobalVar::isUKMarketDay(curTime))
+            {
+                circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
+                emit startThreadTable();
+                emit startThreadTimeShareTick(false);
+            }
+            else
+                circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
+        }
         else if (GlobalVar::WhichInterface==4)
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
     }
@@ -2345,7 +2372,7 @@ void MainWindow::toInterFace(QString which)
     }
     else if(which=="f3")
     {
-        if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5)
+        if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or GlobalVar::WhichInterface==6)
         {
             QMessageBox::information(this,"提示", "只能查看A股", QMessageBox::Ok);
             return;
@@ -2367,7 +2394,7 @@ void MainWindow::toInterFace(QString which)
             QMessageBox::information(this,"提示", "只能查看个股", QMessageBox::Ok);
             return;
         }
-        if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5)
+        if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or GlobalVar::WhichInterface==6)
         {
             QMessageBox::information(this,"提示", "只能查看A股", QMessageBox::Ok);
             return;
