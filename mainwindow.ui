@@ -278,7 +278,7 @@
      <normaloff>:/new/png/png/date.jpg</normaloff>:/new/png/png/date.jpg</iconset>
    </property>
    <property name="text">
-    <string>设置A股假期</string>
+    <string>设置股市假期</string>
    </property>
   </action>
   <action name="login">

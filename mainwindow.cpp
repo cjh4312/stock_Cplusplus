@@ -716,7 +716,7 @@ void MainWindow::initSignals()
         file.close();
     });
     connect(ui->setVacation,&QAction::triggered,this,[=](){
-        mFundFlow.getVacation();
+        GlobalVar::getVacation();
         if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
             ui->setVacation->setEnabled(false);
     });

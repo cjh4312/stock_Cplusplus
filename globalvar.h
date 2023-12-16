@@ -31,6 +31,7 @@ public:
     static bool isUSMarketDay(QDateTime curTime);
     static bool isUKMarketDay(QDateTime curTime);
     static bool isHKMarketDay(QDateTime curTime);
+    static void getVacation();
     static QString getComCode();
     static QString getStockSymbol();
     static void sortByColumn(QList<StockInfo> *mList,int column,bool is_asc);
