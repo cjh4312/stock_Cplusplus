@@ -133,8 +133,8 @@ void MainWindow::initInterface()
     setWindowIcon(QIcon(":/new/png/png/logo.ico"));
     if (not GlobalVar::isSayNews)
         ui->newsReport->setChecked(true);
-    if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
-        ui->setVacation->setEnabled(false);
+    // if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
+    //     ui->setVacation->setEnabled(false);
     QActionGroup *market = new QActionGroup(this);
     market->addAction(ui->HKMarket);
     market->addAction(ui->USMarket);
@@ -717,8 +717,8 @@ void MainWindow::initSignals()
     });
     connect(ui->setVacation,&QAction::triggered,this,[=](){
         GlobalVar::getVacation();
-        if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
-            ui->setVacation->setEnabled(false);
+        // if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
+        //     ui->setVacation->setEnabled(false);
     });
     for (int i=0;i<6;++i)
     {
