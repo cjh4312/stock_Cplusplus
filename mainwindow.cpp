@@ -717,6 +717,7 @@ void MainWindow::initSignals()
     });
     connect(ui->setVacation,&QAction::triggered,this,[=](){
         GlobalVar::getVacation();
+        QMessageBox::information(this,"提示", "设置成功", QMessageBox::Ok);
         // if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
         //     ui->setVacation->setEnabled(false);
     });
