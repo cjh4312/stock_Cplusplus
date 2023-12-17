@@ -945,6 +945,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                        mouseEvent->pos().ry()<mFundFlow.fundFlowChart->height()-40)
             {
                 int n=(mouseEvent->pos().rx()-5)/aveHW;
+                if (n>=maxHNums)
+                    return false;
                 mFundFlow.vKLine->show();
                 mFundFlow.vKLine->move(mouseEvent->pos().rx(),435);
                 mFundFlow.time->setText(mFundFlow.fundFlowHKChart.at(n)[0]);
