@@ -111,7 +111,7 @@ bool GlobalVar::isHKMarketDay(QDateTime curTime)
         return false;
 }
 
-void GlobalVar::getVacation()
+bool GlobalVar::getVacation()
 {
     QByteArray allData;
     QNetworkRequest request;
@@ -178,7 +178,7 @@ void GlobalVar::getVacation()
         request.setUrl(QUrl(url1+area[i]));
         GlobalVar::getData(allData,2,request);
         if (allData.isEmpty())
-            return;
+            return false;
         QString html=QString(allData);
         QString str=GlobalVar::peelStr(html,"<tbody>","-1");
         QStringList l;
@@ -197,6 +197,7 @@ void GlobalVar::getVacation()
         GlobalVar::settings->setValue("Vacation_"+area[i].toUpper(),s);
     }
     GlobalVar::settings->setValue("isSetVacation",QDateTime::currentDateTime().toString("yyyy"));
+    return true;
 }
 
 bool GlobalVar::isInt(QString s)
