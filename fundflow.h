@@ -26,8 +26,8 @@ public:
     QStandardItemModel *model=new QStandardItemModel(this);
     QWidget *tableChart=new QWidget(this);
     QDialog *fundFlowChart=new QDialog(this);
-    QList<QStringList> fundFlowKChart;
-    QList<QStringList> fundFlowHKChart;
+    QList<QStringList> fundFlowKList;
+    QList<QStringList> fundFlowHKList;
     float maxMinKChart[2];
     float maxMinHKChart[2];
     bool isClick=false;

@@ -9,7 +9,7 @@ FundFlow::FundFlow()
 //    naManager = new QNetworkAccessManager(this);
 //    fundFlowChart->setAttribute(Qt::WA_DeleteOnClose);
     fundFlowChart->setWindowFlags(fundFlowChart->windowFlags() | Qt::WindowStaysOnTopHint);
-    fundFlowChart->setGeometry(650, 150, 1000, 800);
+    fundFlowChart->setGeometry(850, 150, 1000, 800);
     fundFlowChart->hide();
     vKLine->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     vKLine->setStyleSheet("QLabel{border:2px dotted blue;}");
@@ -114,7 +114,7 @@ void FundFlow::getFundFlowChartData(QString code)
     QByteArray allData;
     GlobalVar::getData(allData,1,QUrl(url));
 
-    fundFlowKChart.clear();
+    fundFlowKList.clear();
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
     if (jsonError.error == QJsonParseError::NoError)
@@ -138,7 +138,7 @@ void FundFlow::getFundFlowChartData(QString code)
                 maxMinKChart[0]=0;
             if (maxMinKChart[1]>0)
                 maxMinKChart[1]=0;
-            fundFlowKChart.append(list);
+            fundFlowKList.append(list);
         }
     }
 
@@ -166,7 +166,7 @@ void FundFlow::getFundFlowChartData(QString code)
     url="https://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?&lmt=0&klt=101&fields1=f1%2Cf2%2Cf3%2Cf7&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf62%2Cf63%2Cf64%2Cf65&ut=b2884a393a59ad64002292a3e90d46a5&secid="+BK+"&_=1692405309552";
     GlobalVar::getData(allData,1,QUrl(url));
 
-    fundFlowHKChart.clear();
+    fundFlowHKList.clear();
     doc = QJsonDocument::fromJson(allData, &jsonError);
     if (jsonError.error == QJsonParseError::NoError)
     {
@@ -193,7 +193,7 @@ void FundFlow::getFundFlowChartData(QString code)
                 maxMinHKChart[0]=0;
             if (maxMinHKChart[1]>0)
                 maxMinHKChart[1]=0;
-            fundFlowHKChart.append(list);
+            fundFlowHKList.append(list);
         }
 
     }
@@ -201,8 +201,8 @@ void FundFlow::getFundFlowChartData(QString code)
 
 void FundFlow::drawFundFlowChart(QPainter *painter)
 {
-    int maxNums=fundFlowKChart.count();
-    int maxHNums=fundFlowHKChart.count();
+    int maxNums=fundFlowKList.count();
+    int maxHNums=fundFlowHKList.count();
     int width=fundFlowChart->width();
     int height=fundFlowChart->height();
     float aveW=0;
@@ -252,8 +252,8 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
 
     if (maxHNums!=0)
     {
-        painter->drawText(0,height-40+textHeight,fundFlowHKChart.at(0)[0].mid(5,5));
-        painter->drawText((maxHNums-1)*aveHW-15,height-40+textHeight,fundFlowHKChart.at(maxHNums-1)[0].mid(5,5));
+        painter->drawText(0,height-40+textHeight,fundFlowHKList.at(0)[0].mid(5,5));
+        painter->drawText((maxHNums-1)*aveHW-15,height-40+textHeight,fundFlowHKList.at(maxHNums-1)[0].mid(5,5));
     }
     for (int i=0;i<5;++i)
     {
@@ -264,19 +264,19 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
 
     if (maxNums!=0)
     {
-        painter->drawText(0,(height-bottom)/2+textHeight,fundFlowKChart.at(0)[0].mid(11,5));
-        painter->drawText(maxNums/2*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums/2-1)[0].mid(11,5));
-        painter->drawText(maxNums/4*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums/4-1)[0].mid(11,5));
-        painter->drawText(maxNums*3/4*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums*3/4-1)[0].mid(11,5));
-        painter->drawText((maxNums-1)*aveW-15,(height-bottom)/2+textHeight,fundFlowKChart.at(maxNums-1)[0].mid(11,5));
+        painter->drawText(0,(height-bottom)/2+textHeight,fundFlowKList.at(0)[0].mid(11,5));
+        painter->drawText(maxNums/2*aveW-15,(height-bottom)/2+textHeight,fundFlowKList.at(maxNums/2-1)[0].mid(11,5));
+        painter->drawText(maxNums/4*aveW-15,(height-bottom)/2+textHeight,fundFlowKList.at(maxNums/4-1)[0].mid(11,5));
+        painter->drawText(maxNums*3/4*aveW-15,(height-bottom)/2+textHeight,fundFlowKList.at(maxNums*3/4-1)[0].mid(11,5));
+        painter->drawText((maxNums-1)*aveW-15,(height-bottom)/2+textHeight,fundFlowKList.at(maxNums-1)[0].mid(11,5));
     }
 
     for (int j=1;j<6;++j)
     {
         for (int i=1;i<maxNums;++i)
         {
-            float p1=(maxMinKChart[0]-fundFlowKChart.at(i-1)[j].toFloat())/interval*(height-bottom)/2;
-            float p2=(maxMinKChart[0]-fundFlowKChart.at(i)[j].toFloat())/interval*(height-bottom)/2;
+            float p1=(maxMinKChart[0]-fundFlowKList.at(i-1)[j].toFloat())/interval*(height-bottom)/2;
+            float p2=(maxMinKChart[0]-fundFlowKList.at(i)[j].toFloat())/interval*(height-bottom)/2;
             painter->setPen(QPen(fiveColor[j-1],2));
             painter->drawLine(QPointF((i-1)*aveW+leftOffset,p1),QPointF(i*aveW+leftOffset,p2));
         }
@@ -329,8 +329,8 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     {
         for (int i=1;i<maxHNums;++i)
         {
-            float p1=(2*maxMinHKChart[0]-maxMinHKChart[1]-fundFlowHKChart.at(i-1)[j].toFloat())/interval*(height-bottom)/2;
-            float p2=(2*maxMinHKChart[0]-maxMinHKChart[1]-fundFlowHKChart.at(i)[j].toFloat())/interval*(height-bottom)/2;
+            float p1=(2*maxMinHKChart[0]-maxMinHKChart[1]-fundFlowHKList.at(i-1)[j].toFloat())/interval*(height-bottom)/2;
+            float p2=(2*maxMinHKChart[0]-maxMinHKChart[1]-fundFlowHKList.at(i)[j].toFloat())/interval*(height-bottom)/2;
             painter->setPen(QPen(fiveColor[j-1],2));
             painter->drawLine(QPointF((i-1)*aveHW+leftOffset,p1+offset),QPointF(i*aveHW+leftOffset,p2+offset));
         }
@@ -345,20 +345,20 @@ void FundFlow::drawFundFlowChart(QPainter *painter)
     float min=0.0;
     int twentyN=20;
     int fiveN=5;
-    if (fundFlowHKChart.count()<twentyN)
-        twentyN=fundFlowHKChart.count();
-    if (fundFlowHKChart.count()<fiveN)
-        fiveN=fundFlowHKChart.count();
-    for (int i=fundFlowHKChart.count()-twentyN;i<fundFlowHKChart.count();++i)
+    if (fundFlowHKList.count()<twentyN)
+        twentyN=fundFlowHKList.count();
+    if (fundFlowHKList.count()<fiveN)
+        fiveN=fundFlowHKList.count();
+    for (int i=fundFlowHKList.count()-twentyN;i<fundFlowHKList.count();++i)
     {
-        twentyTotal[0]+=fundFlowHKChart.at(i)[1].toFloat();
-        if (i>fundFlowHKChart.count()-fiveN-1)
-            fiveTotal[0]+=fundFlowHKChart.at(i)[1].toFloat();
+        twentyTotal[0]+=fundFlowHKList.at(i)[1].toFloat();
+        if (i>fundFlowHKList.count()-fiveN-1)
+            fiveTotal[0]+=fundFlowHKList.at(i)[1].toFloat();
         for (int j=2;j<6;++j)
         {
-            twentyTotal[6-j]+=fundFlowHKChart.at(i)[j].toFloat();
-            if (i>fundFlowHKChart.count()-fiveN-1)
-                fiveTotal[6-j]+=fundFlowHKChart.at(i)[j].toFloat();
+            twentyTotal[6-j]+=fundFlowHKList.at(i)[j].toFloat();
+            if (i>fundFlowHKList.count()-fiveN-1)
+                fiveTotal[6-j]+=fundFlowHKList.at(i)[j].toFloat();
         }
     }
     for (int j=0;j<5;++j)

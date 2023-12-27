@@ -14,7 +14,6 @@ MainWindow::MainWindow(QWidget *parent)
     initGlobalVar();
     initThread();
     initInterface();
-
     initSettings();
     initSignals();
     tim = new QTimer(this);
@@ -133,6 +132,7 @@ void MainWindow::initInterface()
     ui->setupUi(this);
     setWindowTitle("Stock");
     setWindowIcon(QIcon(":/new/png/png/logo.ico"));
+    // setWindowState(Qt::WindowMaximized);
     if (not GlobalVar::isSayNews)
         ui->newsReport->setChecked(true);
     // if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
@@ -453,8 +453,8 @@ void MainWindow::initSignals()
                 mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(row,0)->text()+" 资金流图表");
                 mFundFlow.fundFlowChart->show();
                 mFundFlow.fundFlowChart->update();
-                mFundFlow.fundFlowChart->move(649,150);
-                mFundFlow.fundFlowChart->move(650,150);
+                mFundFlow.fundFlowChart->move(859,150);
+                mFundFlow.fundFlowChart->move(860,150);
             }
         }
         else
@@ -476,6 +476,16 @@ void MainWindow::initSignals()
         GlobalVar::curCode=GlobalVar::mMyStockList.at(curRow).code;
         emit startThreadTimeShareChart(false);
         emit startThreadTimeShareTick(false);
+    });
+    connect(mTableStock.blockView,&QTableView::clicked,this, [this](const QModelIndex &index){
+        int row=index.row();
+        mFundFlow.isClick=true;
+        mFundFlow.getFundFlowChartData(mFundFlow.model->item(row,13)->text());
+        mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(row,0)->text()+" 资金流图表");
+        mFundFlow.fundFlowChart->show();
+        mFundFlow.fundFlowChart->update();
+        mFundFlow.fundFlowChart->move(859,150);
+        mFundFlow.fundFlowChart->move(860,150);
     });
     connect(ui->ZHMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
     connect(ui->HKMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
@@ -948,9 +958,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         else if(event->type()==QEvent::MouseMove)
         {
             QMouseEvent *mouseEvent = (QMouseEvent *)event;
-            int maxNums=mFundFlow.fundFlowKChart.count();
+            int maxNums=mFundFlow.fundFlowKList.count();
 
-            int maxHNums=mFundFlow.fundFlowHKChart.count();
+            int maxHNums=mFundFlow.fundFlowHKList.count();
             int aveHW=mFundFlow.fundFlowChart->width()/2/maxHNums;
             if (mouseEvent->pos().rx()>10 and
                 mouseEvent->pos().rx()<mFundFlow.fundFlowChart->width()/2-10 and
@@ -967,20 +977,20 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 {
                     mFundFlow.vKLine->show();
                     mFundFlow.vKLine->move(mouseEvent->pos().rx(),0);
-                    mFundFlow.time->setText(mFundFlow.fundFlowKChart.at(n)[0]);
-                    if (mFundFlow.fundFlowKChart.at(n)[1].toFloat()<0)
+                    mFundFlow.time->setText(mFundFlow.fundFlowKList.at(n)[0]);
+                    if (mFundFlow.fundFlowKList.at(n)[1].toFloat()<0)
                         mFundFlow.textFund[0]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
                     else
                         mFundFlow.textFund[0]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
 
-                    mFundFlow.textFund[0]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowKChart.at(n)[1].toFloat()));
+                    mFundFlow.textFund[0]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowKList.at(n)[1].toFloat()));
                     for (int i=1;i<5;++i)
                     {
-                        if (mFundFlow.fundFlowKChart.at(n)[6-i].toFloat()<0)
+                        if (mFundFlow.fundFlowKList.at(n)[6-i].toFloat()<0)
                             mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
                         else
                             mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
-                        mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowKChart.at(n)[6-i].toFloat()));
+                        mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowKList.at(n)[6-i].toFloat()));
                     }
                 }
                 else
@@ -996,19 +1006,19 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                     return false;
                 mFundFlow.vKLine->show();
                 mFundFlow.vKLine->move(mouseEvent->pos().rx(),435);
-                mFundFlow.time->setText(mFundFlow.fundFlowHKChart.at(n)[0]);
-                if (mFundFlow.fundFlowHKChart.at(n)[1].toFloat()<0)
+                mFundFlow.time->setText(mFundFlow.fundFlowHKList.at(n)[0]);
+                if (mFundFlow.fundFlowHKList.at(n)[1].toFloat()<0)
                     mFundFlow.textFund[0]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
                 else
                     mFundFlow.textFund[0]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
-                mFundFlow.textFund[0]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowHKChart.at(n)[1].toFloat()));
+                mFundFlow.textFund[0]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowHKList.at(n)[1].toFloat()));
                 for (int i=1;i<5;++i)
                 {
-                    if (mFundFlow.fundFlowHKChart.at(n)[6-i].toFloat()<0)
+                    if (mFundFlow.fundFlowHKList.at(n)[6-i].toFloat()<0)
                         mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(0,191,0)}");
                     else
                         mFundFlow.textFund[i]->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(255,0,0)}");
-                    mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowHKChart.at(n)[6-i].toFloat()));
+                    mFundFlow.textFund[i]->setText(GlobalVar::format_conversion(mFundFlow.fundFlowHKList.at(n)[6-i].toFloat()));
                 }
             }
             else if (mouseEvent->pos().rx()>mFundFlow.fundFlowChart->width()/2 and
@@ -1072,14 +1082,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 mFundFlow.vKLine->hide();
                 mFundFlow.fundFlowChart->update();
             }
-            mFundFlow.fundFlowChart->move(649,150);
-            mFundFlow.fundFlowChart->move(650,150);
+            mFundFlow.fundFlowChart->move(859,150);
+            mFundFlow.fundFlowChart->move(860,150);
         }
         else if (event->type()==QEvent::Leave)
         {
             mFundFlow.vKLine->hide();
-            mFundFlow.fundFlowChart->move(649,150);
-            mFundFlow.fundFlowChart->move(650,150);
+            mFundFlow.fundFlowChart->move(859,150);
+            mFundFlow.fundFlowChart->move(860,150);
         }
         return true;
     }
