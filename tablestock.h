@@ -13,6 +13,7 @@ class TableStock : public QTableView
 public:
     TableStock();
     QTableView *stockTableView;
+    QTableView *blockView;
     QTableView *risingSpeedView;
     QTableView *myStockView;
     QTableView *timeShareTickView;

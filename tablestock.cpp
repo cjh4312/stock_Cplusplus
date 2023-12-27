@@ -6,6 +6,7 @@
 TableStock::TableStock()
 {
     stockTableView=new QTableView(this);
+    blockView=new QTableView(this);
     risingSpeedView=new QTableView(this);
     myStockView=new QTableView(this);
     timeShareTickView=new QTableView(this);
@@ -33,18 +34,18 @@ void TableStock::setTableView()
 
 void TableStock::setColumnWidth(QTableView *TV)
 {
-    TV->setColumnWidth(0, 70);
+    TV->setColumnWidth(0, 60);
     if (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5 || GlobalVar::WhichInterface==6)
         TV->setColumnWidth(1, 200);
     else
-        TV->setColumnWidth(1, 95);
-    TV->setColumnWidth(2, 70);
+        TV->setColumnWidth(1, 75);
+    TV->setColumnWidth(2, 55);
     TV->setColumnWidth(3, 70);
-    TV->setColumnWidth(4, 60);
-    TV->setColumnWidth(5, 85);
-    TV->setColumnWidth(6, 65);
-    TV->setColumnWidth(7, 70);
-    TV->setColumnWidth(8, 80);
+    TV->setColumnWidth(4, 70);
+    TV->setColumnWidth(5, 60);
+    TV->setColumnWidth(6, 85);
+    TV->setColumnWidth(7, 80);
+    TV->setColumnWidth(8, 70);
     TV->setColumnWidth(9, 90);
     TV->setColumnWidth(10, 65);
     TV->setColumnWidth(11, 65);
@@ -94,8 +95,8 @@ void TableStock::initTableView()
         myStockView->setCurrentIndex(m_myStockModel->index(newIndex,0));
     });
 
-    QTableView *tl[3]={stockTableView,risingSpeedView,myStockView};
-    for (int i=0;i<3;++i)
+    QTableView *tl[4]={stockTableView,risingSpeedView,myStockView,blockView};
+    for (int i=0;i<4;++i)
     {
         tl[i]->horizontalHeader()->setSortIndicatorShown(false);
         tl[i]->horizontalHeader()->setSortIndicatorShown(false);

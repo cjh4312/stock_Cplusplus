@@ -6,7 +6,7 @@ ThreadTable::ThreadTable(QObject *parent)
 {
     StockInfo info;
     info.code="";
-    for (int i=0;i<20;++i)
+    for (int i=0;i<risingSpeedSize;++i)
         GlobalVar::mRisingSpeedList.append(info);
     readMyStock();
 }
@@ -103,7 +103,7 @@ void ThreadTable::initTableList()
             }
             if (not GlobalVar::isBoard)
                 GlobalVar::mTableList=GlobalVar::mTableListCopy;
-            for (int i=0;i<20;++i)
+            for (int i=0;i<risingSpeedSize;++i)
                 GlobalVar::mRisingSpeedList.replace(i,GlobalVar::mTableListCopy.at(i));
             GlobalVar::sortByColumn(&GlobalVar::mTableListCopy,0,true);
 //            GlobalVar::m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false);

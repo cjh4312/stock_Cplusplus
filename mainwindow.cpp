@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     initGlobalVar();
     initThread();
     initInterface();
+
     initSettings();
     initSignals();
     tim = new QTimer(this);
@@ -125,6 +126,7 @@ void MainWindow::initThread()
     });
     connect(this,&MainWindow::startThreadCandleChart,threadCandleChart,&ThreadCandleChart::getAllCandleChart);
     thread[5]->start();
+
 }
 void MainWindow::initInterface()
 {
@@ -146,14 +148,24 @@ void MainWindow::initInterface()
     ui->horizontalLayout->addWidget(drawChart.candleChart);
     drawChart.candleChart->hide();
 
+    middleWindow=new QWidget(this);
     QVBoxLayout *middleLayout =new QVBoxLayout;
+    QHBoxLayout *middleDLayout=new QHBoxLayout;
+    middleWindow->setLayout(middleLayout);
     middleLayout->setSpacing(0);
     middleLayout->setContentsMargins(0,0,0,0);
-    mTableStock.risingSpeedView->setMaximumWidth(530);
-    mTableStock.risingSpeedView->setMaximumHeight(454);
-    mTableStock.myStockView->setMaximumWidth(530);
-    middleLayout->addWidget(mTableStock.risingSpeedView);
-    middleLayout->addWidget(mTableStock.myStockView);
+    middleDLayout->setSpacing(0);
+    middleDLayout->setContentsMargins(0,0,0,0);
+    // mTableStock.blockView->setMaximumHeight(454);
+    mTableStock.risingSpeedView->setMaximumWidth(290);
+    mTableStock.risingSpeedView->setMinimumHeight(496);
+    mTableStock.myStockView->setMinimumHeight(496);
+    mTableStock.blockView->setMinimumWidth(785);
+    middleLayout->addWidget(mTableStock.blockView);
+    middleLayout->addLayout(middleDLayout);
+    middleDLayout->addWidget(mTableStock.risingSpeedView);
+    // middleDLayout->addWidget(mTableStock.blockView);
+    middleDLayout->addWidget(mTableStock.myStockView);
 
     rightBaseWindow=new QWidget(this);
     rightBaseWindow->setMaximumWidth(450);
@@ -169,7 +181,7 @@ void MainWindow::initInterface()
 //    rightFundLayout->setSpacing(0);
     rightFundLayout->setContentsMargins(20,30,20,2);
 
-    ui->horizontalLayout->addLayout(middleLayout);
+    ui->horizontalLayout->addWidget(middleWindow);
     ui->horizontalLayout->addWidget(rightBaseWindow);
     ui->horizontalLayout->addWidget(rightFundWindow);
     rightFundWindow->hide();
@@ -508,6 +520,11 @@ void MainWindow::initSignals()
         emit startThreadCandleChart(freq,adjustFlag,true);
         toInterFace("k");
     });
+    connect(mTableStock.blockView, &QTableView::doubleClicked, this, [this](const QModelIndex &index){
+        mFundFlow.getBoardStock(mFundFlow.FundFlowList.at(index.row())[0]);
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
+        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+    });
     connect(mTableStock.myStockView, &QTableView::doubleClicked, this, [this](const QModelIndex &/*index*/){
         GlobalVar::isKState=true;
         isTraversalMyStock=true;
@@ -805,6 +822,33 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
         }
 //        qDebug()<<mTableStock.stockTableView->height();
+        return true;
+    }
+    else if (obj==mTableStock.blockView->verticalScrollBar() and event->type() == QEvent::Wheel)
+    {
+        QWheelEvent *event1 = static_cast<QWheelEvent *>(event);
+        int para=event1->angleDelta().y();
+        int tempStep=mTableStock.blockView->verticalScrollBar()->value();
+        int curIndex=mTableStock.blockView->currentIndex().row();
+        int row=mTableStock.blockView->height()/22;
+        if (para<0)
+        {
+            mTableStock.blockView->verticalScrollBar()->setSliderPosition(tempStep+row);
+            if (curIndex>mFundFlow.FundFlowList.count()-row)
+                mTableStock.blockView->setCurrentIndex(mFundFlow.model->index(0,0));
+            else
+                mTableStock.blockView->setCurrentIndex(mFundFlow.model->index(curIndex+row,0));
+        }
+        else
+        {
+            mTableStock.blockView->verticalScrollBar()->setSliderPosition(tempStep-row);
+            if (curIndex>=row)
+                mTableStock.blockView->setCurrentIndex(mFundFlow.model->index(curIndex-row,0));
+            else
+                mTableStock.blockView->setCurrentIndex(mFundFlow.model->index(mFundFlow.FundFlowList.count()-1,0));
+
+        }
+        //        qDebug()<<mTableStock.stockTableView->height();
         return true;
     }
     else if (obj==mTableStock.myStockView and event->type()==QEvent::KeyPress)
@@ -1378,10 +1422,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             GlobalVar::isKState=false;
             isTraversalMyStock=false;
             if (GlobalVar::WhichInterface==1)
-            {
-                mTableStock.risingSpeedView->show();
-                mTableStock.myStockView->show();
-            }
+                middleWindow->show();
             else if(GlobalVar::WhichInterface==4)
             {
                 rightFundWindow->show();
@@ -1564,8 +1605,7 @@ void MainWindow::setMarket()
         GlobalVar::WhichInterface=1;
         isAsia=true;
         ifCanClick=1;
-        mTableStock.risingSpeedView->show();
-        mTableStock.myStockView->show();
+        middleWindow->show();
 //        ui->HKMarket->setChecked(false);
 //        ui->USMarket->setChecked(false);
 //        ui->ZHMarket->setChecked(true);
@@ -1578,10 +1618,9 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=2;
-        GlobalVar::curSortNum=5;
+        GlobalVar::curSortNum=6;
         isAsia=true;
-        mTableStock.risingSpeedView->hide();
-        mTableStock.myStockView->hide();
+        middleWindow->hide();
 //        ui->HKMarket->setChecked(true);
 //        ui->USMarket->setChecked(false);
 //        ui->ZHMarket->setChecked(false);
@@ -1594,11 +1633,10 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=5;
-        GlobalVar::curSortNum=5;
+        GlobalVar::curSortNum=6;
         isAsia=false;
         GlobalVar::isUsZhStock=false;
-        mTableStock.risingSpeedView->hide();
-        mTableStock.myStockView->hide();
+        middleWindow->hide();
 //        ui->HKMarket->setChecked(false);
 //        ui->USMarket->setChecked(true);
 //        ui->ZHMarket->setChecked(false);
@@ -1611,11 +1649,10 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=5;
-        GlobalVar::curSortNum=5;
+        GlobalVar::curSortNum=6;
         isAsia=false;
         GlobalVar::isUsZhStock=true;
-        mTableStock.risingSpeedView->hide();
-        mTableStock.myStockView->hide();
+        middleWindow->hide();
 //        ui->HKMarket->setChecked(false);
         ui->USMarket->setChecked(true);
 //        ui->ZHMarket->setChecked(false);
@@ -1628,10 +1665,9 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=6;
-        GlobalVar::curSortNum=5;
+        GlobalVar::curSortNum=6;
         isAsia=false;
-        mTableStock.risingSpeedView->hide();
-        mTableStock.myStockView->hide();
+        middleWindow->hide();
         //        ui->HKMarket->setChecked(true);
         //        ui->USMarket->setChecked(false);
         //        ui->ZHMarket->setChecked(false);
@@ -1762,8 +1798,10 @@ void MainWindow::dealWithFundFlow()
     GlobalVar::WhichInterface=4;
     toInterFace("fund");
     int days[]={1,3,5,10,20};
+    int row=mTableStock.blockView->currentIndex().row();
     mFundFlow.getEastPlateFundFlow(days[n]);
     mTableStock.stockTableView->setModel(mFundFlow.model);
+    mTableStock.stockTableView->setCurrentIndex(mFundFlow.model->index(row,0));
     mTableStock.stockTableView->setColumnWidth(0,140);
     mTableStock.stockTableView->setColumnWidth(5,120);
     mTableStock.stockTableView->setColumnWidth(12,160);
@@ -1805,7 +1843,7 @@ void MainWindow::fastTrade()
         QDialog *fastBuy=new QDialog();
         fastBuy->setAttribute(Qt::WA_DeleteOnClose);
         fastBuy->setWindowFlags(fastBuy->windowFlags() | Qt::WindowStaysOnTopHint);
-        fastBuy->setWindowTitle("闪电买入");
+        fastBuy->setWindowTitle(GlobalVar::curName.split("(")[0]+" "+"闪电买入");
         fastBuy->setGeometry(670, 200, 260, 300);
 
         QLabel *infoName[5];
@@ -1920,7 +1958,7 @@ void MainWindow::fastTrade()
         QDialog *fastSell=new QDialog();
         fastSell->setAttribute(Qt::WA_DeleteOnClose);
         fastSell->setWindowFlags(fastSell->windowFlags() | Qt::WindowStaysOnTopHint);
-        fastSell->setWindowTitle("闪电卖出");
+        fastSell->setWindowTitle(GlobalVar::curName.split("(")[0]+" "+"闪电卖出");
         fastSell->setGeometry(670, 200, 260, 300);
 
         QLabel *infoName[5];
@@ -2050,15 +2088,28 @@ void MainWindow::tradingTimeRunThread()
             emit startThreadTimeShareTick(false);
     if (timeCount%6==1 and GlobalVar::WhichInterface==1)
     {
+        int row=mTableStock.blockView->currentIndex().row();
+        if (row==-1)
+            row=0;
+        if (isFBlock)
+        {
+            mFundFlow.getEastPlateFundFlow(1);
+            mTableStock.blockView->setModel(mFundFlow.model);
+            mTableStock.blockView->setCurrentIndex(mFundFlow.model->index(row,0));
+        }
         if (GlobalVar::isZhMarketDay(curTime))
         {
             circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
             if (GlobalVar::isBoard)
                 searchStock.getBoardData();
             emit startThreadTable();
+            isFBlock=true;
         }
         else
+        {
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
+            isFBlock=false;
+        }
     }
     else if (timeCount%10==4)
     {
@@ -2169,7 +2220,7 @@ void MainWindow::reFlashIndex()
     else
         bl->setPalette(GlobalVar::pBlack);
     bl->setText(GlobalVar::mIndexList.at(n).close+" "+GlobalVar::mIndexList.at(n).pctChg+"%");
-
+    mTableStock.blockView->setModel(mFundFlow.model);
 }
 void MainWindow::reFlashBuySellBaseInfo()
 {
@@ -2353,8 +2404,7 @@ void MainWindow::toInterFace(QString which)
     {
         GlobalVar::isKState=true;
         mTableStock.stockTableView->hide();
-        mTableStock.risingSpeedView->hide();
-        mTableStock.myStockView->hide();
+        middleWindow->hide();
         rightFundWindow->hide();
         drawChart.candleChart->show();
         rightBaseWindow->show();
@@ -2369,8 +2419,7 @@ void MainWindow::toInterFace(QString which)
         isTraversalMyStock=false;
         rightBaseWindow->hide();
         drawChart.candleChart->hide();
-        mTableStock.risingSpeedView->hide();
-        mTableStock.myStockView->hide();
+        middleWindow->hide();
         rightFundWindow->show();
         mTableStock.stockTableView->show();
 //        mTableStock.stockTableView->setFocus();

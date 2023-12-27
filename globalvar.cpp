@@ -249,19 +249,19 @@ void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bo
                       return is_asc?(infoA.code<infoB.code):(infoA.code>infoB.code);
                   case 1:
                       return is_asc?(infoA.name<infoB.name):(infoA.name>infoB.name);
-                  case 2:
+                  case 4:
                       return is_asc?(infoA.close<infoB.close):(infoA.close>infoB.close);
                   case 3:
                       return is_asc?(infoA.pctChg<infoB.pctChg):(infoA.pctChg>infoB.pctChg);
-                  case 4:
-                      return is_asc?(infoA.turn<infoB.turn):(infoA.turn>infoB.turn);
                   case 5:
-                      return is_asc?(infoA.amount<infoB.amount):(infoA.amount>infoB.amount);
+                      return is_asc?(infoA.turn<infoB.turn):(infoA.turn>infoB.turn);
                   case 6:
+                      return is_asc?(infoA.amount<infoB.amount):(infoA.amount>infoB.amount);
+                  case 2:
                       return is_asc?(infoA.velocity<infoB.velocity):(infoA.velocity>infoB.velocity);
-                  case 7:
-                      return is_asc?(infoA.pe<infoB.pe):(infoA.pe>infoB.pe);
                   case 8:
+                      return is_asc?(infoA.pe<infoB.pe):(infoA.pe>infoB.pe);
+                  case 7:
                       return is_asc?(infoA.totalValue<infoB.totalValue):(infoA.totalValue>infoB.totalValue);
                   case 9:
                       return is_asc?(infoA.circulatedValue<infoB.circulatedValue):(infoA.circulatedValue>infoB.circulatedValue);

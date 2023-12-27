@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QTextCodec>
 
+
 class ThreadTable : public QObject
 {
     Q_OBJECT
@@ -18,6 +19,7 @@ private:
     void readMyStock();
     void reFlaseMyStock();
     QByteArray allData;
+    int risingSpeedSize=22;
 //    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
 
 signals:

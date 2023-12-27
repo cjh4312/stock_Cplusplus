@@ -6,7 +6,7 @@
 ModelTableStock::ModelTableStock(QObject *parent)
     : QAbstractTableModel(parent)
 {
-    tableHeader<<"代码"<<"名称"<<"最新价"<<"涨跌幅"<<"换手率"<<"成交额"<<"涨速"<<"市盈率"<<"总市值"<<"流通市值"<<"今年"<<"60日"<<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收";
+    tableHeader<<"代码"<<"名称"<<"涨速"<<"涨跌幅"<<"最新价"<<"换手率"<<"成交额"<<"总市值"<<"市盈率"<<"流通市值"<<"今年"<<"60日"<<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收";
 }
 
 void ModelTableStock::setModelData(const QList<StockInfo> &data,bool forced)
@@ -66,14 +66,14 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         {
         case 0: return m_modelData.at(row).code;
         case 1: return m_modelData.at(row).name;
-        case 2: return QString::number(m_modelData.at(row).close,'f',2);
+        case 2: return QString::number(m_modelData.at(row).velocity,'f',2);
         case 3: return GlobalVar::format_conversion(m_modelData.at(row).pctChg)+"%";
-        case 4: return m_modelData.at(row).turn;
-        case 5: return GlobalVar::format_conversion(m_modelData.at(row).amount);
-        case 6: return QString::number(m_modelData.at(row).velocity,'f',2);
-        case 7: return QString::number(m_modelData.at(row).pe,'f',2);
-        case 8: return GlobalVar::format_conversion(m_modelData.at(row).totalValue);
+        case 4: return QString::number(m_modelData.at(row).close,'f',2);
+        case 5: return m_modelData.at(row).turn;
+        case 6: return GlobalVar::format_conversion(m_modelData.at(row).amount);
+        case 7: return GlobalVar::format_conversion(m_modelData.at(row).totalValue);
         case 9: return GlobalVar::format_conversion(m_modelData.at(row).circulatedValue);
+        case 8: return QString::number(m_modelData.at(row).pe,'f',2);
         case 10: return QString::number(m_modelData.at(row).pctYear,'f',2)+"%";
         case 11: return QString::number(m_modelData.at(row).pctSixty,'f',2)+"%";
         case 12: return GlobalVar::format_conversion(m_modelData.at(row).volume);
@@ -107,7 +107,7 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
             }
             return QColor(72,61,139);
 
-        case 2:
+        case 4:
             if (m_modelData.at(row).close>m_modelData.at(row).open)
                 return QColor(255, 0, 255);
             else if (m_modelData.at(row).close<m_modelData.at(row).open)
@@ -119,17 +119,17 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
             else if (m_modelData.at(row).pctChg<0)
                 return QColor(0, 191, 0);
             break;
-        case 4:
+        case 5:
             if (m_modelData.at(row).turn>=15)
                 return QColor(204, 204, 0);
             break;
-        case 5:
+        case 6:
             if (m_modelData.at(row).amount>= 1000000000)
                 return QColor(153, 0, 153);
             else if (m_modelData.at(row).amount >= 300000000)
                 return QColor(0, 191, 255);
             break;
-        case 6:
+        case 2:
             if (m_modelData.at(row).velocity>= 2)
                 return QColor(153, 0, 153);
             else if (m_modelData.at(row).velocity >0)
@@ -137,11 +137,11 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
             else if (m_modelData.at(row).velocity < 0)
                 return QColor(0, 191, 0);
             break;
-        case 7:
+        case 8:
             if (m_modelData.at(row).pe<0)
                 return QColor(0, 191, 0);
             break;
-        case 8:
+        case 7:
             if (m_modelData.at(row).totalValue/100>100000000)
                 return QColor(32,178,170);
             break;
@@ -190,7 +190,7 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         QFont boldFont = QFont();
         if (index.column() == 1)
             boldFont.setFamily("宋体");
-        if (index.column() == 3 or index.column() == 1 or index.column() == 5)
+        if (index.column() == 3 or index.column() == 1 or index.column() == 6)
         {
             boldFont.setBold(true);
             boldFont.setPixelSize(16);
