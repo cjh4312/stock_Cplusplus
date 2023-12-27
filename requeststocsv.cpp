@@ -94,7 +94,7 @@ bool RequestsToCsv::getPlateList()
     for (int i=0;i<3;++i)
     {
         QByteArray allData;
-        GlobalVar::getData(allData,1,QUrl(url[i]));
+        GlobalVar::getData(allData,2,QUrl(url[i]));
         if (allData.isEmpty())
             return false;
         dealWithPlateList(plateList,allData);
@@ -134,15 +134,15 @@ bool RequestsToCsv::getStockList()
 {
     QJsonObject json;
     json.insert("api_name", "stock_basic");
-//    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
-    json.insert("token", "bbe1d68e9a152f87296960ffd981449ed98fff7cfd13b3cf2a50be79");
+    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
+//    json.insert("token", "bbe1d68e9a152f87296960ffd981449ed98fff7cfd13b3cf2a50be79");
     json.insert("fields", "ts_code,symbol,name,area,industry,list_date,cnspell");
 
     QJsonDocument doc;
     doc.setObject(json);
     QByteArray dataArray = doc.toJson(QJsonDocument::Compact);
     QByteArray allData;
-    GlobalVar::postData(dataArray,allData,1,QUrl("http://api.waditu.com"));
+    GlobalVar::postData(dataArray,allData,2,QUrl("http://api.waditu.com"));
     if (allData.size()<800)
         return false;
 //    qDebug()<<QString(allData);

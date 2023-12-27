@@ -1091,6 +1091,12 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             mFundFlow.fundFlowChart->move(859,150);
             mFundFlow.fundFlowChart->move(860,150);
         }
+        else if (event->type()==QEvent::KeyPress)
+        {
+            QKeyEvent *event1 = static_cast<QKeyEvent *>(event);
+            if (event1->key()==Qt::Key_Escape)
+                mFundFlow.fundFlowChart->close();
+        }
         return true;
     }
     else if (obj==drawChart.hisTimeShareChartTitle)
@@ -1421,28 +1427,32 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     QKeySequence key=event->key();
-    if (key==Qt::Key_Escape and GlobalVar::isKState)
+    if (key==Qt::Key_Escape)
     {
-        if (not drawChart.annoucementWindow->isHidden())
-            drawChart.annoucementWindow->close();
-        else if (not drawChart.hisTimeShareChart->isHidden())
-            drawChart.hisTimeShareChart->close();
-        else
+        if (GlobalVar::isKState)
         {
-            GlobalVar::isKState=false;
-            isTraversalMyStock=false;
-            if (GlobalVar::WhichInterface==1)
-                middleWindow->show();
-            else if(GlobalVar::WhichInterface==4)
+            if (not drawChart.annoucementWindow->isHidden())
+                drawChart.annoucementWindow->close();
+            else if (not drawChart.hisTimeShareChart->isHidden())
+                drawChart.hisTimeShareChart->close();
+            else
             {
-                rightFundWindow->show();
-                rightBaseWindow->hide();
+                GlobalVar::isKState=false;
+                isTraversalMyStock=false;
+                if (GlobalVar::WhichInterface==1)
+                    middleWindow->show();
+                else if(GlobalVar::WhichInterface==4)
+                {
+                    rightFundWindow->show();
+                    rightBaseWindow->hide();
+                }
+                drawChart.candleChart->hide();
+                mTableStock.stockTableView->show();
+                resetKParameter();
             }
-            drawChart.candleChart->hide();
-            mTableStock.stockTableView->show();
-            resetKParameter();
         }
-
+        else if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
+            mFundFlow.fundFlowChart->close();
     }
     else if (key==Qt::Key_PageDown)
     {
