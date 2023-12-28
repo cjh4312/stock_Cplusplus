@@ -111,7 +111,6 @@ private:
     bool isAsia=true;
     bool isTraversalMyStock=false;
     int ifCanClick=1;
-    bool isFBlock=true;
     QString freq="101";
     QString adjustFlag="0";
     QRadioButton *periodAdjust[6];

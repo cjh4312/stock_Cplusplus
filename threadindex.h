@@ -12,6 +12,7 @@ public:
     void getAllIndex();
 private:
     void initIndexList();
+    void getEastFundFlow();
     QByteArray indexData;
 //    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
 

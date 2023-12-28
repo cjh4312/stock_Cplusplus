@@ -71,6 +71,7 @@ public:
     static QList<StockInfo> mTableListCopy;
     static QList<StockInfo> mRisingSpeedList;
     static QList<StockInfo> mMyStockList;
+    static QList<QStringList> mFundFlowList;
     static QStringList mMyStockCode;
     static QList<IndexInfo> mIndexList;
     static QList<timeShareTickInfo> mTimeShareTickList;

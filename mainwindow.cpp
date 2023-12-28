@@ -477,16 +477,16 @@ void MainWindow::initSignals()
         emit startThreadTimeShareChart(false);
         emit startThreadTimeShareTick(false);
     });
-    connect(mTableStock.blockView,&QTableView::clicked,this, [this](const QModelIndex &index){
-        int row=index.row();
-        mFundFlow.isClick=true;
-        mFundFlow.getFundFlowChartData(mFundFlow.model->item(row,13)->text());
-        mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(row,0)->text()+" 资金流图表");
-        mFundFlow.fundFlowChart->show();
-        mFundFlow.fundFlowChart->update();
-        mFundFlow.fundFlowChart->move(859,150);
-        mFundFlow.fundFlowChart->move(860,150);
-    });
+    // connect(mTableStock.blockView,&QTableView::clicked,this, [this](const QModelIndex &index){
+    //     int row=index.row();
+    //     mFundFlow.isClick=true;
+    //     mFundFlow.getFundFlowChartData(GlobalVar::mFundFlowList.at(row)[13]);
+    //     mFundFlow.fundFlowChart->setWindowTitle(GlobalVar::mFundFlowList.at(row)[0]+" 资金流图表");
+    //     mFundFlow.fundFlowChart->show();
+    //     mFundFlow.fundFlowChart->update();
+    //     mFundFlow.fundFlowChart->move(859,150);
+    //     mFundFlow.fundFlowChart->move(860,150);
+    // });
     connect(ui->ZHMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
     connect(ui->HKMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
     connect(ui->USMarket,SIGNAL(triggered()),this,SLOT(setMarket()));
@@ -531,9 +531,13 @@ void MainWindow::initSignals()
         toInterFace("k");
     });
     connect(mTableStock.blockView, &QTableView::doubleClicked, this, [this](const QModelIndex &index){
-        mFundFlow.getBoardStock(mFundFlow.FundFlowList.at(index.row())[0]);
+        GlobalVar::isBoard=true;
+        GlobalVar::curBoard=GlobalVar::mFundFlowList.at(index.row())[13];
+        searchStock.getBoardData();
+        // mFundFlow.getBoardStock(GlobalVar::mFundFlowList.at(index.row())[0]);
         mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
-        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+        // mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+
     });
     connect(mTableStock.myStockView, &QTableView::doubleClicked, this, [this](const QModelIndex &/*index*/){
         GlobalVar::isKState=true;
@@ -844,19 +848,18 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         if (para<0)
         {
             mTableStock.blockView->verticalScrollBar()->setSliderPosition(tempStep+row);
-            if (curIndex>mFundFlow.FundFlowList.count()-row)
-                mTableStock.blockView->setCurrentIndex(mFundFlow.model->index(0,0));
+            if (curIndex>GlobalVar::mFundFlowList.count()-row)
+                mTableStock.blockView->setCurrentIndex(mTableStock.m_fundFlowModel->index(0,0));
             else
-                mTableStock.blockView->setCurrentIndex(mFundFlow.model->index(curIndex+row,0));
+                mTableStock.blockView->setCurrentIndex(mTableStock.m_fundFlowModel->index(curIndex+row,0));
         }
         else
         {
             mTableStock.blockView->verticalScrollBar()->setSliderPosition(tempStep-row);
             if (curIndex>=row)
-                mTableStock.blockView->setCurrentIndex(mFundFlow.model->index(curIndex-row,0));
+                mTableStock.blockView->setCurrentIndex(mTableStock.m_fundFlowModel->index(curIndex-row,0));
             else
-                mTableStock.blockView->setCurrentIndex(mFundFlow.model->index(mFundFlow.FundFlowList.count()-1,0));
-
+                mTableStock.blockView->setCurrentIndex(mTableStock.m_fundFlowModel->index(GlobalVar::mFundFlowList.count()-1,0));
         }
         //        qDebug()<<mTableStock.stockTableView->height();
         return true;
@@ -1818,10 +1821,8 @@ void MainWindow::dealWithFundFlow()
     GlobalVar::WhichInterface=4;
     toInterFace("fund");
     int days[]={1,3,5,10,20};
-    int row=mTableStock.blockView->currentIndex().row();
     mFundFlow.getEastPlateFundFlow(days[n]);
     mTableStock.stockTableView->setModel(mFundFlow.model);
-    mTableStock.stockTableView->setCurrentIndex(mFundFlow.model->index(row,0));
     mTableStock.stockTableView->setColumnWidth(0,140);
     mTableStock.stockTableView->setColumnWidth(5,120);
     mTableStock.stockTableView->setColumnWidth(12,160);
@@ -2108,28 +2109,15 @@ void MainWindow::tradingTimeRunThread()
             emit startThreadTimeShareTick(false);
     if (timeCount%6==1 and GlobalVar::WhichInterface==1)
     {
-        int row=mTableStock.blockView->currentIndex().row();
-        if (row==-1)
-            row=0;
-        if (isFBlock)
-        {
-            mFundFlow.getEastPlateFundFlow(1);
-            mTableStock.blockView->setModel(mFundFlow.model);
-            mTableStock.blockView->setCurrentIndex(mFundFlow.model->index(row,0));
-        }
         if (GlobalVar::isZhMarketDay(curTime))
         {
             circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
             if (GlobalVar::isBoard)
                 searchStock.getBoardData();
             emit startThreadTable();
-            isFBlock=true;
         }
         else
-        {
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
-            isFBlock=false;
-        }
     }
     else if (timeCount%10==4)
     {
@@ -2196,6 +2184,11 @@ void MainWindow::tradingTimeRunThread()
 }
 void MainWindow::reFlashIndex()
 {
+    int row=mTableStock.blockView->currentIndex().row();
+    if (row==-1)
+        row=0;
+    mTableStock.m_fundFlowModel->setModelData(GlobalVar::mFundFlowList,false);
+    mTableStock.blockView->setCurrentIndex(mTableStock.m_fundFlowModel->index(row,0));
     changeInTurn=not changeInTurn;
 //    qDebug()<<ui->statusBar->children();
     int n;
@@ -2240,7 +2233,6 @@ void MainWindow::reFlashIndex()
     else
         bl->setPalette(GlobalVar::pBlack);
     bl->setText(GlobalVar::mIndexList.at(n).close+" "+GlobalVar::mIndexList.at(n).pctChg+"%");
-    mTableStock.blockView->setModel(mFundFlow.model);
 }
 void MainWindow::reFlashBuySellBaseInfo()
 {

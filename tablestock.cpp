@@ -12,6 +12,7 @@ TableStock::TableStock()
     timeShareTickView=new QTableView(this);
 
     m_tableModel= new ModelTableStock(stockTableView);
+    m_fundFlowModel=new ModelFundFlow(blockView);
     m_risingSpeedModel= new ModelTableStock(risingSpeedView);
     m_myStockModel= new ModelTableStock(myStockView);
     m_timeShareTickModel= new ModelTimeShare(timeShareTickView);
@@ -129,10 +130,12 @@ void TableStock::initTableView()
     stockTableView->setModel(m_tableModel);
     risingSpeedView->setModel(m_risingSpeedModel);
     myStockView->setModel(m_myStockModel);
+    blockView->setModel(m_fundFlowModel);
     timeShareTickView->setModel(m_timeShareTickModel);
     connect(m_tableModel, &ModelTableStock::dataChanged, stockTableView, [=](){update();});
     connect(m_risingSpeedModel, &ModelTableStock::dataChanged, risingSpeedView, [=](){update();});
     connect(m_myStockModel, &ModelTableStock::dataChanged, myStockView, [=](){update();});
+    connect(m_fundFlowModel, &ModelTableStock::dataChanged, blockView, [=](){update();});
     connect(m_timeShareTickModel, &ModelTableStock::dataChanged, timeShareTickView, [=](){update();});
     connect(m_tableModel,&ModelTableStock::modelReset,stockTableView,[=](){
         setColumnWidth(stockTableView);

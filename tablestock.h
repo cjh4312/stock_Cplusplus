@@ -5,6 +5,7 @@
 #include <modeltablestock.h>
 #include <QAbstractItemView>
 #include <QScrollBar>
+#include "modelfundflow.h"
 #include "modeltimeshare.h"
 #include <QStandardItemModel>
 
@@ -21,6 +22,7 @@ public:
     ModelTableStock *m_risingSpeedModel;
     ModelTableStock *m_myStockModel;
     ModelTimeShare *m_timeShareTickModel;
+    ModelFundFlow *m_fundFlowModel;
     void setTableView();
     void setTimeShareTickView();
     void setColumnWidth(QTableView *TV);
