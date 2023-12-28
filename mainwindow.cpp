@@ -82,6 +82,13 @@ void MainWindow::initThread()
     threadIndex=new ThreadIndex;
     threadIndex->moveToThread(thread[1]);
     connect(threadIndex,SIGNAL(getIndexFinished()),this,SLOT(reFlashIndex()));
+    connect(threadIndex,&ThreadIndex::getBlockFinished,this,[=](){
+        int row=mTableStock.blockView->currentIndex().row();
+        if (row==-1)
+            row=0;
+        mTableStock.m_fundFlowModel->setModelData(GlobalVar::mFundFlowList,false);
+        mTableStock.blockView->setCurrentIndex(mTableStock.m_fundFlowModel->index(row,0));
+    });
     connect(this,&MainWindow::startThreadIndex,threadIndex,&ThreadIndex::getAllIndex);
     thread[1]->start();
     emit startThreadIndex();
@@ -534,10 +541,7 @@ void MainWindow::initSignals()
         GlobalVar::isBoard=true;
         GlobalVar::curBoard=GlobalVar::mFundFlowList.at(index.row())[13];
         searchStock.getBoardData();
-        // mFundFlow.getBoardStock(GlobalVar::mFundFlowList.at(index.row())[0]);
         mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
-        // mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-
     });
     connect(mTableStock.myStockView, &QTableView::doubleClicked, this, [this](const QModelIndex &/*index*/){
         GlobalVar::isKState=true;
@@ -2184,11 +2188,6 @@ void MainWindow::tradingTimeRunThread()
 }
 void MainWindow::reFlashIndex()
 {
-    int row=mTableStock.blockView->currentIndex().row();
-    if (row==-1)
-        row=0;
-    mTableStock.m_fundFlowModel->setModelData(GlobalVar::mFundFlowList,false);
-    mTableStock.blockView->setCurrentIndex(mTableStock.m_fundFlowModel->index(row,0));
     changeInTurn=not changeInTurn;
 //    qDebug()<<ui->statusBar->children();
     int n;

@@ -19,6 +19,7 @@ private:
 
 signals:
     void getIndexFinished();
+    void getBlockFinished();
 };
 
 #endif // THREADINDEX_H
