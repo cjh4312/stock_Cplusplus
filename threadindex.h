@@ -13,6 +13,7 @@ public:
 private:
     void initIndexList();
     void getEastFundFlow();
+    bool isFirst=true;
     QByteArray indexData;
 //    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
 

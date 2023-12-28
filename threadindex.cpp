@@ -19,8 +19,11 @@ void ThreadIndex::getAllIndex()
     else
         {
             initIndexList();
-            if (GlobalVar::isZhMarketDay(QDateTime::currentDateTime()))
+            if (GlobalVar::isZhMarketDay(QDateTime::currentDateTime()) or isFirst)
+            {
                 getEastFundFlow();
+                isFirst=false;
+            }
             emit getIndexFinished();
         }
 //    qDebug()<<t.msecsTo(QDateTime::currentDateTime().time());
