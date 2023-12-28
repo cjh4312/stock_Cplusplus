@@ -292,6 +292,7 @@ void MainWindow::initSettings()
     mTableStock.myStockView->setContextMenuPolicy(Qt::CustomContextMenu);
     setFocusPolicy(Qt::StrongFocus);
     mTableStock.stockTableView->setFocusPolicy(Qt::NoFocus);
+    mTableStock.blockView->setFocusPolicy(Qt::NoFocus);
     mTableStock.risingSpeedView->setFocusPolicy(Qt::NoFocus);
     mTableStock.myStockView->setFocusPolicy(Qt::ClickFocus);
     mTableStock.myStockView->horizontalHeader()->setHighlightSections(false);

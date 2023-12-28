@@ -5,8 +5,8 @@
 ModelFundFlow::ModelFundFlow(QObject *parent)
     : QAbstractTableModel{parent}
 {
-    tableHeader<<"名称"<<"涨跌幅"<<"主力净额"<<"主力净占比"<<"超大单净额"<<"超大单净占比"<<"大单净额"
-                <<"大单净占比"<<"中单净额"<<"中单净占比"<<"小单净额"<<"小单净占比"<<"主力净流入最大股"<<"CODE";
+    tableHeader<<"名称"<<"涨跌幅"<<"主入最大股"<<"主力净额"<<"占比"<<"超大单净额"<<"占比"<<"大单净额"
+                <<"占比"<<"中单净额"<<"占比"<<"小单净额"<<"占比"<<"CODE";
 }
 
 void ModelFundFlow::setModelData(const QList<QStringList> &data,bool forced)
@@ -65,18 +65,18 @@ QVariant ModelFundFlow::data(const QModelIndex &index, int role) const
         {
         case 0: return m_modelData.at(row)[0];
         case 1: return m_modelData.at(row)[1]+"%";
-        case 2: return GlobalVar::format_conversion(m_modelData.at(row)[2].toFloat());
-        case 3: return m_modelData.at(row)[3];
-        case 4: return GlobalVar::format_conversion(m_modelData.at(row)[4].toFloat());
-        case 5: return m_modelData.at(row)[5];
-        case 6: return GlobalVar::format_conversion(m_modelData.at(row)[6].toFloat());
-        case 7: return m_modelData.at(row)[7];
+        case 3: return GlobalVar::format_conversion(m_modelData.at(row)[2].toFloat());
+        case 4: return m_modelData.at(row)[3];
+        case 5: return GlobalVar::format_conversion(m_modelData.at(row)[4].toFloat());
+        case 6: return m_modelData.at(row)[5];
+        case 7: return GlobalVar::format_conversion(m_modelData.at(row)[6].toFloat());
+        case 8: return m_modelData.at(row)[7];
         case 9: return m_modelData.at(row)[8];
-        case 8: return m_modelData.at(row)[9];
-        case 10: return m_modelData.at(row)[10];
-        case 11: return m_modelData.at(row)[11];
-        case 12: return m_modelData.at(row)[12];
+        case 10: return m_modelData.at(row)[9];
+        case 11: return m_modelData.at(row)[10];
+        case 12: return m_modelData.at(row)[11];
         case 13: return m_modelData.at(row)[13];
+        case 2: return m_modelData.at(row)[12];
         }
     }
     else if (role == Qt::ForegroundRole)
@@ -92,34 +92,34 @@ QVariant ModelFundFlow::data(const QModelIndex &index, int role) const
             else if (m_modelData.at(row)[1].toFloat()<0)
                 return QColor(0, 191, 0);
             break;
-        case 4:
+        case 5:
             if (m_modelData.at(row)[4].toFloat()<0)
                 return QColor(0, 191, 0);
             break;
-        case 3:
+        case 4:
             if (m_modelData.at(row)[3].toFloat()>0)
                 return QColor(Qt::red);
             else if (m_modelData.at(row)[3].toFloat()<0)
                 return QColor(0, 191, 0);
             break;
-        case 5:
+        case 6:
             if (m_modelData.at(row)[5].toFloat()>0)
                 return QColor(Qt::red);
             else if (m_modelData.at(row)[5].toFloat()<0)
                 return QColor(0, 191, 0);
             break;
-        case 6:
+        case 7:
             if (m_modelData.at(row)[6].toFloat()<0)
                 return QColor(0, 191, 0);
             break;
-        case 2:
+        case 3:
             if (m_modelData.at(row)[2].toFloat()<0)
                 return QColor(0, 191, 0);
             break;
-        case 8:
+        case 12:
 
             break;
-        case 7:
+        case 8:
             if (m_modelData.at(row)[7].toFloat()>0)
                 return QColor(Qt::red);
             else if (m_modelData.at(row)[7].toFloat()<0)
