@@ -194,6 +194,8 @@ bool GlobalVar::getVacation()
         QStringList s;
         for (int j=0;j<l.size();++j)
             s<<l[j].mid(5,2)+l[j].right(2);
+        if (s.isEmpty())
+            continue;
         GlobalVar::settings->setValue("Vacation_"+area[i].toUpper(),s);
     }
     GlobalVar::settings->setValue("isSetVacation",QDateTime::currentDateTime().toString("yyyy"));

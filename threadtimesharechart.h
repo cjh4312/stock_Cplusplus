@@ -10,17 +10,17 @@ class ThreadTimeShareChart : public QObject
 public:
     explicit ThreadTimeShareChart(QObject *parent = nullptr);
     void getSSEData();
-    void getAllTimeShareChart(bool reset);
+    void getAllTimeShareChart(bool r);
 
 private:
     void initTimeShareChartList();
     void initSSETimeShareChartList();
-    QNetworkReply *reply=nullptr;
-    QByteArray* qByteArray=new QByteArray();
-    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
-    QNetworkRequest request;
+    // QNetworkReply *reply=nullptr;
+    // QByteArray* qByteArray=new QByteArray();
+    // QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
+    // QNetworkRequest request;
     QByteArray allData;
-
+    bool reset;
     QString preGCode="";
     int mRetries=0;
     bool isFirst=true;

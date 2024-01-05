@@ -4,59 +4,77 @@
 ThreadTimeShareChart::ThreadTimeShareChart(QObject *parent)
     : QObject{parent}
 {
-    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    // request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
 }
 
 void ThreadTimeShareChart::getSSEData()
 {
     QString url="https://push2his.eastmoney.com/api/qt/stock/trends2/sse?mpi=2000&fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893";
+    QByteArray* qByteArray=new QByteArray();
+    QString preCode=GlobalVar::curCode;
+    QNetworkRequest request;
+    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(QUrl(url));
-    reply= naManager->get(request);
+    QNetworkReply *reply= naManager->get(request);
     GlobalVar::mTimeShareChartList.clear();
+    connect(reply, &QNetworkReply::finished, this, [=](){
+        disconnect(reply);
+        reply->deleteLater();
+        delete qByteArray;
+        naManager->deleteLater();
+    });
     connect(reply, &QNetworkReply::readyRead, this, [=](){
-        int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        if (statusCode == 200)
+        if (GlobalVar::curCode!=preCode or reset)
         {
-            mRetries=0;
-            QByteArray tempData=reply->readAll();
-            if (tempData.contains("data:"))
+            reset=false;
+            reply->abort();
+        }
+        else
+        {
+            int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            if (statusCode == 200)
             {
-                if (tempData.contains("\"data\":{\""))
+                mRetries=0;
+                QByteArray tempData=reply->readAll();
+                if (tempData.contains("data:"))
                 {
-                    if (tempData.mid(tempData.size()-2,2)=="\n\n")
+                    if (tempData.contains("\"data\":{\""))
                     {
-                        allData=tempData;
+                        if (tempData.mid(tempData.size()-2,2)=="\n\n")
+                        {
+                            allData=tempData;
+                            initSSETimeShareChartList();
+                            emit getTimeShareChartFinished();
+                        }
+                        else
+                            qByteArray->append(tempData);
+                    }
+                }
+                else
+                {
+                    qByteArray->append(tempData);
+                    QByteArray tempByteArray=qByteArray->data();
+                    if (tempByteArray.mid(tempByteArray.size()-2,2)=="\n\n")
+                    {
+                        allData=tempByteArray;
                         initSSETimeShareChartList();
                         emit getTimeShareChartFinished();
+                        qByteArray->clear();
                     }
-                    else
-                        qByteArray->append(tempData);
                 }
             }
             else
-            {
-                qByteArray->append(tempData);
-                QByteArray tempByteArray=qByteArray->data();
-                if (tempByteArray.mid(tempByteArray.size()-2,2)=="\n\n")
+                if(mRetries < MAX_RETRIES)
                 {
-                    allData=tempByteArray;
-                    initSSETimeShareChartList();
-                    emit getTimeShareChartFinished();
-                    qByteArray->clear();
+                    mRetries++;
+                    getSSEData();
                 }
-            }
         }
-        else
-            if(mRetries < MAX_RETRIES)
-            {
-                mRetries++;
-                getSSEData();
-            }
-
     });
 }
 
-void ThreadTimeShareChart::getAllTimeShareChart(bool reset)
+void ThreadTimeShareChart::getAllTimeShareChart(bool r)
 {
 //    GlobalVar::getData(allData,2,QUrl("https://push2his.eastmoney.com/api/qt/stock/trends2/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893"));
 //    if (GlobalVar::timeOutFlag[6])
@@ -66,11 +84,13 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool reset)
 //            initTimeShareChartList(allData);
 //            emit getTimeShareChartFinished();
 //        }
-    if (preGCode==GlobalVar::curCode and not reset)
+    if (preGCode==GlobalVar::curCode and not r)
         return;
-    if (preGCode!="")
-        reply->abort();
+    // if (preGCode!="")
+    //     reply->abort();
+    // qDebug()<<preGCode<<GlobalVar::curCode;
     preGCode=GlobalVar::curCode;
+    reset=r;
     h=0.0;
     l=100000.0;
     isFirst=true;
