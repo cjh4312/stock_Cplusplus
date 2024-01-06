@@ -1239,8 +1239,43 @@ void FundFlow::getAnnoucement()
 {
     QByteArray allData;
     QNetworkRequest request;
+    QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
+    request.setUrl(QUrl(url));
+    GlobalVar::getData(allData,2,request);
+    if (allData.isEmpty())
+    {
+        getEastAnnoucement();
+        return;
+    }
+
+   QTextCodec *codec = QTextCodec::codecForName("GBK");
+   QString html=codec->toUnicode(allData);
+   QString str=GlobalVar::peelStr(html,"<tbody>","-1");
+   while(1)
+   {
+       if (str.indexOf("<tr")==-1)
+           break;
+       QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
+       QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
+       QStringList list;
+       QStringList l;
+       QString href=GlobalVar::getAttributeContent(s,"href","\"");
+       GlobalVar::getAllContent(s,l,"<td");
+       if (l.size()>2)
+       {
+           list<<l[1]<<"[公告]"<<"("+l[2]+")"<<url+href.mid(1,-1);
+           // qDebug()<<list;
+           GlobalVar::annoucementList.append(list);
+       }
+       str=pair.second;
+   }
+}
+
+void FundFlow::getEastAnnoucement()
+{
+    QByteArray allData;
+    QNetworkRequest request;
     QString url="https://np-anotice-stock.eastmoney.com/api/security/ann?sr=-1&page_size=50&page_index=1&ann_type=A&client_source=web&stock_list="+GlobalVar::curCode+"&f_node=0&s_node=0";
-//    QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
     request.setUrl(QUrl(url));
     GlobalVar::getData(allData,2,request);
     if (allData.isEmpty())
@@ -1256,33 +1291,11 @@ void FundFlow::getAnnoucement()
             QStringList l;
             QJsonValue value = data.at(i);
             QVariantMap ceilMap = value.toVariant().toMap();
-            l<<ceilMap.value("title").toString()<<"[公告]"<<"("+ceilMap.value("notice_date").toString()
+            l<<ceilMap.value("title").toString()<<"[东方公告]"<<"("+ceilMap.value("notice_date").toString()
               <<"https://data.eastmoney.com/notices/detail/"+GlobalVar::curCode+"/"+ceilMap.value("art_code").toString()+".html";
             GlobalVar::annoucementList.append(l);
         }
     }
-
-//    QTextCodec *codec = QTextCodec::codecForName("GBK");
-//    QString html=codec->toUnicode(allData);
-//    QString str=GlobalVar::peelStr(html,"<tbody>","-1");
-//    while(1)
-//    {
-//        if (str.indexOf("<tr")==-1)
-//            break;
-//        QPair<QString, QString> pair=GlobalVar::cutStr(str,"<tr","</tr");
-//        QString s=GlobalVar::peelStr(pair.first,"<tr","-1");
-//        QStringList list;
-//        QStringList l;
-//        QString href=GlobalVar::getAttributeContent(s,"href","\"");
-//        GlobalVar::getAllContent(s,l,"<td");
-//        if (l.size()>2)
-//        {
-//            list<<l[1]<<"[公告]"<<"("+l[2]+")"<<url+href.mid(1,-1);
-////            qDebug()<<list;
-//            GlobalVar::annoucementList.append(list);
-//        }
-//        str=pair.second;
-//    }
 }
 
 void FundFlow::getNews()

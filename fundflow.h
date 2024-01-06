@@ -63,6 +63,7 @@ public:
     void getTimeShareMin(QString code,QString date);
     void initAllNews();
     void getAnnoucement();
+    void getEastAnnoucement();
     void getNews();
     void getEastNews();
     void getGreatEvent();
