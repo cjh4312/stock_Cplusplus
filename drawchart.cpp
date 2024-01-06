@@ -82,6 +82,7 @@ DrawChart::DrawChart(QWidget *parent)
     annoucementWindow->setWindowFlag(Qt::Popup);
     annoucementWindow->resize(1000,600);
     annTitle->setMaximumWidth(300);
+    annTitle->setEditTriggers(QAbstractItemView::NoEditTriggers);
     QHBoxLayout *annLayout=new QHBoxLayout(annoucementWindow);
     annoucementWindow->setLayout(annLayout);
 //    annTitle->setStyleSheet("QListView::item{height:60px}");
