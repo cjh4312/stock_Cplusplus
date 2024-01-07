@@ -20,6 +20,7 @@ SOURCES += \
     jspickstock.cpp \
     main.cpp \
     mainwindow.cpp \
+    modelfundflow.cpp \
     modeltablestock.cpp \
     modeltimeshare.cpp \
     requeststocsv.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     globalvar.h \
     jspickstock.h \
     mainwindow.h \
+    modelfundflow.h \
     modeltablestock.h \
     modeltimeshare.h \
     requeststocsv.h \
