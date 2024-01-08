@@ -10,9 +10,13 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
     tts->setRate(0.3);//设置语速-1.0到1.0
     tts->setPitch(0.0);//设置音高-1.0到1.0
     tts->setVolume(0.6);//设置音量0.0-1.0
-    id=QDateTime::currentDateTime().addSecs(-1800).toString("yyyyMMddhhmmss");
+    QDateTime c=QDateTime::currentDateTime();
+    id=c.addSecs(-1800).toString("yyyyMMddhhmmss");
     jinShiNewsReportCurTime = GlobalVar::settings->value("jinShiNewsReportCurTime").toString();
     eastNewsReportCurTime = GlobalVar::settings->value("eastNewsReportCurTime").toInt();
+    if (eastNewsReportCurTime>12000000 and c.date().month()==1)
+        eastNewsReportCurTime=1010000;
+
 }
 
 void ThreadNewsReport::getNewsData()
@@ -45,7 +49,7 @@ void ThreadNewsReport::initEastNews()
         dataList<<content.mid(content.indexOf(temp)+temp.length(),GlobalVar::peelStr(content,temp,"-1").indexOf("\""));
         dataList<<GlobalVar::getContent(content);
         dataList<<GlobalVar::getContent(GlobalVar::peelStr(content,"class=\"time\"","-1"));
-//        qDebug()<<dataList;
+        // qDebug()<<dataList;
         eastNewsList.append(dataList);
     }
     std::sort(eastNewsList.begin(),eastNewsList.end(),[](QStringList a,QStringList b){
