@@ -86,6 +86,7 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
     else if (role == Qt::ForegroundRole)
     {
         const int row = index.row();
+        int nums=GlobalVar::mRisingSpeedList.size();
         switch(index.column())
         {
         case 0:
@@ -97,9 +98,9 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
                 {
                     if (m_modelData.count()!=GlobalVar::mMyStockCode.count())
                         return QColor(255,140,0);
-                    else if (m_modelData.count()==20)
+                    else if (m_modelData.count()==nums)
                     {
-                        for (int j =0;j<20;++j)
+                        for (int j =0;j<nums;++j)
                             if (m_modelData.at(j).code!=GlobalVar::mMyStockCode[j])
                                 return QColor(255,140,0);
                     }

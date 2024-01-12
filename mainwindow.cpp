@@ -542,7 +542,8 @@ void MainWindow::initSignals()
         GlobalVar::isBoard=true;
         GlobalVar::curBoard=GlobalVar::mFundFlowList.at(index.row())[13];
         searchStock.getBoardData();
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
+        if (not GlobalVar::mTableList.isEmpty())
+            mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
     });
     connect(mTableStock.myStockView, &QTableView::doubleClicked, this, [this](const QModelIndex &/*index*/){
         GlobalVar::isKState=true;
