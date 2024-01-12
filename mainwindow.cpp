@@ -1764,10 +1764,13 @@ void MainWindow::addRightMenu(int num)
         mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
         // mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
         // curIndex=mTableStock.stockTableView->currentIndex().row();
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
-        mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-        // mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
-        GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
+        if (ifCanClick!=2)
+        {
+            mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
+            mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+            // mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
+            GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
+        }
     });
 
 }
