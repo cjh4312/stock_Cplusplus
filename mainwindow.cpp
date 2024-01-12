@@ -506,7 +506,7 @@ void MainWindow::initSignals()
             if (ifCanClick==0)
             {
                 mFundFlow.getBoardStock(mFundFlow.FundFlowList.at(index.row())[0]);
-                mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
+                mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
                 mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
                 for (int i=0;i<16;++i)
                     mTableStock.stockTableView->setColumnWidth(i,90);
@@ -543,7 +543,7 @@ void MainWindow::initSignals()
         GlobalVar::curBoard=GlobalVar::mFundFlowList.at(index.row())[13];
         searchStock.getBoardData();
         if (not GlobalVar::mTableList.isEmpty())
-            mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
+            mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
     });
     connect(mTableStock.myStockView, &QTableView::doubleClicked, this, [this](const QModelIndex &/*index*/){
         GlobalVar::isKState=true;
@@ -568,7 +568,7 @@ void MainWindow::initSignals()
                 GlobalVar::is_asc = not preSort;
             GlobalVar::sortByColumn(&GlobalVar::mTableList,logicalIndex,GlobalVar::is_asc);
             preSort=GlobalVar::is_asc;
-            mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
+            mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
             mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
             mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
         }
@@ -696,7 +696,7 @@ void MainWindow::initSignals()
         GlobalVar::curBoard=f10View.model->item(index.row(),3)->text();
         GlobalVar::isBoard=true;
         searchStock.getBoardData();
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
         toInterFace("main");
@@ -1764,15 +1764,15 @@ void MainWindow::addRightMenu(int num)
         GlobalVar::mMyStockList.append(info);
         GlobalVar::mMyStockCode.append(info.code);
         int curIndex=mTableStock.myStockView->currentIndex().row();
-        mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
+        mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
         mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
         mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
         curIndex=mTableStock.risingSpeedView->currentIndex().row();
-        mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false);
+        mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
         mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
         mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
         curIndex=mTableStock.stockTableView->currentIndex().row();
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
         GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
@@ -1786,7 +1786,7 @@ void MainWindow::showSearchResult()
         resetKParameter();
         searchSmallWindow->hide();
         GlobalVar::WhichInterface=1;
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
         emit startThreadTable();
@@ -2092,15 +2092,15 @@ void MainWindow::delMyStock()
     GlobalVar::mMyStockCode.removeAt(curIndex);
     if (curIndex==mTableStock.m_myStockModel->rowCount()-1)
         curIndex-=1;
-    mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
+    mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
     mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
     mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
     curIndex=mTableStock.risingSpeedView->currentIndex().row();
-    mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false);
+    mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
     mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
     mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
     curIndex=mTableStock.stockTableView->currentIndex().row();
-    mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false);
+    mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
     mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
     mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
     GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
@@ -2410,7 +2410,7 @@ void MainWindow::toInterFace(QString which)
         if (row==-1)
             row=0;
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,true);
+        mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,true,true);
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(row,0));
     }
     else if (which=="k")

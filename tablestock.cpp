@@ -24,12 +24,12 @@ void TableStock::setTableView()
     int row=stockTableView->currentIndex().row();
     if (row==-1)
         row=0;
-    m_tableModel->setModelData(GlobalVar::mTableList,false);
+    m_tableModel->setModelData(GlobalVar::mTableList,false,true);
     stockTableView->setCurrentIndex(m_tableModel->index(row,0));
     if (GlobalVar::WhichInterface==1)
     {
-        m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false);
-        m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
+        m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
+        m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
     }
 }
 
@@ -91,8 +91,8 @@ void TableStock::initTableView()
         GlobalVar::settings->setValue("myStock",s);
         GlobalVar::mMyStockCode=s;
         QList<StockInfo> t;
-        m_myStockModel->setModelData(t,false);
-        m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
+        m_myStockModel->setModelData(t,false,false);
+        m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
         myStockView->setCurrentIndex(m_myStockModel->index(newIndex,0));
     });
 

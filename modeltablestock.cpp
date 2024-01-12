@@ -9,8 +9,9 @@ ModelTableStock::ModelTableStock(QObject *parent)
     tableHeader<<"代码"<<"名称"<<"涨速"<<"涨跌幅"<<"最新价"<<"换手率"<<"成交额"<<"总市值"<<"市盈率"<<"流通市值"<<"今年"<<"60日"<<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收";
 }
 
-void ModelTableStock::setModelData(const QList<StockInfo> &data,bool forced)
+void ModelTableStock::setModelData(const QList<StockInfo> &data,bool forced,bool marking)
 {
+    mark=marking;
     if (m_modelData.size()!=data.size() or forced)
     {
         beginResetModel();
@@ -86,7 +87,6 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
     else if (role == Qt::ForegroundRole)
     {
         const int row = index.row();
-        int nums=GlobalVar::mRisingSpeedList.size();
         switch(index.column())
         {
         case 0:
@@ -94,16 +94,9 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 1:
             for (int i=0;i<GlobalVar::mMyStockCode.count();++i)
             {
-                if (m_modelData.at(row).code==GlobalVar::mMyStockCode[i])
+                if (mark and m_modelData.at(row).code==GlobalVar::mMyStockCode[i])
                 {
-                    if (m_modelData.count()!=GlobalVar::mMyStockCode.count())
-                        return QColor(255,140,0);
-                    else if (m_modelData.count()==nums)
-                    {
-                        for (int j =0;j<nums;++j)
-                            if (m_modelData.at(j).code!=GlobalVar::mMyStockCode[j])
-                                return QColor(255,140,0);
-                    }
+                    return QColor(255,140,0);
                 }
             }
             return QColor(72,61,139);
