@@ -595,7 +595,6 @@ void MainWindow::initSignals()
         menu->addAction(act);
         menu->popup(QCursor::pos());
         connect(act,&QAction::triggered,this,&MainWindow::delMyStock);
-
     });
     for (int i = 2; i<=14; i=i+2)
     {
@@ -1300,6 +1299,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         else if (event->type()==QEvent::ContextMenu)
         {
             QMenu *menu=new QMenu(drawChart.candleChart);
+            menu->setAttribute(Qt::WA_DeleteOnClose);
             QAction *moveOne=new QAction("左右移动一格",menu);
             QAction *moveFast=new QAction("左右快速移动",menu);
             QIcon icon(":/new/png/png/step.jpeg");
@@ -1717,6 +1717,13 @@ void MainWindow::setMarket()
 }
 void MainWindow::addRightMenu(int num)
 {
+    QMenu *menu=new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+    QAction *act=new QAction("加入自选",menu);
+    QIcon icon(":/new/png/png/join.jpg");
+    act->setIcon(icon);
+    menu->addAction(act);
+    menu->popup(QCursor::pos());
     StockInfo info;
     QString code;
     if (num==1)
@@ -1740,14 +1747,6 @@ void MainWindow::addRightMenu(int num)
             return;
         info=GlobalVar::findStock(code);
     }
-
-    QMenu *menu=new QMenu(this);
-    menu->setAttribute(Qt::WA_DeleteOnClose);
-    QAction *act=new QAction("加入自选",menu);
-    QIcon icon(":/new/png/png/join.jpg");
-    act->setIcon(icon);
-    menu->addAction(act);
-    menu->popup(QCursor::pos());
     connect(act,&QAction::triggered,this,[info, this](){
         for (int i=0;i<GlobalVar::mMyStockList.count();++i)
         {
@@ -1836,6 +1835,7 @@ void MainWindow::fastTrade()
         GlobalVar::curCode.left(1)=="1")
         return;
     QMenu *menu=new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
     QAction *actB=new QAction("闪电买入",menu);
     QIcon icon(":/new/png/png/buy.jpg");
     actB->setIcon(icon);
