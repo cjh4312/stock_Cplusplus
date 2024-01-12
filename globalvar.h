@@ -47,6 +47,7 @@ public:
     static QString getAttributeContent(const QString &s,QString attribute,QString symbol);
     static void getAllContent(QString &content,QStringList &strList,QString begin);
     static bool isInt(QString s);
+    static StockInfo findStock(QString code);
 
     static QString curCode;
     static bool isBoard;

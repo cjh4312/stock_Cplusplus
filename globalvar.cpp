@@ -209,6 +209,28 @@ bool GlobalVar::isInt(QString s)
     return isInt;
 }
 
+StockInfo GlobalVar::findStock(QString code)
+{
+    StockInfo info;
+    info.code="";
+    int l = 0;
+    int r = GlobalVar::mTableListCopy.count() - 1;
+    while (l <= r)
+    {
+        int mid = (l + r) / 2;
+        if (GlobalVar::mTableListCopy.at(mid).code == code)
+        {
+            return GlobalVar::mTableListCopy.at(mid);
+            break;
+        }
+        else if (GlobalVar::mTableListCopy.at(mid).code > code)
+            r = mid - 1;
+        else
+            l = mid + 1;
+    }
+    return info;
+}
+
 QString GlobalVar::getComCode()
 {
 //    qDebug()<<GlobalVar::curCode;

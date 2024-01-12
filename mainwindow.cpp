@@ -589,11 +589,13 @@ void MainWindow::initSignals()
     connect(mTableStock.myStockView,&QTableView::customContextMenuRequested,this,[=](QPoint){
         QMenu *menu=new QMenu(this);
         QAction *act=new QAction("删除自选",menu);
+        menu->setAttribute(Qt::WA_DeleteOnClose);
         QIcon icon(":/new/png/png/del.jpg");
         act->setIcon(icon);
         menu->addAction(act);
         menu->popup(QCursor::pos());
         connect(act,&QAction::triggered,this,&MainWindow::delMyStock);
+
     });
     for (int i = 2; i<=14; i=i+2)
     {
@@ -1720,36 +1722,27 @@ void MainWindow::addRightMenu(int num)
     if (num==1)
     {
         if (ifCanClick==1)
-            code=GlobalVar::mTableList.at(mTableStock.stockTableView->currentIndex().row()).code;
+            info=GlobalVar::mTableList.at(mTableStock.stockTableView->currentIndex().row());
         else if (ifCanClick==2)
+        {
             code=mFundFlow.model->item(mTableStock.stockTableView->currentIndex().row(),0)->text();
+            info=GlobalVar::findStock(code);
+        }
         else
             return;
     }
     else if(num==2)
-        code=GlobalVar::mRisingSpeedList.at(mTableStock.risingSpeedView->currentIndex().row()).code;
+        info=GlobalVar::mRisingSpeedList.at(mTableStock.risingSpeedView->currentIndex().row());
     else if(num==3)
     {
         code=GlobalVar::curCode;
         if (code.left(1)=="1" or code.left(3)=="399")
             return;
+        info=GlobalVar::findStock(code);
     }
-    int l = 0;
-    int r = GlobalVar::mTableListCopy.count() - 1;
-    while (l <= r)
-    {
-        int mid = (l + r) / 2;
-        if (GlobalVar::mTableListCopy.at(mid).code == code)
-        {
-            info=GlobalVar::mTableListCopy.at(mid);
-            break;
-        }
-        else if (GlobalVar::mTableListCopy.at(mid).code > code)
-            r = mid - 1;
-        else
-            l = mid + 1;
-    }
+
     QMenu *menu=new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
     QAction *act=new QAction("加入自选",menu);
     QIcon icon(":/new/png/png/join.jpg");
     act->setIcon(icon);
@@ -1767,14 +1760,14 @@ void MainWindow::addRightMenu(int num)
         mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
         mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
         mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
-        curIndex=mTableStock.risingSpeedView->currentIndex().row();
+        // curIndex=mTableStock.risingSpeedView->currentIndex().row();
         mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
         mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
-        mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
-        curIndex=mTableStock.stockTableView->currentIndex().row();
+        // mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
+        // curIndex=mTableStock.stockTableView->currentIndex().row();
         mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-        mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
+        // mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
         GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
     });
 
@@ -2095,14 +2088,14 @@ void MainWindow::delMyStock()
     mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
     mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
     mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
-    curIndex=mTableStock.risingSpeedView->currentIndex().row();
+    // curIndex=mTableStock.risingSpeedView->currentIndex().row();
     mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
     mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
-    mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
-    curIndex=mTableStock.stockTableView->currentIndex().row();
+    // mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
+    // curIndex=mTableStock.stockTableView->currentIndex().row();
     mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
     mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-    mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
+    // mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
     GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
 }
 void MainWindow::tradingTimeRunThread()

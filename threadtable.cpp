@@ -161,28 +161,13 @@ void ThreadTable::readMyStock()
 
 void ThreadTable::reFlaseMyStock()
 {
-    int n=GlobalVar::mTableListCopy.count();
-    if (n==0)
+    if (GlobalVar::mTableListCopy.isEmpty())
         return;
     StockInfo info;
     for (int i=0;i<GlobalVar::mMyStockList.count();++i)
     {
-        int l = 0;
-        int r = n - 1;
-        while (l <= r)
-        {
-            int mid = (l + r) / 2;
-            if (GlobalVar::mTableListCopy.at(mid).code == GlobalVar::mMyStockList.at(i).code)
-            {
-                info=GlobalVar::mTableListCopy.at(mid);
-                GlobalVar::mMyStockList.replace(i,info);
-                break;
-            }
-            else if (GlobalVar::mTableListCopy.at(mid).code > GlobalVar::mMyStockList.at(i).code)
-                r = mid - 1;
-            else
-                l = mid + 1;
-        }
+        info=GlobalVar::findStock(GlobalVar::mMyStockList.at(i).code);
+        GlobalVar::mMyStockList.replace(i,info);
     }
 //    GlobalVar::m_myStockModel->setModelData(GlobalVar::mMyStockList,false);
 }
