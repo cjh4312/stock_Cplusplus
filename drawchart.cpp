@@ -530,12 +530,12 @@ void DrawChart::drawCandleChart(QPainter *painter)
         {
             if (candleHighLowPoint[3]>=GlobalVar::KRange/2)
             {
-                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]-95,30,100,30);
+                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]-100,30,100,30);
                 painter->drawText(rect,Qt::AlignRight,QString::number(highPoint));
             }
             else
             {
-                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3]-5,30,100,30);
+                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[3],30,100,30);
                 painter->drawText(rect,Qt::AlignLeft,QString::number(highPoint));
             }
         }
@@ -544,12 +544,12 @@ void DrawChart::drawCandleChart(QPainter *painter)
         {
             if (candleHighLowPoint[4]>=GlobalVar::KRange/2)
             {
-                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[4]-95,canldeChartHeight*12/15-35,100,30);
+                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[4]-100,canldeChartHeight*12/15-35,100,30);
                 painter->drawText(rect,Qt::AlignRight,QString::number(lowPoint));
             }
             else
             {
-                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[4]-5,canldeChartHeight*12/15-35,100,30);
+                rect=QRect(KWIDTHEDGE+aveWidth/2+aveWidth*candleHighLowPoint[4],canldeChartHeight*12/15-35,100,30);
                 painter->drawText(rect,Qt::AlignLeft,QString::number(lowPoint));
             }
         }

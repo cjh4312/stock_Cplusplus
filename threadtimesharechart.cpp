@@ -224,6 +224,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                 list=data.at(i).toString().split(",");
 
                 info.time=list[0];
+                // qDebug()<<info.time;
                 info.price=per(list[2].toFloat());
                 info.vol=list[5].toFloat();
                 info.avePrice=per(list[7].toFloat());
@@ -267,6 +268,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                 list=data.at(i).toString().split(",");
 
                 info.time=list[0];
+                // qDebug()<<info.time;
                 info.price=per(list[2].toFloat());
                 info.avePrice=per(list[7].toFloat());
                 info.vol=list[5].toFloat();

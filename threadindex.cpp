@@ -24,7 +24,8 @@ void ThreadIndex::getAllIndex()
     if (GlobalVar::isZhMarketDay(QDateTime::currentDateTime()) or isFirst)
     {
         getEastFundFlow();
-        emit getBlockFinished();
+        if (not GlobalVar::mFundFlowList.empty())
+            emit getBlockFinished();
         isFirst=false;
     }
    // qDebug()<<t.msecsTo(QDateTime::currentDateTime().time());
@@ -81,7 +82,10 @@ void ThreadIndex::getEastFundFlow()
                 QJsonValue value = data.at(i);
                 QVariantMap ceilMap = value.toVariant().toMap();
                 QStringList dataList;
-                dataList<<ceilMap.value("f14").toString()<<ceilMap.value(v1).toString()
+                QString name=ceilMap.value("f14").toString();
+                if (name.contains("昨日"))
+                    continue;
+                dataList<<name<<ceilMap.value(v1).toString()
                          <<ceilMap.value(v2).toString()<<ceilMap.value(v3).toString()
                          <<ceilMap.value(v4).toString()<<ceilMap.value(v5).toString()
                          <<ceilMap.value(v6).toString()<<ceilMap.value(v7).toString()
