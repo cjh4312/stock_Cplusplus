@@ -560,6 +560,16 @@ void FundFlow::drawIntervalHighLowChart(QPainter *painter)
     }
 }
 
+QColor whichColor(QString code)
+{
+    for (int i=0;i<GlobalVar::mMyStockCode.count();++i)
+    {
+        if (code==GlobalVar::mMyStockCode.at(i))
+            return QColor(255,140,0);
+    }
+    return QColor(72,61,139);
+}
+
 void FundFlow::getStockPoolStrong(QString date)
 {
     QStringList strongStockCol;
@@ -585,10 +595,11 @@ void FundFlow::getStockPoolStrong(QString date)
             int n=t.toInt();
             QString s=t.toString()+"/"+ceilMap.value("zttj").toJsonValue().toVariant().toMap().value("ct").toString();
             model->setItem(i,0,new QStandardItem(ceilMap.value("c").toString()));
-            model->setItem(i,1,new QStandardItem(ceilMap.value("n").toString()));
+            QString code=ceilMap.value("n").toString();
+            model->setItem(i,1,new QStandardItem(code));
             model->setItem(i,2,new QStandardItem(QString::number(ceilMap.value("zdp").toFloat(),'f',2)));
             model->item(i,1)->setFont(boldFont);
-            model->item(i,1)->setForeground(QColor(72,61,139));
+            model->item(i,1)->setForeground(whichColor(code));
             model->item(i,2)->setFont(boldFont);
             model->item(i,2)->setForeground(Qt::red);
             model->setItem(i,3,new QStandardItem(QString::number(ceilMap.value("p").toFloat()/1000)));
@@ -644,11 +655,12 @@ void FundFlow::getNorthFundFlow(QString days)
         {
             QJsonValue value = data.at(i);
             QVariantMap ceilMap = value.toVariant().toMap();
-            model->setItem(i,0,new QStandardItem(ceilMap.value("SECURITY_CODE").toString()));
+            QString code=ceilMap.value("SECURITY_CODE").toString();
+            model->setItem(i,0,new QStandardItem(code));
             model->setItem(i,1,new QStandardItem(ceilMap.value("SECURITY_NAME").toString()));
             model->setItem(i,2,new QStandardItem(ceilMap.value("CLOSE_PRICE").toString()));
             model->item(i,1)->setFont(boldFont);
-            model->item(i,1)->setForeground(QColor(72,61,139));
+            model->item(i,1)->setForeground(whichColor(code));
             QString s=ceilMap.value("CHANGE_RATE").toString();
             model->setItem(i,3,new QStandardItem(s));
             model->item(i,3)->setFont(boldFont);
@@ -728,7 +740,8 @@ void FundFlow::getDragonTigerList(int nums,int pages)
             {
                 QJsonValue value = data.at(i);
                 QVariantMap ceilMap = value.toVariant().toMap();
-                model->setItem(i+n,0,new QStandardItem(ceilMap.value("SECURITY_CODE").toString()));
+                QString code=ceilMap.value("SECURITY_CODE").toString();
+                model->setItem(i+n,0,new QStandardItem(code));
                 model->setItem(i+n,1,new QStandardItem(ceilMap.value("SECURITY_NAME_ABBR").toString()));
                 model->setItem(i+n,2,new QStandardItem(ceilMap.value("EXPLAIN").toString()));
                 model->setItem(i+n,3,new QStandardItem(ceilMap.value("CLOSE_PRICE").toString()));
@@ -751,7 +764,7 @@ void FundFlow::getDragonTigerList(int nums,int pages)
                 else if (c>0)
                     model->item(i+n,5)->setForeground(Qt::red);
                 model->item(i,1)->setFont(boldFont);
-                model->item(i,1)->setForeground(QColor(72,61,139));
+                model->item(i,1)->setForeground(whichColor(code));
                 model->item(i,4)->setFont(boldFont);
                 model->setItem(i+n,6,new QStandardItem(GlobalVar::format_conversion(ceilMap.value("BILLBOARD_BUY_AMT").toFloat())));
                 model->item(i+n,6)->setForeground(Qt::red);
@@ -802,7 +815,8 @@ void FundFlow::countSingleStockBoard(QString nums,int pages)
             {
                 QJsonValue value = data.at(i);
                 QVariantMap ceilMap = value.toVariant().toMap();
-                model->setItem(i+n,0,new QStandardItem(ceilMap.value("SECURITY_CODE").toString()));
+                QString code=ceilMap.value("SECURITY_CODE").toString();
+                model->setItem(i+n,0,new QStandardItem(code));
                 model->setItem(i+n,1,new QStandardItem(ceilMap.value("SECURITY_NAME_ABBR").toString()));
                 model->setItem(i+n,2,new QStandardItem(ceilMap.value("LATEST_TDATE").toString()));
                 model->setItem(i+n,3,new QStandardItem(ceilMap.value("CLOSE_PRICE").toString()));
@@ -821,7 +835,7 @@ void FundFlow::countSingleStockBoard(QString nums,int pages)
 
                 model->setItem(i+n,5,new QStandardItem(ceilMap.value("BILLBOARD_TIMES").toString()));
                 model->item(i,1)->setFont(boldFont);
-                model->item(i,1)->setForeground(QColor(72,61,139));
+                model->item(i,1)->setForeground(whichColor(code));
                 model->item(i,4)->setFont(boldFont);
                 model->item(i,5)->setFont(boldFont);
                 float b=ceilMap.value("BILLBOARD_NET_BUY").toFloat();
@@ -931,7 +945,7 @@ void FundFlow::getStockHot()
                     l = mid + 1;
             }
             model->item(i,1)->setFont(boldFont);
-            model->item(i,1)->setForeground(QColor(72,61,139));
+            model->item(i,1)->setForeground(whichColor(code));
             model->item(i,3)->setFont(boldFont);
         }
         model->setHorizontalHeaderLabels(stockHotCol);
@@ -970,7 +984,7 @@ void FundFlow::openFundRank(QString ft,QString sc)
             model->setItem(i,3,new QStandardItem(str[4]));
             model->setItem(i,4,new QStandardItem(str[5]));
             model->item(i,1)->setFont(boldFont);
-            model->item(i,1)->setForeground(QColor(72,61,139));
+            model->item(i,1)->setForeground(whichColor(str[1]));
             model->item(i,4)->setFont(boldFont);
             model->item(i,3)->setFont(boldFont);
             for (int j=5;j<15;++j)

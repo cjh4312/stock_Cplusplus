@@ -92,11 +92,12 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 0:
             return QColor(128,128,0);
         case 1:
-            for (int i=0;i<GlobalVar::mMyStockCode.count();++i)
+            if (mark)
             {
-                if (mark and m_modelData.at(row).code==GlobalVar::mMyStockCode[i])
+                for (int i=0;i<GlobalVar::mMyStockCode.count();++i)
                 {
-                    return QColor(255,140,0);
+                    if (m_modelData.at(row).code==GlobalVar::mMyStockCode[i])
+                        return QColor(255,140,0);
                 }
             }
             return QColor(72,61,139);
