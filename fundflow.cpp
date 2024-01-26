@@ -594,9 +594,9 @@ void FundFlow::getStockPoolStrong(QString date)
             auto t=ceilMap.value("zttj").toJsonValue().toVariant().toMap().value("days");
             int n=t.toInt();
             QString s=t.toString()+"/"+ceilMap.value("zttj").toJsonValue().toVariant().toMap().value("ct").toString();
-            model->setItem(i,0,new QStandardItem(ceilMap.value("c").toString()));
-            QString code=ceilMap.value("n").toString();
-            model->setItem(i,1,new QStandardItem(code));
+            QString code=ceilMap.value("c").toString();
+            model->setItem(i,0,new QStandardItem(code));
+            model->setItem(i,1,new QStandardItem(ceilMap.value("n").toString()));
             model->setItem(i,2,new QStandardItem(QString::number(ceilMap.value("zdp").toFloat(),'f',2)));
             model->item(i,1)->setFont(boldFont);
             model->item(i,1)->setForeground(whichColor(code));
@@ -984,7 +984,7 @@ void FundFlow::openFundRank(QString ft,QString sc)
             model->setItem(i,3,new QStandardItem(str[4]));
             model->setItem(i,4,new QStandardItem(str[5]));
             model->item(i,1)->setFont(boldFont);
-            model->item(i,1)->setForeground(whichColor(str[1]));
+            model->item(i,1)->setForeground(QColor(72,61,139));
             model->item(i,4)->setFont(boldFont);
             model->item(i,3)->setFont(boldFont);
             for (int j=5;j<15;++j)
@@ -1091,6 +1091,9 @@ void FundFlow::getNotNormalStock()
         "32","16","8208","8207","128","64","8209","8210",
         "8211","8212","8213","8214","8215","8216"};
     int len=sizeof(code)/sizeof(code[0]);
+    QFont boldFont = QFont();
+    boldFont.setBold(true);
+    boldFont.setPixelSize(16);
     model->clear();
     if (jsonError.error == QJsonParseError::NoError)
     {
@@ -1102,8 +1105,11 @@ void FundFlow::getNotNormalStock()
             QJsonValue value = data.at(i);
             QVariantMap ceilMap = value.toVariant().toMap();
 //            QStringList list;
-            model->setItem(i,0,new QStandardItem(ceilMap.value("c").toString()));
+            QString cod=ceilMap.value("c").toString();
+            model->setItem(i,0,new QStandardItem(cod));
             model->setItem(i,1,new QStandardItem(ceilMap.value("n").toString()));
+            model->item(i,1)->setFont(boldFont);
+            model->item(i,1)->setForeground(whichColor(cod));
             model->setItem(i,2,new QStandardItem(ceilMap.value("tm").toString()));
 //            list<<ceilMap.value("tm").toString()<<ceilMap.value("c").toString()
 //                 <<ceilMap.value("n").toString();

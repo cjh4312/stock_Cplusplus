@@ -101,17 +101,24 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
                 }
             }
             return QColor(72,61,139);
-
-        case 4:
-            if (m_modelData.at(row).close>m_modelData.at(row).open)
-                return QColor(255, 0, 255);
-            else if (m_modelData.at(row).close<m_modelData.at(row).open)
+        case 2:
+            if (m_modelData.at(row).velocity>= 2)
+                return QColor(153, 0, 153);
+            else if (m_modelData.at(row).velocity >0)
+                return QColor(Qt::red);
+            else if (m_modelData.at(row).velocity < 0)
                 return QColor(0, 191, 0);
             break;
         case 3:
             if (m_modelData.at(row).pctChg>0)
                 return QColor(Qt::red);
             else if (m_modelData.at(row).pctChg<0)
+                return QColor(0, 191, 0);
+            break;
+        case 4:
+            if (m_modelData.at(row).close>m_modelData.at(row).open)
+                return QColor(255, 0, 255);
+            else if (m_modelData.at(row).close<m_modelData.at(row).open)
                 return QColor(0, 191, 0);
             break;
         case 5:
@@ -124,21 +131,13 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
             else if (m_modelData.at(row).amount >= 300000000)
                 return QColor(0, 191, 255);
             break;
-        case 2:
-            if (m_modelData.at(row).velocity>= 2)
-                return QColor(153, 0, 153);
-            else if (m_modelData.at(row).velocity >0)
-                return QColor(Qt::red);
-            else if (m_modelData.at(row).velocity < 0)
-                return QColor(0, 191, 0);
+        case 7:
+            if (m_modelData.at(row).totalValue/100>100000000)
+                return QColor(32,178,170);
             break;
         case 8:
             if (m_modelData.at(row).pe<0)
                 return QColor(0, 191, 0);
-            break;
-        case 7:
-            if (m_modelData.at(row).totalValue/100>100000000)
-                return QColor(32,178,170);
             break;
         case 9:
             if (m_modelData.at(row).circulatedValue/100>100000000)
