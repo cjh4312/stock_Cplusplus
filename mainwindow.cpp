@@ -571,6 +571,7 @@ void MainWindow::initSignals()
             mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
             mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
             mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
+            mTableStock.stockTableView->scrollTo(mTableStock.m_tableModel->index(0,0));
         }
 //        else if (GlobalVar::WhichInterface==4 and ifCanClick==2)
 //        {

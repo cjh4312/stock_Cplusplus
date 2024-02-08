@@ -24,7 +24,7 @@ void ThreadIndex::getAllIndex()
     if (GlobalVar::isZhMarketDay(QDateTime::currentDateTime()) or isFirst)
     {
         getEastFundFlow();
-        if (not GlobalVar::mFundFlowList.empty())
+        if (not GlobalVar::mFundFlowList.isEmpty())
             emit getBlockFinished();
         isFirst=false;
     }
