@@ -1806,6 +1806,7 @@ void MainWindow::resetKParameter()
     GlobalVar::offsetEnd=GlobalVar::settings->value("offsetEnd").toInt();
     GlobalVar::KRange=KRANGE;
     GlobalVar::offsetLocal=GlobalVar::KRange;
+    preCode="";
 }
 void MainWindow::dealWithFundFlow()
 {

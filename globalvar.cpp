@@ -279,7 +279,7 @@ void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bo
                       if (is_asc)
                       {
                           if (infoA.pctChg==infoB.pctChg)
-                              return infoA.code<infoB.code;
+                            return infoA.code<infoB.code;
                           return infoA.pctChg<infoB.pctChg;
                       }
                       else
