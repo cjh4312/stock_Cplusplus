@@ -56,6 +56,8 @@ void SearchStock::searchFinished()
 {
     QStringList cn=matchCodeText->document()->findBlockByNumber(GlobalVar::curBlock).text().split("   ");
     GlobalVar::isBoard=false;
+    if (cn.contains(">>> "))
+        return;
     QString code=cn.at(0).right(6);
     if (cn.at(2)=="指数")
     {
