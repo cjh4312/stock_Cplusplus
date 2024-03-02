@@ -3,6 +3,7 @@
 #include "globalvar.h"
 #include "qmessagebox.h"
 #include "qpushbutton.h"
+#include "QDir"
 
 RequestsToCsv::RequestsToCsv(QDialog *parent)
     : QDialog{parent}
@@ -134,8 +135,8 @@ bool RequestsToCsv::getStockList()
 {
     QJsonObject json;
     json.insert("api_name", "stock_basic");
-    json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
-//    json.insert("token", "bbe1d68e9a152f87296960ffd981449ed98fff7cfd13b3cf2a50be79");
+    // json.insert("token", "3f9e5eb08d18f3305618e4c0ae237c88bdc920c6a3acd58d27c3866b");
+    json.insert("token", "bbe1d68e9a152f87296960ffd981449ed98fff7cfd13b3cf2a50be79");
     json.insert("fields", "ts_code,symbol,name,area,industry,list_date,cnspell");
 
     QJsonDocument doc;
@@ -289,6 +290,17 @@ void RequestsToCsv::downStockIndexPlateInfo()
     promptText->append("指数、板块、个股信息处理完毕");
 }
 
+void isDirExist(QString fullPath)
+{
+    QDir dir(fullPath);
+    if(dir.exists())
+        return;
+    dir.mkdir(GlobalVar::currentPath+fullPath);
+    dir.mkdir(GlobalVar::currentPath+fullPath+"/sh");
+    dir.mkdir(GlobalVar::currentPath+fullPath+"/bj");
+    dir.mkdir(GlobalVar::currentPath+fullPath+"/sz");
+}
+
 void RequestsToCsv::downloadAllStockK()
 {
     if (GlobalVar::settings->value("isDownloadK").toString()==
@@ -313,6 +325,7 @@ void RequestsToCsv::downloadAllStockK()
     numLine->setText(QString::number(n));
     progressBar->setRange(0, n);
     progressBarWindow->show();
+    isDirExist("/list/data");
     connect(stopBtn,&QPushButton::clicked,this,[=](){
         isStop=true;
     });
