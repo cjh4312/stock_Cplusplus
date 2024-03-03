@@ -369,8 +369,8 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
                          "http://push2.eastmoney.com/api/qt/clist",
                          "https://push2his.eastmoney.com/api/qt/stock/trends2",
                          "http://push2.eastmoney.com/api/qt/stock/details",
-                         "http://push2.eastmoney.com/api/qt/stock",
-                         "https://datacenter-web.eastmoney.com"};
+                         "http://push2.eastmoney.com/api/qt/stock/get",
+                         "https://push2.eastmoney.com/api/qt/stock/get"};
         QStringList n={"candle chart of thread",
                          "index of thread",
                          "future index of thread",
@@ -380,7 +380,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
                          "time share chart of thread",
                          "time share tick of thread",
                          "buy sell of thread",
-                         "EPS of stock"};
+                         "exchange rate"};
         for (int i=0;i<s.count();++i)
         {
             if (url.toString().contains(s[i]))

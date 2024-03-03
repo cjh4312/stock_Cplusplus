@@ -6,7 +6,7 @@ ThreadIndex::ThreadIndex(QObject *parent)
 {
     IndexInfo info;
     info.name="name";
-    for (int i=0;i<20;++i)
+    for (int i=0;i<21;++i)
         GlobalVar::mIndexList.append(info);
 }
 
@@ -17,10 +17,16 @@ void ThreadIndex::getAllIndex()
     if (GlobalVar::timeOutFlag[1])
         GlobalVar::timeOutFlag[1]=false;
     else
+    {
+        GlobalVar::getData(exchangeRateData,2,QUrl("https://push2.eastmoney.com/api/qt/stock/get?invt=2&fltt=2&cb=&fields=f43%2Cf170&secid=133.USDCNH&ut=fa5fd1943c7b386f172d6893dbfba10b&wbp2u=7111416627128474%7C0%7C1%7C0%7Cweb&_=1709436204747"));
+        if (GlobalVar::timeOutFlag[9])
+            GlobalVar::timeOutFlag[9]=false;
+        else
         {
             initIndexList();
             emit getIndexFinished();
         }
+    }
     if (GlobalVar::isZhMarketDay(QDateTime::currentDateTime()) or isFirst)
     {
         getEastFundFlow();
@@ -53,6 +59,19 @@ void ThreadIndex::initIndexList()
             GlobalVar::mIndexList.replace(i,info);
         }
     }
+
+    doc = QJsonDocument::fromJson(exchangeRateData, &jsonError);
+    IndexInfo info;
+    if (jsonError.error == QJsonParseError::NoError)
+    {
+        QJsonObject jsonObject = doc.object();
+        info.name="USD/CNH";
+        info.close=QString::number(jsonObject.value("data").toObject().value("f43").toDouble());
+        info.pctChg=QString::number(jsonObject.value("data").toObject().value("f170").toDouble());
+        GlobalVar::mIndexList.replace(20,info);
+    }
+    // for (int i=0;i<21;++i)
+    //     qDebug()<<GlobalVar::mIndexList.at(i).close;
 }
 
 void ThreadIndex::getEastFundFlow()

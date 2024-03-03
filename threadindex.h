@@ -15,6 +15,7 @@ private:
     void getEastFundFlow();
     bool isFirst=true;
     QByteArray indexData;
+    QByteArray exchangeRateData;
 //    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
 
 signals:

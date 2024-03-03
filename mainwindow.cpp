@@ -258,7 +258,7 @@ void MainWindow::initInterface()
     circle=new QLabel(this);
     ui->statusBar->addWidget(circle);
     circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
-    for(int i=1;i<=7;++i)
+    for(int i=1;i<=8;++i)
     {
 //        QHBoxLayout *statusBarLayout=new QHBoxLayout(ui->statusBar);
 //        ui->statusBar->setLayout(statusBarLayout);
@@ -597,7 +597,7 @@ void MainWindow::initSignals()
         menu->popup(QCursor::pos());
         connect(act,&QAction::triggered,this,&MainWindow::delMyStock);
     });
-    for (int i = 2; i<=14; i=i+2)
+    for (int i = 2; i<=16; i=i+2)
     {
         QPushButton *bb = (QPushButton *)(ui->statusBar->children().at(i));
         connect(bb,&QPushButton::clicked,this,[=](){
@@ -605,7 +605,8 @@ void MainWindow::initSignals()
                 drawChart.hisTimeShareChart->close();
             GlobalVar::isKState=true;
             QString IndexCode[]={"1.000001","399001","399006","100.HSI","100.N225","100.KS11","1.000688","100.TWII","100.SENSEX","100.DJIA",
-                                "100.SPX","100.NDX","100.SX5E","100.GDAXI","100.RTS","100.FTSE","100.FCHI","100.AS51","104.CN00Y","103.YM00Y"};
+                                "100.SPX","100.NDX","100.SX5E","100.GDAXI","100.RTS","100.FTSE","100.FCHI","100.AS51","104.CN00Y","103.YM00Y",
+                                "133.USDCNH"};
             int n;
             if (isAsia)
             {
@@ -628,6 +629,8 @@ void MainWindow::initSignals()
                 else
                     n=19;
             }
+            else if (i==16)
+                n=20;
 //            qDebug()<<i<<n;
             GlobalVar::curCode=IndexCode[n];
             GlobalVar::curName=bb->text();
@@ -2224,7 +2227,7 @@ void MainWindow::reFlashIndex()
         n=18;
     QPushButton *bb = (QPushButton *)(ui->statusBar->children().at(14));
     bb->setText(GlobalVar::mIndexList.at(n).name);
-    QLabel *bl = (QLabel *)(ui->statusBar->children().at(16));
+    QLabel *bl = (QLabel *)(ui->statusBar->children().at(15));
     if (GlobalVar::mIndexList.at(n).pctChg.toFloat()>0)
         bl->setPalette(GlobalVar::pRed);
     else if (GlobalVar::mIndexList.at(n).pctChg.toFloat()<0)
@@ -2232,6 +2235,16 @@ void MainWindow::reFlashIndex()
     else
         bl->setPalette(GlobalVar::pBlack);
     bl->setText(GlobalVar::mIndexList.at(n).close+" "+GlobalVar::mIndexList.at(n).pctChg+"%");
+    bb = (QPushButton *)(ui->statusBar->children().at(16));
+    bb->setText(GlobalVar::mIndexList.at(20).name);
+    bl = (QLabel *)(ui->statusBar->children().at(18));
+    if (GlobalVar::mIndexList.at(20).pctChg.toFloat()>0)
+        bl->setPalette(GlobalVar::pRed);
+    else if (GlobalVar::mIndexList.at(20).pctChg.toFloat()<0)
+        bl->setPalette(GlobalVar::pGreen);
+    else
+        bl->setPalette(GlobalVar::pBlack);
+    bl->setText(GlobalVar::mIndexList.at(20).close+" "+GlobalVar::mIndexList.at(20).pctChg+"%");
 }
 void MainWindow::reFlashBuySellBaseInfo()
 {
