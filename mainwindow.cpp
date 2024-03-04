@@ -76,19 +76,19 @@ void MainWindow::initThread()
         baseInfoData[15]->setText(QString::number(GlobalVar::downNums));
     });
     connect(this,&MainWindow::startThreadTable,threadTable,&ThreadTable::getTableData);
-    thread[0]->start();
-    emit startThreadTable();
-
-    threadIndex=new ThreadIndex;
-    threadIndex->moveToThread(thread[1]);
-    connect(threadIndex,SIGNAL(getIndexFinished()),this,SLOT(reFlashIndex()));
-    connect(threadIndex,&ThreadIndex::getBlockFinished,this,[=](){
+    connect(threadTable,&ThreadTable::getBlockFinished,this,[=](){
         int row=mTableStock.blockView->currentIndex().row();
         if (row==-1)
             row=0;
         mTableStock.m_fundFlowModel->setModelData(GlobalVar::mFundFlowList,false);
         mTableStock.blockView->setCurrentIndex(mTableStock.m_fundFlowModel->index(row,0));
     });
+    thread[0]->start();
+    emit startThreadTable();
+
+    threadIndex=new ThreadIndex;
+    threadIndex->moveToThread(thread[1]);
+    connect(threadIndex,SIGNAL(getIndexFinished()),this,SLOT(reFlashIndex()));
     connect(this,&MainWindow::startThreadIndex,threadIndex,&ThreadIndex::getAllIndex);
     thread[1]->start();
     emit startThreadIndex();
