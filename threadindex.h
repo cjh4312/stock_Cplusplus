@@ -12,12 +12,15 @@ public:
     void getAllIndex();
 private:
     void initIndexList();
+    void getEastFundFlow();
+    bool isFirst=true;
     QByteArray indexData;
     QByteArray exchangeRateData;
 //    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
 
 signals:
     void getIndexFinished();
+    void getBlockFinished();
 };
 
 #endif // THREADINDEX_H

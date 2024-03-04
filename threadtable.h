@@ -18,15 +18,12 @@ private:
     void initTableList();
     void readMyStock();
     void reFlaseMyStock();
-    void getEastFundFlow();
-    bool isFirst=true;
     QByteArray allData;
     int risingSpeedSize=22;
 //    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
 
 signals:
     void getTableDataFinished();
-    void getBlockFinished();
 };
 
 #endif // THREADTABLE_H
