@@ -107,10 +107,12 @@ void ThreadNewsReport::initNewsReport()
             else
                 eastTime="123456789";
             QString jsTime;
+
             if (jsNums!=-1)
                 jsTime=array[jsNums].toObject().value("id").toString().mid(4,8);
             else
                 jsTime="123456789";
+
             int et=eastTime.toInt();
 //            qDebug()<<jsTime.toInt()<<et;
             if (jsTime.toInt()>et and eastNums!=-1)
@@ -141,11 +143,13 @@ void ThreadNewsReport::sayJsNews(QJsonObject object)
             return;
         if (newsText=="" or newsText=="-")
             return;
-        QString dt=QDateTime::fromString(object.value("time").toString().mid(0,19), "yyyy-MM-ddThh:mm:ss").addSecs(28800).toString("yyyy-MM-dd hh:mm:ss");
+        // QString dt=QDateTime::fromString(object.value("time").toString().mid(0,19), "yyyy-MM-ddThh:mm:ss").addSecs(28800).toString("yyyy-MM-dd hh:mm:ss");
+        QString dt=object.value("time").toString();
         if (jinShiNewsReportCurTime>=dt)
             return;
         if (tts->state() == QTextToSpeech::Ready)
         {
+
             if (GlobalVar::isSayNews)
                 tts->say(newsText);
             id=newId;
