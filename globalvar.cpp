@@ -69,7 +69,7 @@ bool GlobalVar::isUSMarketDay(QDateTime curTime)
     int startTime=83000;
     int endTime=150010;
     quint8 month = curTime.date().month();
-    if (int(month)>10 or int(month)<4)
+    if (int(month)>10 or int(month)<3)
     {
         startTime=93000;
         endTime=160010;
@@ -388,7 +388,6 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
                 timeOutFlag[i]=true;
 //                QString s=QDateTime::currentDateTime().toString()+n[i];
                 qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime().toString()<< n[i]<<timeOut;
-
                 break;
             }
             if (i==s.count()-1)
