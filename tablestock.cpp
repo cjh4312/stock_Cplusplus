@@ -24,8 +24,11 @@ void TableStock::setTableView()
     int row=stockTableView->currentIndex().row();
     if (row==-1)
         row=0;
-    m_tableModel->setModelData(GlobalVar::mTableList,false,true);
-    stockTableView->setCurrentIndex(m_tableModel->index(row,0));
+    if (isFlashTable)
+    {
+        m_tableModel->setModelData(GlobalVar::mTableList,false,true);
+        stockTableView->setCurrentIndex(m_tableModel->index(row,0));
+    }
     if (GlobalVar::WhichInterface==1)
     {
         m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);

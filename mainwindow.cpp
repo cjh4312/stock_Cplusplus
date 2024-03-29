@@ -539,11 +539,14 @@ void MainWindow::initSignals()
         toInterFace("k");
     });
     connect(mTableStock.blockView, &QTableView::doubleClicked, this, [this](const QModelIndex &index){
+        mTableStock.isFlashTable=false;
         GlobalVar::isBoard=true;
         GlobalVar::curBoard=GlobalVar::mFundFlowList.at(index.row())[13];
         searchStock.getBoardData();
         if (not GlobalVar::mTableList.isEmpty())
             mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
+        mTableStock.isFlashTable=true;
+
     });
     connect(mTableStock.myStockView, &QTableView::doubleClicked, this, [this](const QModelIndex &/*index*/){
         GlobalVar::isKState=true;

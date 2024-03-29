@@ -186,12 +186,14 @@ void SearchStock::getBoardData()
 {
     QByteArray allData;
     GlobalVar::getData(allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=6000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&fid="+GlobalVar::columns[GlobalVar::curSortNum]+"&fs=b:"+GlobalVar::curBoard+"+f:!50&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22&_=1667954879297"));
-    GlobalVar::mTableList.clear();
+    if (allData.isEmpty())
+        return;
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
-
     if (jsonError.error == QJsonParseError::NoError)
     {
+        QList<StockInfo> mTableList;
+        // GlobalVar::mTableList.clear();
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("diff").toArray();
         for (int i = 0; i < data.size(); ++i)
@@ -201,15 +203,9 @@ void SearchStock::getBoardData()
 
             StockInfo info;
             info.code = ceilMap.value("f12").toString();
-            if (GlobalVar::WhichInterface==5)
-                info.code = ceilMap.value("f13").toString()+"."+ceilMap.value("f12").toString();
             info.name = ceilMap.value("f14").toString();
             info.close = ceilMap.value("f2").toFloat();
             info.pctChg=ceilMap.value("f3").toFloat();
-            if (info.pctChg>0)
-                GlobalVar::upNums+=1;
-            else if (info.pctChg<0)
-                GlobalVar::downNums+=1;
             info.turn=ceilMap.value("f8").toFloat();
             info.amount=ceilMap.value("f6").toFloat();
             info.velocity = ceilMap.value("f22").toFloat();
@@ -223,8 +219,9 @@ void SearchStock::getBoardData()
             info.low = ceilMap.value("f16").toFloat();
             info.open=ceilMap.value("f17").toFloat();
             info.preClose=ceilMap.value("f18").toFloat();
-            GlobalVar::mTableList.append(info);
+            mTableList.append(info);
         }
+        GlobalVar::mTableList=mTableList;
     }
 }
 

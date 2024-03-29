@@ -23,6 +23,7 @@ public:
     ModelTableStock *m_myStockModel;
     ModelTimeShare *m_timeShareTickModel;
     ModelFundFlow *m_fundFlowModel;
+    bool isFlashTable=true;
     void setTableView();
     void setTimeShareTickView();
     void setColumnWidth(QTableView *TV);

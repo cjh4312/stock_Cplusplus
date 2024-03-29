@@ -79,7 +79,6 @@ public:
     static QList<timeShartChartInfo> mTimeShareChartList;
     static QList<timeShartChartInfo> mHisTimeShareChartList;
     static QList<candleChartInfo> mCandleChartList;
-//    static QList<QStringList> mFundFlowList;
     static bool timeOutFlag[10];
     static int KRange;
     static float timeShareHighLowPoint[5];
