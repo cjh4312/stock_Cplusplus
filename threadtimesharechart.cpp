@@ -194,7 +194,6 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
 {
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData.mid(6,allData.size()-6), &jsonError);
-    float backPP=0.0;
     if (jsonError.error == QJsonParseError::NoError)
     {
         QJsonObject jsonObject = doc.object();
@@ -216,7 +215,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
             GlobalVar::timeShareHighLowPoint[3]=per(a);
             GlobalVar::timeShareHighLowPoint[4]=per(b);
             GlobalVar::timeShareHighLowPoint[2]=0;
-            backPP=GlobalVar::preClose;
+            pp=GlobalVar::preClose;
             GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
             QList<timeShartChartInfo> mTimeShareChartList;
             for (int i = 0; i < data.size(); ++i)
@@ -238,14 +237,13 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                         l=list[7].toFloat();
                     if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
                         GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
-                    pp=backPP;
                     if (pp<list[2].toFloat())
                         info.direct=2;
                     else if (pp>list[2].toFloat())
                         info.direct=1;
                     else
                         info.direct=3;
-                    backPP=pp=list[2].toFloat();
+                    pp=list[2].toFloat();
                     mTimeShareChartList.append(info);
                 }
                 else
@@ -261,14 +259,13 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                         l=list[4].toFloat();
                     if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
                         GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
-                    pp=backPP;
                     if (pp<list[2].toFloat())
                         info.direct=2;
                     else if (pp>list[2].toFloat())
                         info.direct=1;
                     else
                         info.direct=3;
-                    backPP=pp=list[2].toFloat();
+                    pp=list[2].toFloat();
                     mTimeShareChartList.append(info);
                 }
             }
@@ -276,6 +273,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         }
         else
         {
+            float backPP=0.0;
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
                 for (int i = 0; i < data.size(); ++i)
                 {
