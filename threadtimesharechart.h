@@ -23,7 +23,6 @@ private:
     bool reset;
     QString preGCode="";
     int mRetries=0;
-    bool isFirst=true;
     float h;
     float l;
     float pp;
