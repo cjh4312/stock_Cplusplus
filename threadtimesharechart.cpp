@@ -17,7 +17,6 @@ void ThreadTimeShareChart::getSSEData()
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(QUrl(url));
     QNetworkReply *reply= naManager->get(request);
-
     connect(reply, &QNetworkReply::finished, this, [=](){
         disconnect(reply);
         reply->deleteLater();
@@ -79,12 +78,10 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool r)
 {
     if (preGCode==GlobalVar::curCode and not r)
         return;
-
     reset=r;
     h=0.0;
     l=10000000.0;
     getSSEData();
-
 
     // GlobalVar::getData(allData,2,QUrl("https://push2his.eastmoney.com/api/qt/stock/trends2/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893"));
     // if (GlobalVar::timeOutFlag[6])
@@ -113,10 +110,8 @@ void ThreadTimeShareChart::initTimeShareChartList()
         }
         float a=int(GlobalVar::preClose*ph+0.5)/100.0;
         float b=int(GlobalVar::preClose*pl+0.5)/100.0;
-
         GlobalVar::timeShareHighLowPoint[3]=per(a);
         GlobalVar::timeShareHighLowPoint[4]=per(b);
-
         QJsonArray data=jsonObject.value("data").toObject().value("trends").toArray();
         GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
         float h=0.0;
@@ -150,7 +145,6 @@ void ThreadTimeShareChart::initTimeShareChartList()
                     h=list[7].toFloat();
                 if (list[7].toFloat()<l)
                     l=list[7].toFloat();
-
                 if (list[5].toFloat()>vl)
                     vl=list[5].toFloat();
                 mTimeShareChartList.append(info);
@@ -174,7 +168,6 @@ void ThreadTimeShareChart::initTimeShareChartList()
                     h=list[3].toFloat();
                 if (list[4].toFloat()<l)
                     l=list[4].toFloat();
-
                 if (list[5].toFloat()>vl)
                     vl=list[5].toFloat();
                 mTimeShareChartList.append(info);

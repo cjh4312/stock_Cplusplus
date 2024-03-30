@@ -2256,7 +2256,10 @@ void MainWindow::reFlashBuySellBaseInfo()
     for (int i=0;i<10;++i)
     {
         float price=GlobalVar::buySellPrice[i];
-        str=QString::number(price,'f',2);
+        int p=2;
+        if (GlobalVar::curCode.left(3)=="133")
+            p=4;
+        str=QString::number(price,'f',p);
         if (GlobalVar::buySellPrice[i]==0)
             str="";
         if (price>GlobalVar::preClose)
@@ -2291,7 +2294,12 @@ void MainWindow::reFlashBuySellBaseInfo()
     }
     for (int i=0;i<7;++i)
         if (i==0)
-            baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i],'f',2));
+        {
+            int p=2;
+            if (GlobalVar::curCode.left(3)=="133")
+                p=4;
+            baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i],'f',p));
+        }
         else if (i==1 or i==2)
             baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i],'f',2)+"%");
         else

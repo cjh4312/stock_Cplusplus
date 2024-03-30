@@ -43,7 +43,13 @@ QVariant ModelTimeShare::data(const QModelIndex &index, int role) const
         switch(index.column())
         {
         case 0: return m_modelData.at(row).time;
-        case 1: return QString::number(m_modelData.at(row).price,'f',2);
+        case 1:
+            {
+                int p=2;
+                if (GlobalVar::curCode.left(3)=="133")
+                    p=4;
+                return QString::number(m_modelData.at(row).price,'f',p);
+            }
         case 2: return m_modelData.at(row).nums;
         case 3:
             if (m_modelData.at(row).d==1)
