@@ -2185,8 +2185,8 @@ void MainWindow::tradingTimeRunThread()
                 requestsToCsv.downStockIndexPlateInfo();
                 GlobalVar::settings->setValue("curTime",d);
                 downloadDate=d;
-                // emit startThreadTimeShareChart(true);
-                // emit startThreadTimeShareTick(true);
+                emit startThreadTimeShareChart(true);
+                emit startThreadTimeShareTick(true);
             }
         }
         timeCount=0;
