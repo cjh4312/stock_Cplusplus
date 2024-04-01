@@ -213,11 +213,11 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
             GlobalVar::timeShareHighLowPoint[2]=0;
             pp=GlobalVar::preClose;
             GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
-            // QList<timeShartChartInfo> mTimeShareChartList;
-            GlobalVar::mTimeShareChartList.clear();
-            for (int i = 0; i < data.size(); ++i)
+            QList<timeShartChartInfo> mTimeShareChartList;
+            // GlobalVar::mTimeShareChartList.clear();
+            if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
             {
-                if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
+                for (int i = 0; i < data.size(); ++i)
                 {
                     list=data.at(i).toString().split(",");
                     info.time=list[0];
@@ -241,9 +241,11 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     else
                         info.direct=3;
                     pp=list[2].toFloat();
-                    GlobalVar::mTimeShareChartList.append(info);
+                    mTimeShareChartList.append(info);
                 }
-                else
+            }
+            else
+                for (int i = 0; i < data.size(); ++i)
                 {
                     list=data.at(i).toString().split(",");
                     info.time=list[0];
@@ -263,10 +265,9 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     else
                         info.direct=3;
                     pp=list[2].toFloat();
-                    GlobalVar::mTimeShareChartList.append(info);
+                    mTimeShareChartList.append(info);
                 }
-            }
-            // GlobalVar::mTimeShareChartList=mTimeShareChartList;
+            GlobalVar::mTimeShareChartList=mTimeShareChartList;
         }
         else
         {
