@@ -78,6 +78,8 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool r)
 {
     if (preGCode==GlobalVar::curCode and not r)
         return;
+    preGCode=GlobalVar::curCode;
+    isFirst=true;
     reset=r;
     h=0.0;
     l=10000000.0;
@@ -193,8 +195,9 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         QJsonArray data=jsonObject.value("data").toObject().value("trends").toArray();
         timeShartChartInfo info;
         QStringList list;
-        if (GlobalVar::curCode!=preGCode or reset)
+        if (isFirst)
         {
+            isFirst=false;
             GlobalVar::preClose=jsonObject.value("data").toObject().value("preClose").toDouble();
             int ph=110;
             int pl=90;
@@ -210,7 +213,8 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
             GlobalVar::timeShareHighLowPoint[2]=0;
             pp=GlobalVar::preClose;
             GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
-            QList<timeShartChartInfo> mTimeShareChartList;
+            // QList<timeShartChartInfo> mTimeShareChartList;
+            GlobalVar::mTimeShareChartList.clear();
             for (int i = 0; i < data.size(); ++i)
             {
                 if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
@@ -237,7 +241,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     else
                         info.direct=3;
                     pp=list[2].toFloat();
-                    mTimeShareChartList.append(info);
+                    GlobalVar::mTimeShareChartList.append(info);
                 }
                 else
                 {
@@ -259,10 +263,10 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     else
                         info.direct=3;
                     pp=list[2].toFloat();
-                    mTimeShareChartList.append(info);
+                    GlobalVar::mTimeShareChartList.append(info);
                 }
             }
-            GlobalVar::mTimeShareChartList=mTimeShareChartList;
+            // GlobalVar::mTimeShareChartList=mTimeShareChartList;
         }
         else
         {
@@ -354,6 +358,5 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         GlobalVar::timeShareHighLowPoint[1]=per(l);
         if (GlobalVar::timeShareHighLowPoint[1]>0)
             GlobalVar::timeShareHighLowPoint[1]=0;
-        preGCode=GlobalVar::curCode;
     }
 }

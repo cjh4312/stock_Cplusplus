@@ -609,7 +609,7 @@ void MainWindow::initSignals()
             GlobalVar::isKState=true;
             QString IndexCode[]={"1.000001","399001","399006","100.HSI","100.N225","100.KS11","1.000688","100.TWII","100.SENSEX","100.DJIA",
                                 "100.SPX","100.NDX","100.SX5E","100.GDAXI","100.RTS","100.FTSE","100.FCHI","100.AS51","104.CN00Y","103.YM00Y",
-                                "133.USDCNH"};
+                                "133.USDCNH","122.XAU"};
             int n;
             if (isAsia)
             {
@@ -628,12 +628,16 @@ void MainWindow::initSignals()
             if (i==14)
             {
                 if (changeInTurn)
-                    n=18;
-                else
                     n=19;
+                else
+                    n=18;
             }
             else if (i==16)
-                n=20;
+            {
+                if (changeInTurn)
+                    n=21;
+                else
+                    n=20;}
 //            qDebug()<<i<<n;
             GlobalVar::curCode=IndexCode[n];
             GlobalVar::curName=bb->text();
@@ -2225,10 +2229,13 @@ void MainWindow::reFlashIndex()
             bl->setPalette(GlobalVar::pBlack);
         bl->setText(GlobalVar::mIndexList.at(n).close+" "+GlobalVar::mIndexList.at(n).pctChg+"%");
     }
+    int m=20;
+    n=19;
     if (changeInTurn)
-        n=19;
-    else
+    {
         n=18;
+        m=21;
+    }
     QPushButton *bb = (QPushButton *)(ui->statusBar->children().at(14));
     bb->setText(GlobalVar::mIndexList.at(n).name);
     QLabel *bl = (QLabel *)(ui->statusBar->children().at(15));
@@ -2240,15 +2247,15 @@ void MainWindow::reFlashIndex()
         bl->setPalette(GlobalVar::pBlack);
     bl->setText(GlobalVar::mIndexList.at(n).close+" "+GlobalVar::mIndexList.at(n).pctChg+"%");
     bb = (QPushButton *)(ui->statusBar->children().at(16));
-    bb->setText(GlobalVar::mIndexList.at(20).name);
+    bb->setText(GlobalVar::mIndexList.at(m).name);
     bl = (QLabel *)(ui->statusBar->children().at(18));
-    if (GlobalVar::mIndexList.at(20).pctChg.toFloat()>0)
+    if (GlobalVar::mIndexList.at(m).pctChg.toFloat()>0)
         bl->setPalette(GlobalVar::pRed);
-    else if (GlobalVar::mIndexList.at(20).pctChg.toFloat()<0)
+    else if (GlobalVar::mIndexList.at(m).pctChg.toFloat()<0)
         bl->setPalette(GlobalVar::pGreen);
     else
         bl->setPalette(GlobalVar::pBlack);
-    bl->setText(GlobalVar::mIndexList.at(20).close+" "+GlobalVar::mIndexList.at(20).pctChg+"%");
+    bl->setText(GlobalVar::mIndexList.at(m).close+" "+GlobalVar::mIndexList.at(m).pctChg+"%");
 }
 void MainWindow::reFlashBuySellBaseInfo()
 {
@@ -2413,9 +2420,7 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
     drawChart.hKLine->setStyleSheet("QLabel{border:2px dotted white;}");
     drawChart.hKLine->resize(drawChart.candleChart->width(),1);
     int posX=(2*m+1)*(drawChart.candleChart->width()-2*KWIDTHEDGE-KRIGHTWIDTHEDGE)/(2*GlobalVar::KRange);
-//    int posY=;
     drawChart.vKLine->move(posX+KWIDTHEDGE,0);
-
     drawChart.vKLine->show();
     drawChart.hKLine->show();
 }

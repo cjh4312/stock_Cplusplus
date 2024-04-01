@@ -20,6 +20,7 @@ private:
     // QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
     // QNetworkRequest request;
     QByteArray allData;
+    bool isFirst=false;
     bool reset;
     QString preGCode="";
     int mRetries=0;
