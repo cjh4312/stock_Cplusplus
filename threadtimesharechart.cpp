@@ -9,6 +9,7 @@ ThreadTimeShareChart::ThreadTimeShareChart(QObject *parent)
 
 void ThreadTimeShareChart::getSSEData()
 {
+    GlobalVar::mTimeShareChartList.clear();
     QString url="https://push2his.eastmoney.com/api/qt/stock/trends2/sse?mpi=2000&fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893";
     QByteArray* qByteArray=new QByteArray();
     QString preCode=GlobalVar::curCode;
@@ -76,23 +77,23 @@ void ThreadTimeShareChart::getSSEData()
 
 void ThreadTimeShareChart::getAllTimeShareChart(bool r)
 {
-    if (preGCode==GlobalVar::curCode and not r)
-        return;
-    preGCode=GlobalVar::curCode;
-    isFirst=true;
     reset=r;
-    h=0.0;
-    l=10000000.0;
-    getSSEData();
+    if (preGCode!=GlobalVar::curCode or r)
+    {
+        preGCode=GlobalVar::curCode;
+        GlobalVar::timeShareHighLowPoint[0]=0.0;
+        GlobalVar::timeShareHighLowPoint[1]=10000000.0;
+        getSSEData();
 
-    // GlobalVar::getData(allData,2,QUrl("https://push2his.eastmoney.com/api/qt/stock/trends2/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893"));
-    // if (GlobalVar::timeOutFlag[6])
-    //     GlobalVar::timeOutFlag[6]=false;
-    // else
-    // {
-    //     initTimeShareChartList();
-    //     emit getTimeShareChartFinished();
-    // }
+        // GlobalVar::getData(allData,2,QUrl("https://push2his.eastmoney.com/api/qt/stock/trends2/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893"));
+        // if (GlobalVar::timeOutFlag[6])
+        //     GlobalVar::timeOutFlag[6]=false;
+        // else
+        // {
+        //     initTimeShareChartList();
+        //     emit getTimeShareChartFinished();
+        // }
+    }
 }
 
 void ThreadTimeShareChart::initTimeShareChartList()
@@ -116,11 +117,10 @@ void ThreadTimeShareChart::initTimeShareChartList()
         GlobalVar::timeShareHighLowPoint[4]=per(b);
         QJsonArray data=jsonObject.value("data").toObject().value("trends").toArray();
         GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
-        float h=0.0;
-        float l=100000.0;
-        float vl=0.0;
-        GlobalVar::timeShareHighLowPoint[2]=0;
-        float pp=GlobalVar::preClose;
+        GlobalVar::timeShareHighLowPoint[0]=0.0;
+        GlobalVar::timeShareHighLowPoint[1]=10000000.0;
+        GlobalVar::timeShareHighLowPoint[2]=0.0;
+        float pp=0;
         QList<timeShartChartInfo> mTimeShareChartList;
         timeShartChartInfo info;
         QStringList list;
@@ -128,57 +128,56 @@ void ThreadTimeShareChart::initTimeShareChartList()
             for (int i = 0; i < data.size(); ++i)
             {
                 list=data.at(i).toString().split(",");
-                if (pp<list[2].toFloat())
+                info.time=list[0];
+                info.price=per(list[2].toFloat());
+                info.vol=list[5].toFloat();
+                info.avePrice=per(list[7].toFloat());
+                if (pp<info.price)
                     info.direct=2;
-                else if (pp>list[2].toFloat())
+                else if (pp>info.price)
                     info.direct=1;
                 else
                     info.direct=3;
-                pp=list[2].toFloat();
-                info.time=list[0];
-                info.price=per(pp);
-                info.vol=list[5].toFloat();
-                info.avePrice=per(list[7].toFloat());
-                if (list[3].toFloat()>h)
-                    h=list[3].toFloat();
-                if (list[4].toFloat()<l)
-                    l=list[4].toFloat();
-                if (list[7].toFloat()>h)
-                    h=list[7].toFloat();
-                if (list[7].toFloat()<l)
-                    l=list[7].toFloat();
-                if (list[5].toFloat()>vl)
-                    vl=list[5].toFloat();
+                float h=per(list[3].toFloat());
+                float l=per(list[4].toFloat());
+                if (h>GlobalVar::timeShareHighLowPoint[0])
+                    GlobalVar::timeShareHighLowPoint[0]=h;
+                if (l<GlobalVar::timeShareHighLowPoint[1])
+                    GlobalVar::timeShareHighLowPoint[1]=l;
+                if (info.avePrice>GlobalVar::timeShareHighLowPoint[0])
+                    GlobalVar::timeShareHighLowPoint[0]=info.avePrice;
+                if (info.avePrice<GlobalVar::timeShareHighLowPoint[1])
+                    GlobalVar::timeShareHighLowPoint[1]=info.avePrice;
+                if (info.vol>GlobalVar::timeShareHighLowPoint[2])
+                    GlobalVar::timeShareHighLowPoint[2]=info.vol;
                 mTimeShareChartList.append(info);
             }
         else
             for (int i = 0; i < data.size(); ++i)
             {
                 list=data.at(i).toString().split(",");
-                if (pp<list[2].toFloat())
+                info.time=list[0];
+                info.price=per(list[2].toFloat());
+                info.vol=list[5].toFloat();
+                info.avePrice=per(list[7].toFloat());
+                if (pp<info.price)
                     info.direct=2;
-                else if (pp>list[2].toFloat())
+                else if (pp>info.price)
                     info.direct=1;
                 else
                     info.direct=3;
-                pp=list[2].toFloat();
-                info.time=list[0];
-                info.price=per(pp);
-                info.vol=list[5].toFloat();
-                info.avePrice=per(list[7].toFloat());
-                if (list[3].toFloat()>h)
-                    h=list[3].toFloat();
-                if (list[4].toFloat()<l)
-                    l=list[4].toFloat();
-                if (list[5].toFloat()>vl)
-                    vl=list[5].toFloat();
+                float h=per(list[3].toFloat());
+                float l=per(list[4].toFloat());
+                if (h>GlobalVar::timeShareHighLowPoint[0])
+                    GlobalVar::timeShareHighLowPoint[0]=h;
+                if (l<GlobalVar::timeShareHighLowPoint[1])
+                    GlobalVar::timeShareHighLowPoint[1]=l;
+                if (info.vol>GlobalVar::timeShareHighLowPoint[2])
+                    GlobalVar::timeShareHighLowPoint[2]=info.vol;
                 mTimeShareChartList.append(info);
             }
-        GlobalVar::timeShareHighLowPoint[0]=per(h);
-        GlobalVar::timeShareHighLowPoint[2]=vl;
         if (GlobalVar::timeShareHighLowPoint[0]<0)
             GlobalVar::timeShareHighLowPoint[0]=0;
-        GlobalVar::timeShareHighLowPoint[1]=per(l);
         if (GlobalVar::timeShareHighLowPoint[1]>0)
             GlobalVar::timeShareHighLowPoint[1]=0;
         GlobalVar::mTimeShareChartList=mTimeShareChartList;
@@ -195,9 +194,10 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         QJsonArray data=jsonObject.value("data").toObject().value("trends").toArray();
         timeShartChartInfo info;
         QStringList list;
-        if (isFirst)
+        float h;
+        float l;
+        if (GlobalVar::mTimeShareChartList.isEmpty())
         {
-            isFirst=false;
             GlobalVar::preClose=jsonObject.value("data").toObject().value("preClose").toDouble();
             int ph=110;
             int pl=90;
@@ -206,15 +206,11 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                 ph=120;
                 pl=80;
             }
-            float a=int(GlobalVar::preClose*ph+0.5)/100.0;
-            float b=int(GlobalVar::preClose*pl+0.5)/100.0;
-            GlobalVar::timeShareHighLowPoint[3]=per(a);
-            GlobalVar::timeShareHighLowPoint[4]=per(b);
+            GlobalVar::timeShareHighLowPoint[3]=per(int(GlobalVar::preClose*ph+0.5)/100.0);
+            GlobalVar::timeShareHighLowPoint[4]=per(int(GlobalVar::preClose*pl+0.5)/100.0);
             GlobalVar::timeShareHighLowPoint[2]=0;
-            pp=GlobalVar::preClose;
+            pp=0;
             GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
-            QList<timeShartChartInfo> mTimeShareChartList;
-            // GlobalVar::mTimeShareChartList.clear();
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
             {
                 for (int i = 0; i < data.size(); ++i)
@@ -224,24 +220,26 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     info.price=per(list[2].toFloat());
                     info.vol=list[5].toFloat();
                     info.avePrice=per(list[7].toFloat());
-                    if (list[3].toFloat()>h)
-                        h=list[3].toFloat();
-                    if (list[4].toFloat()<l)
-                        l=list[4].toFloat();
-                    if (list[7].toFloat()>h)
-                        h=list[7].toFloat();
-                    if (list[7].toFloat()<l)
-                        l=list[7].toFloat();
-                    if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
-                        GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
-                    if (pp<list[2].toFloat())
+                    h=per(list[3].toFloat());
+                    l=per(list[4].toFloat());
+                    if (h>GlobalVar::timeShareHighLowPoint[0])
+                        GlobalVar::timeShareHighLowPoint[0]=h;
+                    if (l<GlobalVar::timeShareHighLowPoint[1])
+                        GlobalVar::timeShareHighLowPoint[1]=l;
+                    if (info.avePrice>GlobalVar::timeShareHighLowPoint[0])
+                        GlobalVar::timeShareHighLowPoint[0]=info.avePrice;
+                    if (info.avePrice<GlobalVar::timeShareHighLowPoint[1])
+                        GlobalVar::timeShareHighLowPoint[1]=info.avePrice;
+                    if (info.vol>GlobalVar::timeShareHighLowPoint[2])
+                        GlobalVar::timeShareHighLowPoint[2]=info.vol;
+                    if (pp<info.price)
                         info.direct=2;
-                    else if (pp>list[2].toFloat())
+                    else if (pp>info.price)
                         info.direct=1;
                     else
                         info.direct=3;
-                    pp=list[2].toFloat();
-                    mTimeShareChartList.append(info);
+                    pp=info.price;
+                    GlobalVar::mTimeShareChartList.append(info);
                 }
             }
             else
@@ -252,22 +250,23 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     info.price=per(list[2].toFloat());
                     info.vol=list[5].toFloat();
                     info.avePrice=per(list[7].toFloat());
-                    if (list[3].toFloat()>h)
-                        h=list[3].toFloat();
-                    if (list[4].toFloat()<l)
-                        l=list[4].toFloat();
-                    if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
-                        GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
-                    if (pp<list[2].toFloat())
+                    h=per(list[3].toFloat());
+                    l=per(list[4].toFloat());
+                    if (h>GlobalVar::timeShareHighLowPoint[0])
+                        GlobalVar::timeShareHighLowPoint[0]=h;
+                    if (l<GlobalVar::timeShareHighLowPoint[1])
+                        GlobalVar::timeShareHighLowPoint[1]=l;
+                    if (info.vol>GlobalVar::timeShareHighLowPoint[2])
+                        GlobalVar::timeShareHighLowPoint[2]=info.vol;
+                    if (pp<info.price)
                         info.direct=2;
-                    else if (pp>list[2].toFloat())
+                    else if (pp>info.price)
                         info.direct=1;
                     else
                         info.direct=3;
-                    pp=list[2].toFloat();
-                    mTimeShareChartList.append(info);
+                    pp=info.price;
+                    GlobalVar::mTimeShareChartList.append(info);
                 }
-            GlobalVar::mTimeShareChartList=mTimeShareChartList;
         }
         else
         {
@@ -280,38 +279,40 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     info.price=per(list[2].toFloat());
                     info.vol=list[5].toFloat();
                     info.avePrice=per(list[7].toFloat());
-                    if (list[3].toFloat()>h)
-                        h=list[3].toFloat();
-                    if (list[4].toFloat()<l)
-                        l=list[4].toFloat();
-                    if (list[7].toFloat()>h)
-                        h=list[7].toFloat();
-                    if (list[7].toFloat()<l)
-                        l=list[7].toFloat();
-                    if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
-                        GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
-                    if (info.time!=GlobalVar::mTimeShareChartList.at(GlobalVar::mTimeShareChartList.size()-1).time)
+                    h=per(list[3].toFloat());
+                    l=per(list[4].toFloat());
+                    if (h>GlobalVar::timeShareHighLowPoint[0])
+                        GlobalVar::timeShareHighLowPoint[0]=h;
+                    if (l<GlobalVar::timeShareHighLowPoint[1])
+                        GlobalVar::timeShareHighLowPoint[1]=l;
+                    if (info.avePrice>GlobalVar::timeShareHighLowPoint[0])
+                        GlobalVar::timeShareHighLowPoint[0]=info.avePrice;
+                    if (info.avePrice<GlobalVar::timeShareHighLowPoint[1])
+                        GlobalVar::timeShareHighLowPoint[1]=info.avePrice;
+                    if (info.vol>GlobalVar::timeShareHighLowPoint[2])
+                        GlobalVar::timeShareHighLowPoint[2]=info.vol;
+                    if (info.time!=GlobalVar::mTimeShareChartList.at(GlobalVar::mTimeShareChartList.count()-1).time)
                     {
                         pp=backPP;
-                        if (pp<list[2].toFloat())
+                        if (pp<info.price)
                             info.direct=2;
-                        else if (pp>list[2].toFloat())
+                        else if (pp>info.price)
                             info.direct=1;
                         else
                             info.direct=3;
-                        backPP=pp=list[2].toFloat();
+                        backPP=pp=info.price;
                         GlobalVar::mTimeShareChartList.append(info);
                     }
                     else
                     {
-                        if (pp<list[2].toFloat())
+                        if (pp<info.price)
                             info.direct=2;
-                        else if (pp>list[2].toFloat())
+                        else if (pp>info.price)
                             info.direct=1;
                         else
                             info.direct=3;
-                        backPP=list[2].toFloat();
-                        GlobalVar::mTimeShareChartList.replace(GlobalVar::mTimeShareChartList.size()-1,info);
+                        backPP=info.price;
+                        GlobalVar::mTimeShareChartList.replace(GlobalVar::mTimeShareChartList.count()-1,info);
                     }
                 }
             else
@@ -322,41 +323,41 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     info.price=per(list[2].toFloat());
                     info.avePrice=per(list[7].toFloat());
                     info.vol=list[5].toFloat();
-                    if (list[3].toFloat()>h)
-                        h=list[3].toFloat();
-                    if (list[4].toFloat()<l)
-                        l=list[4].toFloat();
-                    if (list[5].toFloat()>GlobalVar::timeShareHighLowPoint[2])
-                        GlobalVar::timeShareHighLowPoint[2]=list[5].toFloat();
-                    if (info.time!=GlobalVar::mTimeShareChartList.at(GlobalVar::mTimeShareChartList.size()-1).time)
+                    h=per(list[3].toFloat());
+                    l=per(list[4].toFloat());
+                    if (h>GlobalVar::timeShareHighLowPoint[0])
+                        GlobalVar::timeShareHighLowPoint[0]=h;
+                    if (l<GlobalVar::timeShareHighLowPoint[1])
+                        GlobalVar::timeShareHighLowPoint[1]=l;
+                    if (info.vol>GlobalVar::timeShareHighLowPoint[2])
+                        GlobalVar::timeShareHighLowPoint[2]=info.vol;
+                    if (info.time!=GlobalVar::mTimeShareChartList.at(GlobalVar::mTimeShareChartList.count()-1).time)
                     {
                         pp=backPP;
-                        if (pp<list[2].toFloat())
+                        if (pp<info.price)
                             info.direct=2;
-                        else if (pp>list[2].toFloat())
+                        else if (pp>info.price)
                             info.direct=1;
                         else
                             info.direct=3;
-                        backPP=pp=list[2].toFloat();
+                        backPP=pp=info.price;
                         GlobalVar::mTimeShareChartList.append(info);
                     }
                     else
                     {
-                        if (pp<list[2].toFloat())
+                        if (pp<info.price)
                             info.direct=2;
-                        else if (pp>list[2].toFloat())
+                        else if (pp>info.price)
                             info.direct=1;
                         else
                             info.direct=3;
-                        backPP=list[2].toFloat();
-                        GlobalVar::mTimeShareChartList.replace(GlobalVar::mTimeShareChartList.size()-1,info);
+                        backPP=info.price;
+                        GlobalVar::mTimeShareChartList.replace(GlobalVar::mTimeShareChartList.count()-1,info);
                     }
                 }
         }
-        GlobalVar::timeShareHighLowPoint[0]=per(h);
         if (GlobalVar::timeShareHighLowPoint[0]<0)
             GlobalVar::timeShareHighLowPoint[0]=0;
-        GlobalVar::timeShareHighLowPoint[1]=per(l);
         if (GlobalVar::timeShareHighLowPoint[1]>0)
             GlobalVar::timeShareHighLowPoint[1]=0;
     }
