@@ -2263,25 +2263,32 @@ void MainWindow::reFlashBuySellBaseInfo()
     for (int i=0;i<10;++i)
     {
         float price=GlobalVar::buySellPrice[i];
-        int p=2;
-        if (GlobalVar::curCode.left(3)=="133")
-            p=4;
-        str=QString::number(price,'f',p);
-        if (GlobalVar::buySellPrice[i]==0)
+        if (price==0)
             str="";
-        if (price>GlobalVar::preClose)
-            buySellPrice[i]->setPalette(GlobalVar::pRed);
-        else if (price<GlobalVar::preClose)
-            buySellPrice[i]->setPalette(GlobalVar::pGreen);
         else
-            buySellPrice[i]->setPalette(GlobalVar::pBlack);
+        {
+            int p=2;
+            if (GlobalVar::curCode.left(3)=="133")
+                p=4;
+            str=QString::number(price,'f',p);
+            if (price>GlobalVar::preClose)
+                buySellPrice[i]->setPalette(GlobalVar::pRed);
+            else if (price<GlobalVar::preClose)
+                buySellPrice[i]->setPalette(GlobalVar::pGreen);
+            else
+                buySellPrice[i]->setPalette(GlobalVar::pBlack);
+        }
         buySellPrice[i]->setText(str);
-        if (GlobalVar::buySellNum[i]>1000000)
-            str=GlobalVar::format_conversion(GlobalVar::buySellNum[i]);
-        else
-            str=QString::number(GlobalVar::buySellNum[i]);
-        if (GlobalVar::buySellNum[i]==0)
+        int nums=GlobalVar::buySellNum[i];
+        if (nums==0)
             str="";
+        else
+        {
+            if (nums>1000000)
+                str=GlobalVar::format_conversion(nums);
+            else
+                str=QString::number(nums);
+        }
         buySellNum[i]->setText(str);
     }
     if (GlobalVar::baseInfoData[1]>0)
@@ -2299,37 +2306,32 @@ void MainWindow::reFlashBuySellBaseInfo()
         baseInfoData[0]->setPalette(GlobalVar::pBlack);
         baseInfoData[1]->setPalette(GlobalVar::pBlack);
     }
-    for (int i=0;i<7;++i)
-        if (i==0)
-        {
-            int p=2;
-            if (GlobalVar::curCode.left(3)=="133")
-                p=4;
-            baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i],'f',p));
-        }
-        else if (i==1 or i==2)
-            baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i],'f',2)+"%");
-        else
-            baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i]));
+    int p=2;
+    if (GlobalVar::curCode.left(3)=="133")
+        p=4;
+    baseInfoData[0]->setText(QString::number(GlobalVar::baseInfoData[0],'f',p));
+    for (int i=1;i<3;++i)
+        baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i],'f',2)+"%");
+    for (int i=3;i<7;++i)
+        baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i]));
     float pct=0;
-    for (int i=8;i<15;++i)
-        if (i==8 or i==9 or i==10)
-        {
-            float p=GlobalVar::baseInfoData[i-1];
-            if (GlobalVar::preClose==0 or p==0)
-                pct=0;
-            else
-                pct=(p-GlobalVar::preClose)*100/GlobalVar::preClose;
-            baseInfoData[i]->setText(QString::number(p)+"("+GlobalVar::format_conversion(pct)+"%)");
-
-            if (p>GlobalVar::preClose)
-                baseInfoData[i]->setPalette(GlobalVar::pRed);
-            else if(p<GlobalVar::preClose)
-                baseInfoData[i]->setPalette(GlobalVar::pGreen);
-            else
-                baseInfoData[i]->setPalette(GlobalVar::pBlack);
-        }
-        else if(i==13)
+    for (int i=8;i<11;++i)
+    {
+        float p=GlobalVar::baseInfoData[i-1];
+        if (GlobalVar::preClose==0 or p==0)
+            pct=0;
+        else
+            pct=(p-GlobalVar::preClose)*100/GlobalVar::preClose;
+        baseInfoData[i]->setText(QString::number(p)+"("+GlobalVar::format_conversion(pct)+"%)");
+        if (pct>0)
+            baseInfoData[i]->setPalette(GlobalVar::pRed);
+        else if(pct<0)
+            baseInfoData[i]->setPalette(GlobalVar::pGreen);
+        else
+            baseInfoData[i]->setPalette(GlobalVar::pBlack);
+    }
+    for (int i=11;i<15;++i)
+        if(i==13)
             baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i-1],'f',3));
         else
             baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i-1]));

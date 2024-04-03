@@ -124,6 +124,8 @@ void ThreadTimeShareChart::initTimeShareChartList()
         QList<timeShartChartInfo> mTimeShareChartList;
         timeShartChartInfo info;
         QStringList list;
+        float h;
+        float l;
         if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
             for (int i = 0; i < data.size(); ++i)
             {
@@ -138,8 +140,8 @@ void ThreadTimeShareChart::initTimeShareChartList()
                     info.direct=1;
                 else
                     info.direct=3;
-                float h=per(list[3].toFloat());
-                float l=per(list[4].toFloat());
+                h=per(list[3].toFloat());
+                l=per(list[4].toFloat());
                 if (h>GlobalVar::timeShareHighLowPoint[0])
                     GlobalVar::timeShareHighLowPoint[0]=h;
                 if (l<GlobalVar::timeShareHighLowPoint[1])
@@ -166,8 +168,8 @@ void ThreadTimeShareChart::initTimeShareChartList()
                     info.direct=1;
                 else
                     info.direct=3;
-                float h=per(list[3].toFloat());
-                float l=per(list[4].toFloat());
+                h=per(list[3].toFloat());
+                l=per(list[4].toFloat());
                 if (h>GlobalVar::timeShareHighLowPoint[0])
                     GlobalVar::timeShareHighLowPoint[0]=h;
                 if (l<GlobalVar::timeShareHighLowPoint[1])
