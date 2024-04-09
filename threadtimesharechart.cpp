@@ -19,6 +19,7 @@ void ThreadTimeShareChart::getSSEData()
     request.setUrl(QUrl(url));
     QNetworkReply *reply= naManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [=](){
+        // qDebug()<<"abort";
         disconnect(reply);
         reply->deleteLater();
         delete qByteArray;
@@ -28,6 +29,7 @@ void ThreadTimeShareChart::getSSEData()
         if (GlobalVar::curCode!=preCode or reset)
         {
             reset=false;
+            // qDebug()<<"abort1";
             reply->abort();
         }
         else
@@ -37,6 +39,7 @@ void ThreadTimeShareChart::getSSEData()
             {
                 mRetries=0;
                 QByteArray tempData=reply->readAll();
+                // qDebug()<<tempData;
                 if (tempData.contains("data:"))
                 {
                     if (tempData.contains("\"data\":{\""))
@@ -80,6 +83,7 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool r)
     reset=r;
     if (preGCode!=GlobalVar::curCode or r)
     {
+        qDebug()<<r;
         preGCode=GlobalVar::curCode;
         GlobalVar::timeShareHighLowPoint[0]=0.0;
         GlobalVar::timeShareHighLowPoint[1]=10000000.0;
@@ -194,13 +198,16 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
     {
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("trends").toArray();
+        // qDebug()<<data;
         timeShartChartInfo info;
         QStringList list;
         float h;
         float l;
         if (GlobalVar::mTimeShareChartList.isEmpty())
         {
-            GlobalVar::preClose=jsonObject.value("data").toObject().value("preClose").toDouble();
+            float p=jsonObject.value("data").toObject().value("preClose").toDouble();
+            if (p!=0)
+                GlobalVar::preClose=jsonObject.value("data").toObject().value("preClose").toDouble();
             int ph=110;
             int pl=90;
             if (GlobalVar::curCode.left(1)=="3" or GlobalVar::curCode.left(1)=="8" or GlobalVar::curCode.left(3)=="688")
@@ -212,7 +219,9 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
             GlobalVar::timeShareHighLowPoint[4]=per(int(GlobalVar::preClose*pl+0.5)/100.0);
             GlobalVar::timeShareHighLowPoint[2]=0;
             pp=0;
-            GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
+            int t=jsonObject.value("data").toObject().value("trendsTotal").toInt();
+            if (t!=0)
+                GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
             {
                 for (int i = 0; i < data.size(); ++i)
@@ -273,6 +282,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         else
         {
             float backPP=GlobalVar::mTimeShareChartList.at(GlobalVar::mTimeShareChartList.count()-1).price;
+            pp=GlobalVar::mTimeShareChartList.at(GlobalVar::mTimeShareChartList.count()-2).price;
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
                 for (int i = 0; i < data.size(); ++i)
                 {
@@ -363,4 +373,5 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         if (GlobalVar::timeShareHighLowPoint[1]>0)
             GlobalVar::timeShareHighLowPoint[1]=0;
     }
+    // qDebug()<<GlobalVar::mTimeShareChartList.count();
 }
