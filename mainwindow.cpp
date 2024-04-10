@@ -1242,7 +1242,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         {
             if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or
                 GlobalVar::curCode.left(2)=="10" or GlobalVar::WhichInterface==6 or
-                GlobalVar::curCode.left(2)=="13")
+                GlobalVar::curCode.left(2)=="13" or GlobalVar::curCode.left(2)=="12")
             {
                 QMessageBox::information(this,"提示", "只能查看A股", QMessageBox::Ok);
                 return false;

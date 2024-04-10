@@ -27,7 +27,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
     {
         if (preCode==GlobalVar::curCode)
             return;
-        QString url="http://push2.eastmoney.com/api/qt/stock/sse?mpi=2000&ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=1&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963";
+        QString url="http://push2.eastmoney.com/api/qt/stock/sse?mpi=2000&ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=1&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963";
         getSSEData(1,url);
         url="http://push2.eastmoney.com/api/qt/stock/details/sse?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55&mpi=2000&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&pos=-0&secid="+GlobalVar::getComCode();
         GlobalVar::mTimeShareTickList.clear();
@@ -36,7 +36,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
     }
     else
     {
-        GlobalVar::getData(buySellData,0.9,QUrl("http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=1&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f108,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963"));
+        GlobalVar::getData(buySellData,0.9,QUrl("http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=1&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f58,f60,f62,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963"));
         if (GlobalVar::timeOutFlag[8])
             GlobalVar::timeOutFlag[8]=false;
         else
@@ -57,7 +57,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
         else
         {
             initTimeShareTickList(pos);
-            emit getTimeShareTickFinished();
+
         }
         preCode=GlobalVar::curCode;
 //        if (preCode==GlobalVar::curCode)
@@ -173,18 +173,17 @@ void ThreadTimeShareTick::initBuySellList()
                 GlobalVar::buySellPrice[i]=jsonObject.value("data").toObject().value(price[i]).toDouble();
             if (buySellData.contains(nums[i].toUtf8()))
                 GlobalVar::buySellNum[i]=int(jsonObject.value("data").toObject().value(nums[i]).toDouble()+0.5);
-
             }
         for (int i=0;i<14;++i)
         {
             if (buySellData.contains(baseInfo[i].toUtf8()))
                 GlobalVar::baseInfoData[i]=jsonObject.value("data").toObject().value(baseInfo[i]).toDouble();
-            if (i==13 and (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5) and
-                    buySellData.contains("f164"))
-                GlobalVar::baseInfoData[i]=jsonObject.value("data").toObject().value("f164").toDouble();
         }
-        if (buySellData.contains("f55"))
-            GlobalVar::baseInfoData[12]=jsonObject.value("data").toObject().value("f55").toDouble();
+        if ((GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5) and
+            buySellData.contains("f164"))
+            GlobalVar::baseInfoData[13]=jsonObject.value("data").toObject().value("f164").toDouble();
+        // if (buySellData.contains("f55"))
+        //     GlobalVar::baseInfoData[12]=jsonObject.value("data").toObject().value("f55").toDouble();
         GlobalVar::EPSReportDate="每股收益";
         GlobalVar::PEName="市盈率";
         if (buySellData.contains("f62") and GlobalVar::WhichInterface==1)
@@ -209,6 +208,7 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
         QJsonObject jsonObject = doc.object();
         QString code=jsonObject.value("data").toObject().value("code").toString();
         QJsonArray data=jsonObject.value("data").toObject().value("details").toArray();
+        int s=data.size();
         timeShareTickInfo info;
         QStringList list;
         int j=0;
@@ -219,14 +219,15 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
             if (code!=GlobalVar::curCode)
                 return;
             if (not GlobalVar::mTimeShareTickList.empty())
-                for (int i = 0; i < data.size(); ++i)
+            {
+                QString t=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time;
+                for (int i = 0; i < s; ++i)
                 {
                     list=data.at(i).toString().split(",");
-                    if (list[0]<=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time)
+                    if (list[0]<=t)
                     {
-                        if (i==data.size()-1)
+                        if (i==s-1)
                             return;
-                        continue;
                     }
                     else
                     {
@@ -234,8 +235,9 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
                         break;
                     }
                 }
+            }
         }
-        for (int i = j; i < data.size(); ++i)
+        for (int i = j; i < s; ++i)
         {
             list=data.at(i).toString().split(",");
             info.time=list[0];
@@ -245,6 +247,7 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
             info.tick=list[3].toInt();
             GlobalVar::mTimeShareTickList.append(info);
         }
+        emit getTimeShareTickFinished();
     }
 }
 

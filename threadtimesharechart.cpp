@@ -71,6 +71,7 @@ void ThreadTimeShareChart::getSSEData()
                 if(mRetries < MAX_RETRIES)
                 {
                     mRetries++;
+                    reply->abort();
                     getSSEData();
                 }
 
@@ -80,15 +81,10 @@ void ThreadTimeShareChart::getSSEData()
 
 void ThreadTimeShareChart::getAllTimeShareChart(bool r)
 {
-    // reset=r;
     if (preGCode!=GlobalVar::curCode or r)
     {
-        // qDebug()<<r;
         if (preGCode!="")
-        {
             reply->abort();
-            // disconnect(reply);
-        }
         preGCode=GlobalVar::curCode;
         GlobalVar::timeShareHighLowPoint[0]=0.0;
         GlobalVar::timeShareHighLowPoint[1]=10000000.0;
