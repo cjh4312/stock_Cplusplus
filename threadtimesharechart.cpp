@@ -87,7 +87,7 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool r)
         if (preGCode!="")
         {
             reply->abort();
-            disconnect(reply);
+            // disconnect(reply);
         }
         preGCode=GlobalVar::curCode;
         GlobalVar::timeShareHighLowPoint[0]=0.0;
