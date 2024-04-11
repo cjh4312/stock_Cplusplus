@@ -20,9 +20,9 @@ private:
     // QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
     // QNetworkRequest request;
     QByteArray allData;
-    bool isFirst=true;
+    // bool isFirst=true;
     QString preGCode="";
-    int mRetries=0;
+    // int mRetries=0;
     float pp;
 
 signals:

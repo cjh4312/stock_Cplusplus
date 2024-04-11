@@ -2146,7 +2146,7 @@ void MainWindow::tradingTimeRunThread()
             {
                 circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
                 emit startThreadTable();
-                emit startThreadTimeShareTick(false);
+                // emit startThreadTimeShareTick(false);
             }
             else
                 circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
@@ -2168,7 +2168,7 @@ void MainWindow::tradingTimeRunThread()
             {
                 circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
                 emit startThreadTable();
-                emit startThreadTimeShareTick(false);
+                // emit startThreadTimeShareTick(false);
             }
             else
                 circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);

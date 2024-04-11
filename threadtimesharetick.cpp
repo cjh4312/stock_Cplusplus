@@ -23,7 +23,9 @@ ThreadTimeShareTick::ThreadTimeShareTick(QObject *parent)
 
 void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
 {
-    if (GlobalVar::curCode.left(1)=="1" or GlobalVar::curCode.left(1)=="9" or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.left(3)=="899")
+    QString t=GlobalVar::curCode.left(3);
+    QString o=GlobalVar::curCode.left(1);
+    if (o=="1" or t=="399" or t=="899" or o=="9")
     {
         if (preCode==GlobalVar::curCode)
             return;
@@ -89,8 +91,7 @@ void ThreadTimeShareTick::getSSEData(int nums,QString url)
             reply->abort();
         else
         {
-            int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            if (statusCode == 200)
+            if (reply->error() == QNetworkReply::NoError)
             {
                 mRetries=0;
                 QByteArray tempData=reply->readAll();

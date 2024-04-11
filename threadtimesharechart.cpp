@@ -10,8 +10,7 @@ ThreadTimeShareChart::ThreadTimeShareChart(QObject *parent)
 
 void ThreadTimeShareChart::getSSEData()
 {
-    // GlobalVar::mTimeShareChartList.clear();
-    isFirst=true;
+    GlobalVar::mTimeShareChartList.clear();
     QString url="https://push2his.eastmoney.com/api/qt/stock/trends2/sse?mpi=2000&fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893";
     QByteArray* qByteArray=new QByteArray();
     // QString preCode=GlobalVar::curCode;
@@ -21,7 +20,6 @@ void ThreadTimeShareChart::getSSEData()
     request.setUrl(QUrl(url));
     reply= naManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [=](){
-        reply->disconnect();
         delete qByteArray;
         naManager->deleteLater();
     });
@@ -36,7 +34,7 @@ void ThreadTimeShareChart::getSSEData()
         {
             if (reply->error() == QNetworkReply::NoError)
             {
-                mRetries=0;
+                // mRetries=0;
                 QByteArray tempData=reply->readAll();
                 // qDebug()<<tempData;
                 if (tempData.contains("data:"))
@@ -66,14 +64,15 @@ void ThreadTimeShareChart::getSSEData()
                     }
                 }
             }
-            else
-                if(mRetries < MAX_RETRIES)
-                {
-                // qDebug()<<mRetries;
-                    mRetries++;
-                    reply->abort();
-                    getSSEData();
-                }
+            // else
+            //     if(mRetries < MAX_RETRIES)
+            //     {
+            //     // qDebug()<<mRetries;
+            //         mRetries++;
+            //         reply->abort();
+            //         reply->disconnect();
+            //         getSSEData();
+            //     }
 
         }
     });
@@ -84,7 +83,10 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool r)
     if (preGCode!=GlobalVar::curCode or r)
     {
         if (preGCode!="")
+        {
             reply->abort();
+            reply->disconnect();
+        }
         preGCode=GlobalVar::curCode;
         GlobalVar::timeShareHighLowPoint[0]=0.0;
         GlobalVar::timeShareHighLowPoint[1]=10000000.0;
@@ -204,9 +206,8 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         QStringList list;
         float h;
         float l;
-        if (isFirst)
+        if (GlobalVar::mTimeShareChartList.isEmpty())
         {
-            isFirst=false;
             float p=jsonObject.value("data").toObject().value("preClose").toDouble();
             if (p!=0)
                 GlobalVar::preClose=jsonObject.value("data").toObject().value("preClose").toDouble();
@@ -224,7 +225,6 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
             int t=jsonObject.value("data").toObject().value("trendsTotal").toInt();
             if (t!=0)
                 GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
-            QList<timeShartChartInfo> mTimeShareChartList;
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
             {
                 for (int i = 0; i < data.size(); ++i)
@@ -253,7 +253,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     else
                         info.direct=3;
                     pp=info.price;
-                    mTimeShareChartList.append(info);
+                    GlobalVar::mTimeShareChartList.append(info);
                 }
             }
             else
@@ -279,9 +279,8 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     else
                         info.direct=3;
                     pp=info.price;
-                    mTimeShareChartList.append(info);
+                    GlobalVar::mTimeShareChartList.append(info);
                 }
-            GlobalVar::mTimeShareChartList=mTimeShareChartList;
         }
         else
         {
