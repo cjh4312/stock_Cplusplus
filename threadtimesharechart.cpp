@@ -20,6 +20,7 @@ void ThreadTimeShareChart::getSSEData()
     request.setUrl(QUrl(url));
     reply= naManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [=](){
+        preGCode="";
         reply->disconnect();
         delete qByteArray;
         naManager->deleteLater();
