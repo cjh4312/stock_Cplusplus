@@ -20,6 +20,7 @@ void ThreadTimeShareChart::getSSEData()
     request.setUrl(QUrl(url));
     reply= naManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [=](){
+        reply->disconnect();
         delete qByteArray;
         naManager->deleteLater();
     });
@@ -27,7 +28,6 @@ void ThreadTimeShareChart::getSSEData()
         // if (GlobalVar::curCode!=preCode or reset)
         // {
         //     reset=false;
-        //     // qDebug()<<"abort1";
         //     reply->abort();
         // }
         // else
@@ -70,7 +70,6 @@ void ThreadTimeShareChart::getSSEData()
             //     // qDebug()<<mRetries;
             //         mRetries++;
             //         reply->abort();
-            //         reply->disconnect();
             //         getSSEData();
             //     }
 
@@ -83,10 +82,7 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool r)
     if (preGCode!=GlobalVar::curCode or r)
     {
         if (preGCode!="")
-        {
             reply->abort();
-            reply->disconnect();
-        }
         preGCode=GlobalVar::curCode;
         GlobalVar::timeShareHighLowPoint[0]=0.0;
         GlobalVar::timeShareHighLowPoint[1]=10000000.0;
@@ -128,8 +124,8 @@ void ThreadTimeShareChart::initTimeShareChartList()
         GlobalVar::timeShareHighLowPoint[1]=10000000.0;
         GlobalVar::timeShareHighLowPoint[2]=0.0;
         float pp=0;
-        QList<timeShartChartInfo> mTimeShareChartList;
-        timeShartChartInfo info;
+        QList<timeShareChartInfo> mTimeShareChartList;
+        timeShareChartInfo info;
         QStringList list;
         float h;
         float l;
@@ -202,7 +198,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("trends").toArray();
         // qDebug()<<data;
-        timeShartChartInfo info;
+        timeShareChartInfo info;
         QStringList list;
         float h;
         float l;

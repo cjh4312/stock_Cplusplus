@@ -93,7 +93,7 @@ void ThreadTimeShareTick::getSSEData(int nums,QString url)
         {
             if (reply->error() == QNetworkReply::NoError)
             {
-                mRetries=0;
+                // mRetries=0;
                 QByteArray tempData=reply->readAll();
                 if (tempData.contains("data:"))
                 {
@@ -147,12 +147,13 @@ void ThreadTimeShareTick::getSSEData(int nums,QString url)
                     }
                 }
             }
-            else
-                if(mRetries < MAX_RETRIES)
-                {
-                    mRetries++;
-                    getSSEData(nums,url);
-                }
+            // else
+            //     if(mRetries < MAX_RETRIES)
+            //     {
+            //         qDebug()<<mRetries;
+            //         mRetries++;
+            //         getSSEData(nums,url);
+            //     }
         }
     });
 }

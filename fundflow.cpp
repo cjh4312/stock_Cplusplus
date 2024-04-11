@@ -1194,7 +1194,7 @@ void FundFlow::getTimeShareMin(QString code,QString date)
     QString str=s.mid(pos,s.size()-pos-1);
 
     QStringList ss=str.split(",");
-    QList<timeShartChartInfo> hisTimeShareChartList;
+    QList<timeShareChartInfo> hisTimeShareChartList;
     for (int i=0;i<ss.count();++i)
     {
         QJSValueList args;
@@ -1211,7 +1211,7 @@ void FundFlow::getTimeShareMin(QString code,QString date)
         QString d=date.left(10);
         for (int j=1;j<l;++j)
         {
-            timeShartChartInfo info;
+            timeShareChartInfo info;
             info.price=funcValue.property(j).property("price").toNumber();
             info.vol=funcValue.property(j).property("volume").toNumber()/100;
             info.avePrice=funcValue.property(j).property("avg_price").toNumber();

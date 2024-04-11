@@ -76,8 +76,8 @@ public:
     static QStringList mMyStockCode;
     static QList<IndexInfo> mIndexList;
     static QList<timeShareTickInfo> mTimeShareTickList;
-    static QList<timeShartChartInfo> mTimeShareChartList;
-    static QList<timeShartChartInfo> mHisTimeShareChartList;
+    static QList<timeShareChartInfo> mTimeShareChartList;
+    static QList<timeShareChartInfo> mHisTimeShareChartList;
     static QList<candleChartInfo> mCandleChartList;
     static bool timeOutFlag[10];
     static int KRange;
