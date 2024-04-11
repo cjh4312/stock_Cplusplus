@@ -1,30 +1,30 @@
 
 #include "threadtimesharechart.h"
+#include <synchapi.h>
 
 ThreadTimeShareChart::ThreadTimeShareChart(QObject *parent)
     : QObject{parent}
 {
-    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    // request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
 }
 
 void ThreadTimeShareChart::getSSEData()
 {
-    GlobalVar::mTimeShareChartList.clear();
+    // GlobalVar::mTimeShareChartList.clear();
+    isFirst=true;
     QString url="https://push2his.eastmoney.com/api/qt/stock/trends2/sse?mpi=2000&fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893";
-    // QByteArray* qByteArray=new QByteArray();
+    QByteArray* qByteArray=new QByteArray();
     // QString preCode=GlobalVar::curCode;
-    // QNetworkRequest request;
-    // QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
-    // request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    QNetworkRequest request;
+    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(QUrl(url));
     reply= naManager->get(request);
-    // connect(reply, &QNetworkReply::finished, this, [=](){
-    //     // qDebug()<<"abort";
-    //     disconnect(reply);
-    //     // reply->deleteLater();
-    //     delete qByteArray;
-    //     naManager->deleteLater();
-    // });
+    connect(reply, &QNetworkReply::finished, this, [=](){
+        reply->disconnect();
+        delete qByteArray;
+        naManager->deleteLater();
+    });
     connect(reply, &QNetworkReply::readyRead, this, [=](){
         // if (GlobalVar::curCode!=preCode or reset)
         // {
@@ -34,8 +34,7 @@ void ThreadTimeShareChart::getSSEData()
         // }
         // else
         {
-            int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            if (statusCode == 200)
+            if (reply->error() == QNetworkReply::NoError)
             {
                 mRetries=0;
                 QByteArray tempData=reply->readAll();
@@ -70,6 +69,7 @@ void ThreadTimeShareChart::getSSEData()
             else
                 if(mRetries < MAX_RETRIES)
                 {
+                // qDebug()<<mRetries;
                     mRetries++;
                     reply->abort();
                     getSSEData();
@@ -204,8 +204,9 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         QStringList list;
         float h;
         float l;
-        if (GlobalVar::mTimeShareChartList.isEmpty())
+        if (isFirst)
         {
+            isFirst=false;
             float p=jsonObject.value("data").toObject().value("preClose").toDouble();
             if (p!=0)
                 GlobalVar::preClose=jsonObject.value("data").toObject().value("preClose").toDouble();
@@ -223,6 +224,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
             int t=jsonObject.value("data").toObject().value("trendsTotal").toInt();
             if (t!=0)
                 GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
+            QList<timeShartChartInfo> mTimeShareChartList;
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
             {
                 for (int i = 0; i < data.size(); ++i)
@@ -251,7 +253,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     else
                         info.direct=3;
                     pp=info.price;
-                    GlobalVar::mTimeShareChartList.append(info);
+                    mTimeShareChartList.append(info);
                 }
             }
             else
@@ -277,8 +279,9 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
                     else
                         info.direct=3;
                     pp=info.price;
-                    GlobalVar::mTimeShareChartList.append(info);
+                    mTimeShareChartList.append(info);
                 }
+            GlobalVar::mTimeShareChartList=mTimeShareChartList;
         }
         else
         {
