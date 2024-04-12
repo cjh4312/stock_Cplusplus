@@ -198,6 +198,7 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
     {
         QJsonObject jsonObject = doc.object();
         QString code=jsonObject.value("data").toObject().value("code").toString();
+        GlobalVar::preClose=jsonObject.value("data").toObject().value("prePrice").toDouble();
         QJsonArray data=jsonObject.value("data").toObject().value("details").toArray();
         int s=data.size();
         timeShareTickInfo info;

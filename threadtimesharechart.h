@@ -16,9 +16,9 @@ private:
     void initTimeShareChartList();
     void initSSETimeShareChartList();
     QNetworkReply *reply=nullptr;
-    // QByteArray* qByteArray=new QByteArray();
-    // QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
-    // QNetworkRequest request;
+    QByteArray* qByteArray=new QByteArray();
+    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
+    QNetworkRequest request;
     QByteArray allData;
     // bool isFirst=true;
     QString preGCode="";

@@ -5,24 +5,24 @@
 ThreadTimeShareChart::ThreadTimeShareChart(QObject *parent)
     : QObject{parent}
 {
-    // request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
 }
 
 void ThreadTimeShareChart::getSSEData()
 {
     GlobalVar::mTimeShareChartList.clear();
     QString url="https://push2his.eastmoney.com/api/qt/stock/trends2/sse?mpi=2000&fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893";
-    QByteArray* qByteArray=new QByteArray();
-    QNetworkRequest request;
-    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
-    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+    // QByteArray* qByteArray=new QByteArray();
+    // QNetworkRequest request;
+    // QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
+    // request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     request.setUrl(QUrl(url));
     reply= naManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [=](){
         preGCode="";
-        reply->disconnect();
-        delete qByteArray;
-        naManager->deleteLater();
+        // reply->disconnect();
+        // delete qByteArray;
+        // naManager->deleteLater();
     });
     connect(reply, &QNetworkReply::readyRead, this, [=](){
         if (reply->error() == QNetworkReply::NoError)

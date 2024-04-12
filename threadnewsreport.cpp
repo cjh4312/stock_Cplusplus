@@ -6,10 +6,10 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
 {
 //    naManager = new QNetworkAccessManager(this);
     tts = new QTextToSpeech(this);
-    tts->setLocale(QLocale::Chinese);//设置语言环境
-    tts->setRate(0.3);//设置语速-1.0到1.0
-    tts->setPitch(0.0);//设置音高-1.0到1.0
-    tts->setVolume(0.6);//设置音量0.0-1.0
+    tts->setLocale(QLocale::Chinese);
+    tts->setRate(0.3);
+    tts->setPitch(0.0);
+    tts->setVolume(0.6);
     QDateTime c=QDateTime::currentDateTime();
     id=c.addSecs(-1800).toString("yyyyMMddhhmmss");
     jinShiNewsReportCurTime = GlobalVar::settings->value("jinShiNewsReportCurTime").toString();
