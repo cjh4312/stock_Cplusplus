@@ -1497,11 +1497,22 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             }
             else
             {
-                int curRow=mTableStock.stockTableView->currentIndex().row()+1;
-                if (curRow>GlobalVar::mTableList.count()-1)
-                    curRow=0;
-                GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
-                mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curRow,0));
+                if (isTraversalMyStock)
+                {
+                    int curRow=mTableStock.myStockView->currentIndex().row()+1;
+                    if (curRow>GlobalVar::mMyStockList.count()-1)
+                        curRow=0;
+                    GlobalVar::curCode=GlobalVar::mMyStockList.at(curRow).code;
+                    mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curRow,0));
+                }
+                else
+                {
+                    int curRow=mTableStock.stockTableView->currentIndex().row()+1;
+                    if (curRow>GlobalVar::mTableList.count()-1)
+                        curRow=0;
+                    GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
+                    mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curRow,0));
+                }
             }
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart(false);
@@ -1531,11 +1542,22 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             }
             else
             {
-                int curRow=mTableStock.stockTableView->currentIndex().row()-1;
-                if (curRow<0)
-                    curRow=GlobalVar::mTableList.count()-1;
-                GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
-                mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curRow,0));
+                if (isTraversalMyStock)
+                {
+                    int curRow=mTableStock.myStockView->currentIndex().row()-1;
+                    if (curRow<0)
+                        curRow=GlobalVar::mMyStockList.count()-1;
+                    GlobalVar::curCode=GlobalVar::mMyStockList.at(curRow).code;
+                    mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curRow,0));
+                }
+                else
+                {
+                    int curRow=mTableStock.stockTableView->currentIndex().row()-1;
+                    if (curRow<0)
+                        curRow=GlobalVar::mTableList.count()-1;
+                    GlobalVar::curCode=GlobalVar::mTableList.at(curRow).code;
+                    mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curRow,0));
+                }
             }
             emit startThreadCandleChart(freq,adjustFlag,true);
             emit startThreadTimeShareChart(false);
