@@ -139,7 +139,7 @@ void ThreadNewsReport::sayJsNews(QJsonObject object)
         QString newsText=object.value("data").toObject().value("content").toString();
         if (newsText.contains("<a") or newsText.contains("点击查看") or newsText.contains("金十图示") or
             newsText.contains("＞＞") or newsText.contains("...") or newsText.contains("......") or
-            newsText.contains(">>") or newsText.contains("……"))
+            newsText.contains(">>") or newsText.contains("……") or newsText.contains("免费领取"))
             return;
         if (newsText=="" or newsText=="-")
             return;
