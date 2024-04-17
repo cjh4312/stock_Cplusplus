@@ -239,7 +239,6 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
             info.tick=list[3].toInt();
             GlobalVar::mTimeShareTickList.append(info);
         }
-
     }
 }
 

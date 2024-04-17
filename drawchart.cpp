@@ -218,7 +218,7 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
             float price2=GlobalVar::mTimeShareChartList.at(i).price;
             float avePrice1=GlobalVar::mTimeShareChartList.at(i-1).avePrice;
             float avePrice2=GlobalVar::mTimeShareChartList.at(i).avePrice;
-            painter->setPen(Qt::yellow);
+            painter->setPen(Qt::white);
             if (high!=low)
                 painter->drawLine(QPointF(WIDTHEDGE+aveWidth*(i-1), (high-price1)*aveHeight+TOPHEIGHTEDGE), QPointF(WIDTHEDGE+aveWidth*i, (high-price2)*aveHeight+TOPHEIGHTEDGE));
             else
@@ -231,7 +231,7 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
                     painter->drawLine(QPointF(WIDTHEDGE+aveWidth*(i-1), priceH-TOPHEIGHTEDGE), QPointF(WIDTHEDGE+aveWidth*i, priceH-TOPHEIGHTEDGE));
                 }
             }
-            painter->setPen(Qt::white);
+            painter->setPen(Qt::yellow);
             if (high!=low)
                 painter->drawLine(QPointF(WIDTHEDGE+aveWidth*(i-1), (high-avePrice1)*aveHeight+TOPHEIGHTEDGE), QPointF(WIDTHEDGE+aveWidth*i, (high-avePrice2)*aveHeight+TOPHEIGHTEDGE));
         }
@@ -341,7 +341,7 @@ void DrawChart::drawHisTimeShare(QPainter *painter)
 
             float avePrice1=GlobalVar::mHisTimeShareChartList.at(i-1).avePrice;
             float avePrice2=GlobalVar::mHisTimeShareChartList.at(i).avePrice;
-            painter->setPen(Qt::yellow);
+            painter->setPen(Qt::white);
             if (high!=low)
                 painter->drawLine(QPointF(WIDTHEDGE+aveWidth*(i-1), (high-price1)*aveHeight+TOPHEIGHTEDGE), QPointF(WIDTHEDGE+aveWidth*i, (high-price2)*aveHeight+TOPHEIGHTEDGE));
             else
@@ -354,7 +354,7 @@ void DrawChart::drawHisTimeShare(QPainter *painter)
                     painter->drawLine(QPointF(WIDTHEDGE+aveWidth*(i-1), priceH-TOPHEIGHTEDGE), QPointF(WIDTHEDGE+aveWidth*i, priceH-TOPHEIGHTEDGE));
                 }
             }
-            painter->setPen(Qt::white);
+            painter->setPen(Qt::yellow);
             if (high!=low)
                 painter->drawLine(QPointF(WIDTHEDGE+aveWidth*(i-1), (high-avePrice1)*aveHeight+TOPHEIGHTEDGE), QPointF(WIDTHEDGE+aveWidth*i, (high-avePrice2)*aveHeight+TOPHEIGHTEDGE));
 
