@@ -94,8 +94,8 @@ public:
     static QPalette pBlack;
     static QPalette pBlue;
     static QPalette pWhite;
-    static int upNums;
-    static int downNums;
+    static int upNums[3];
+    static int downNums[3];
     static int trendsTotal;
     static bool isSayNews;
     static int curBlock;

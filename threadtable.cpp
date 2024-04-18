@@ -61,8 +61,11 @@ void ThreadTable::initTableList()
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
     if (jsonError.error == QJsonParseError::NoError)
     {
-        GlobalVar::upNums=0;
-        GlobalVar::downNums=0;
+        for (int i=0;i<3;++i)
+        {
+            GlobalVar::upNums[i]=0;
+            GlobalVar::downNums[i]=0;
+        }
         QJsonObject jsonObject = doc.object();
         QJsonArray data=jsonObject.value("data").toObject().value("diff").toArray();
         QJsonValue value;
@@ -82,10 +85,32 @@ void ThreadTable::initTableList()
                 info.code = ceilMap.value("f12").toString();
                 info.close = ceilMap.value("f2").toFloat();
                 info.pctChg=ceilMap.value("f3").toFloat();
-                if (info.pctChg>0)
-                    GlobalVar::upNums+=1;
+                if (info.pctChg>=8)
+                {
+                    GlobalVar::upNums[2]+=1;
+                    GlobalVar::upNums[1]+=1;
+                    GlobalVar::upNums[0]+=1;
+                }
+                else if (info.pctChg>=5)
+                {
+                    GlobalVar::upNums[1]+=1;
+                    GlobalVar::upNums[0]+=1;
+                }
+                else if (info.pctChg>0)
+                    GlobalVar::upNums[0]+=1;
+                else if (info.pctChg<=-8)
+                {
+                    GlobalVar::downNums[2]+=1;
+                    GlobalVar::downNums[1]+=1;
+                    GlobalVar::downNums[0]+=1;
+                }
+                else if (info.pctChg<=-5)
+                {
+                    GlobalVar::downNums[1]+=1;
+                    GlobalVar::downNums[0]+=1;
+                }
                 else if (info.pctChg<0)
-                    GlobalVar::downNums+=1;
+                    GlobalVar::downNums[0]+=1;
                 info.turn=ceilMap.value("f8").toFloat();
                 info.amount=ceilMap.value("f6").toFloat();
                 info.velocity = ceilMap.value("f22").toFloat();
@@ -123,10 +148,32 @@ void ThreadTable::initTableList()
                     info.code = ceilMap.value("f12").toString();
                 info.close = ceilMap.value("f2").toFloat();
                 info.pctChg=ceilMap.value("f3").toFloat();
-                if (info.pctChg>0)
-                    GlobalVar::upNums+=1;
+                if (info.pctChg>=8)
+                {
+                    GlobalVar::upNums[2]+=1;
+                    GlobalVar::upNums[1]+=1;
+                    GlobalVar::upNums[0]+=1;
+                }
+                else if (info.pctChg>=5)
+                {
+                    GlobalVar::upNums[1]+=1;
+                    GlobalVar::upNums[0]+=1;
+                }
+                else if (info.pctChg>0)
+                    GlobalVar::upNums[0]+=1;
+                else if (info.pctChg<=-8)
+                {
+                    GlobalVar::downNums[2]+=1;
+                    GlobalVar::downNums[1]+=1;
+                    GlobalVar::downNums[0]+=1;
+                }
+                else if (info.pctChg<=-5)
+                {
+                    GlobalVar::downNums[1]+=1;
+                    GlobalVar::downNums[0]+=1;
+                }
                 else if (info.pctChg<0)
-                    GlobalVar::downNums+=1;
+                    GlobalVar::downNums[0]+=1;
                 info.turn=ceilMap.value("f8").toFloat();
                 info.amount=ceilMap.value("f6").toFloat();
                 info.velocity = ceilMap.value("f22").toFloat();

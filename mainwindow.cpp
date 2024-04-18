@@ -72,8 +72,10 @@ void MainWindow::initThread()
     threadTable->moveToThread(thread[0]);
     connect(threadTable,&ThreadTable::getTableDataFinished,this,[=](){
         mTableStock.setTableView();
-        baseInfoData[7]->setText(QString::number(GlobalVar::upNums));
-        baseInfoData[15]->setText(QString::number(GlobalVar::downNums));
+        baseInfoData[7]->setText(QString::number(GlobalVar::upNums[0]));
+        baseInfoData[16]->setText(QString::number(GlobalVar::downNums[0]));
+        baseInfoData[8]->setText(QString::number(GlobalVar::upNums[1])+"/"+QString::number(GlobalVar::upNums[2]));
+        baseInfoData[17]->setText(QString::number(GlobalVar::downNums[1])+"/"+QString::number(GlobalVar::downNums[2]));
     });
     connect(this,&MainWindow::startThreadTable,threadTable,&ThreadTable::getTableData);
     thread[0]->start();
@@ -356,37 +358,37 @@ void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
     baseInfoLayout->addWidget(stockCode, 0, 0, 2, 1);
     baseInfoLayout->addWidget(stockName, 0, 1, 2, 3);
 
-    QString lName[]={"现价", "涨幅","换手", "成交额", "总股本", "总市值", "市净率", "上涨总数",
-                       "今开", "最高", "最低", "成交量(手)", "流通股", "", "", "下跌总数"};
+    QString lName[]={"现价", "涨幅","换手", "成交额", "总股本", "总市值", "市净率", "上涨总数","上涨5/8",
+                       "今开", "最高", "最低", "成交量(手)", "流通股", "", "", "下跌总数","下跌5/8"};
 
-    for (int i=0;i<16;++i)
+    for (int i=0;i<18;++i)
     {
         QLabel *name=new QLabel(lName[i],this);
         baseInfoData[i]=new QLabel(this);
         name->setStyleSheet("QLabel{font:bold 16px;font:bold;font-family:微软雅黑;color:rgb(47,79,79)}");
-        if ((i >= 2 and i <= 6) or (i >= 11 and i <= 14))
+        if ((i >= 2 and i <= 6) or (i >= 12 and i <= 15))
             baseInfoData[i]->setStyleSheet("QLabel{font:bold 14px;color:blue}");
-        else if (i == 7)
+        else if (i == 7 or i==8)
         {
             baseInfoData[i]->setStyleSheet("QLabel{font:bold 14px;color:red}");
 //            name->setMaximumWidth(90);
         }
-        else if (i == 15)
+        else if (i == 16 or i==17)
         {
             baseInfoData[i]->setStyleSheet("QLabel{font:bold 14px;color:green}");
 //            name->setMaximumWidth(90);
         }
         else
             baseInfoData[i]->setStyleSheet("QLabel{font:bold 14px}");
-        if (i < 8)
+        if (i < 9)
         {
             baseInfoLayout->addWidget(name,i+2,0);
             baseInfoLayout->addWidget(baseInfoData[i],i+2,1);
         }
-        else
+        else if (i<18)
         {
-            baseInfoLayout->addWidget(name,i-6,2);
-            baseInfoLayout->addWidget(baseInfoData[i],i-6,3);
+            baseInfoLayout->addWidget(name,i-7,2);
+            baseInfoLayout->addWidget(baseInfoData[i],i-7,3);
         }
     }
     EPSLabel=new QLabel(this);
@@ -2351,9 +2353,9 @@ void MainWindow::reFlashBuySellBaseInfo()
     for (int i=3;i<7;++i)
         baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i]));
     float pct=0;
-    for (int i=8;i<11;++i)
+    for (int i=9;i<12;++i)
     {
-        float p=GlobalVar::baseInfoData[i-1];
+        float p=GlobalVar::baseInfoData[i-2];
         if (GlobalVar::preClose==0 or p==0)
             pct=0;
         else
@@ -2366,11 +2368,11 @@ void MainWindow::reFlashBuySellBaseInfo()
         else
             baseInfoData[i]->setPalette(GlobalVar::pBlack);
     }
-    for (int i=11;i<15;++i)
-        if(i==13)
-            baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i-1],'f',3));
+    for (int i=12;i<16;++i)
+        if(i==14)
+            baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i-2],'f',3));
         else
-            baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i-1]));
+            baseInfoData[i]->setText(GlobalVar::format_conversion(GlobalVar::baseInfoData[i-2]));
     stockCode->setText(GlobalVar::curCode);
     stockName->setText(GlobalVar::curName);
     EPSLabel->setText(GlobalVar::EPSReportDate);

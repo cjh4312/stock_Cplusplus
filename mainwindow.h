@@ -90,7 +90,7 @@ private:
     QThread *thread[6];
     QTimer *tim;
     QLabel *circle;
-    QLabel *baseInfoData[16];
+    QLabel *baseInfoData[18];
     QLabel *buySellPrice[10];
     QLabel *buySellNum[10];
     QLabel *stockCode;

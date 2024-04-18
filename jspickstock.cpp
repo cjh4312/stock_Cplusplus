@@ -71,7 +71,7 @@ void JSPickStock::PickStockInterface()
     QLabel *formulaName=new QLabel("公式名称:",pickStockWindow);
     QLineEdit *nameLine=new QLineEdit(pickStockWindow);
     QLabel *formulaDes=new QLabel("公式描述:",pickStockWindow);
-    QTextEdit *desText=new QTextEdit();
+    QTextEdit *desText=new QTextEdit(pickStockWindow);
     desText->setMaximumHeight(200);
     QLabel *area=new QLabel("选股范围:",pickStockWindow);
     layout2->addWidget(formulaName,0,0,1,1,Qt::AlignCenter);
@@ -287,7 +287,9 @@ void JSPickStock::PickStockInterface()
         }
         emit updateTableList();
     });
-    connect(pickStockWindow,&QDialog::destroyed,this,[=](){isRunning=false;});
+    connect(pickStockWindow,&QDialog::destroyed,this,[=](){
+        isRunning=false;
+    });
 }
 
 void JSPickStock::onButtonClicked(QAbstractButton *button)
