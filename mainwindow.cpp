@@ -1963,6 +1963,8 @@ void MainWindow::fastTrade()
         proportionName[0]->setChecked(true);
         QPushButton *buy=new QPushButton("买入",fastBuy);
         QPushButton *close=new QPushButton("取消",fastBuy);
+        if (maxNums==0)
+            buy->setEnabled(false);
         connect(buy,&QPushButton::clicked,this,[=](){
             PyGILState_STATE state=PyGILState_Ensure();
             PyObject* pModule = PyImport_ImportModule("qmt");
@@ -2049,18 +2051,9 @@ void MainWindow::fastTrade()
         QLabel *numbers=new QLabel(GlobalVar::curCode,fastSell);
         QSpinBox *sellNums=new QSpinBox(fastSell);
         sellNums->setRange(0,1000000);
-        int maxNums=0;
-        if (GlobalVar::curCode==l[0].split('.')[0])
-        {
-            maxNums=l[1].toInt();
-            numbers->setText(QString::number(maxNums));
-            sellNums->setValue(maxNums);
-        }
-        else
-        {
-            numbers->setText(QString::number(maxNums));
-            sellNums->setValue(maxNums);
-        }
+        int maxNums=l[1].toInt();
+        numbers->setText(QString::number(maxNums));
+        sellNums->setValue(maxNums);
 
         price->setSingleStep(0.01);
         price->setRange(0,10000);
@@ -2085,6 +2078,8 @@ void MainWindow::fastTrade()
         proportionName[0]->setChecked(true);
         QPushButton *sell=new QPushButton("卖出",fastSell);
         QPushButton *close=new QPushButton("取消",fastSell);
+        if (maxNums==0)
+            sell->setEnabled(false);
         connect(sell,&QPushButton::clicked,this,[=](){
             PyGILState_STATE state=PyGILState_Ensure();
             PyObject* pModule = PyImport_ImportModule("qmt");
