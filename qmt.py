@@ -50,7 +50,7 @@ def getAsset(account):
     else:
         return f'{connect_result};{subscribe_result}'
 
-def getPositions(account):
+def getPositions(account,code):
     session_id = int(random.randint(100000, 999999))
     xt_trader = XtQuantTrader(path, session_id)
 
@@ -61,10 +61,10 @@ def getPositions(account):
     subscribe_result = xt_trader.subscribe(acc)
 
     positions = xt_trader.query_stock_positions(acc)
-    if len(positions)!=0:
-        return f"{positions[-1].stock_code};{positions[-1].can_use_volume}"
-    else:
-        return f'{connect_result};{subscribe_result}'
+    for p in positions:
+        if p.stock_code==code:
+            return f"{p.stock_code};{p.can_use_volume}"
+    return f'{code};{0}'
 
 #    positions = xt_trader.query_stock_positions(acc)
 #    info=[]

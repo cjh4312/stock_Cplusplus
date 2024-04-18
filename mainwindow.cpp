@@ -2005,8 +2005,14 @@ void MainWindow::fastTrade()
         PyObject* pFunTrade = PyObject_GetAttrString(pModule,"getPositions");
 //        if(!pFunTrade)
 //            qDebug()<<"get function failed";
-        PyObject* args = PyTuple_New(1);
+        PyObject* args = PyTuple_New(2);
+        QString stockCode=GlobalVar::curCode;
+        if (stockCode.mid(0,1)=='3' or stockCode.mid(0,1)=='0')
+            stockCode=stockCode+".SZ";
+        else
+            stockCode=stockCode+".SH";
         PyTuple_SetItem(args,0,Py_BuildValue("s",account.toStdString().c_str()));
+        PyTuple_SetItem(args,1,Py_BuildValue("s",stockCode.toStdString().c_str()));
         PyObject* outcome=PyObject_CallFunction(pFunTrade, "O",args);
         QStringList l=QString(PyUnicode_AsUTF8(outcome)).split(";");
         PyGILState_Release(state);
