@@ -1925,7 +1925,9 @@ void MainWindow::fastTrade()
         QLabel *code=new QLabel(GlobalVar::curCode,fastBuy);
         QLabel *fix=new QLabel("限价委托",fastBuy);
         QDoubleSpinBox *price=new QDoubleSpinBox(fastBuy);
-        QPushButton *flash=new QPushButton("刷新",fastBuy);
+        QLabel *unit=new QLabel("元",fastBuy);
+        QLabel *unit1=new QLabel("股",fastBuy);
+        QLabel *unit2=new QLabel("股",fastBuy);
 
         QLabel *numbers=new QLabel(GlobalVar::curCode,fastBuy);
         QSpinBox *buyNums=new QSpinBox(fastBuy);
@@ -1934,18 +1936,23 @@ void MainWindow::fastTrade()
         int maxNums=floor(cash/tradePrice/100)*100;
         numbers->setText(QString::number(maxNums));
         buyNums->setValue(maxNums);
-        connect(flash,&QPushButton::clicked,this,[=](){
-            numbers->setText(QString::number(floor(cash/price->text().toFloat()/100)*100));
+        connect(price,&QDoubleSpinBox::valueChanged,this,[=](){
+            int n=floor(cash/price->text().toFloat()/100)*100;
+            numbers->setText(QString::number(n));
+            buyNums->setValue(n);
         });
+
         price->setSingleStep(0.01);
         price->setRange(0,10000);
         price->setValue(tradePrice);
         tradeInfo->addWidget(code,0,2);
         tradeInfo->addWidget(fix,1,2);
         tradeInfo->addWidget(price,2,2);
+        tradeInfo->addWidget(unit,2,3);
         tradeInfo->addWidget(numbers,3,2);
-        tradeInfo->addWidget(flash,3,3);
+        tradeInfo->addWidget(unit1,3,3);
         tradeInfo->addWidget(buyNums,4,2);
+        tradeInfo->addWidget(unit2,4,3);
         QButtonGroup *proportion=new QButtonGroup(fastBuy);
         QRadioButton *proportionName[5];
         QStringList proportionNums={"全仓","1/2","1/3","1/4","1/5"};
@@ -1967,12 +1974,12 @@ void MainWindow::fastTrade()
             buy->setEnabled(false);
         connect(buy,&QPushButton::clicked,this,[=](){
             PyGILState_STATE state=PyGILState_Ensure();
-            PyObject* pModule = PyImport_ImportModule("qmt");
-            if(!pModule)
-                qDebug()<<"import failure";
+            // PyObject* pModule = PyImport_ImportModule("qmt");
+            // if(!pModule)
+            //     qDebug()<<"import failure";
             PyObject* pFunTrade = PyObject_GetAttrString(pModule,"qmtBuy");
-            if(!pFunTrade)
-                qDebug()<<"get function failed";
+            // if(!pFunTrade)
+            //     qDebug()<<"get function failed";
 
             PyObject* args = PyTuple_New(4);
             QString code=GlobalVar::curCode;
@@ -2047,6 +2054,9 @@ void MainWindow::fastTrade()
         QLabel *code=new QLabel(GlobalVar::curCode,fastSell);
         QLabel *fix=new QLabel("限价委托",fastSell);
         QDoubleSpinBox *price=new QDoubleSpinBox(fastSell);
+        QLabel *unit=new QLabel("元",fastSell);
+        QLabel *unit1=new QLabel("股",fastSell);
+        QLabel *unit2=new QLabel("股",fastSell);
 
         QLabel *numbers=new QLabel(GlobalVar::curCode,fastSell);
         QSpinBox *sellNums=new QSpinBox(fastSell);
@@ -2060,9 +2070,12 @@ void MainWindow::fastTrade()
         price->setValue(tradePrice);
         tradeInfo->addWidget(code,0,2);
         tradeInfo->addWidget(fix,1,2);
-        tradeInfo->addWidget(price,2,2,1,2);
+        tradeInfo->addWidget(price,2,2);
+        tradeInfo->addWidget(unit,2,3);
         tradeInfo->addWidget(numbers,3,2);
+        tradeInfo->addWidget(unit1,3,3);
         tradeInfo->addWidget(sellNums,4,2);
+        tradeInfo->addWidget(unit2,4,3);
         QButtonGroup *proportion=new QButtonGroup(fastSell);
         QRadioButton *proportionName[5];
         QStringList proportionNums={"全仓","1/2","1/3","1/4","1/5"};
@@ -2083,11 +2096,11 @@ void MainWindow::fastTrade()
         connect(sell,&QPushButton::clicked,this,[=](){
             PyGILState_STATE state=PyGILState_Ensure();
             PyObject* pModule = PyImport_ImportModule("qmt");
-            if(!pModule)
-                qDebug()<<"import failure";
+            // if(!pModule)
+            //     qDebug()<<"import failure";
             PyObject* pFunTrade = PyObject_GetAttrString(pModule,"qmtSell");
-            if(!pFunTrade)
-                qDebug()<<"get function failed";
+            // if(!pFunTrade)
+            //     qDebug()<<"get function failed";
 
             PyObject* args = PyTuple_New(4);
             QString code=GlobalVar::curCode;
