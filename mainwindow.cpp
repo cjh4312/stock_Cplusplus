@@ -1394,7 +1394,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         for (int i=0;i<10;++i)
         {
-            if (obj==buySellPrice[i] and (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4))
+            if (obj==buySellPrice[i] and (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4) and GlobalVar::curCode.left(1)!="1")
             {
                 if (event->type()==QEvent::MouseButtonPress)
                     tradePrice=buySellPrice[i]->text().toFloat();
@@ -1871,8 +1871,7 @@ void MainWindow::dealWithFundFlow()
 }
 void MainWindow::fastTrade()
 {
-    if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or GlobalVar::WhichInterface==6 or tradePrice==0 or
-        GlobalVar::curCode.left(1)=="1")
+    if ((GlobalVar::WhichInterface!=1 and GlobalVar::WhichInterface!=4) or GlobalVar::curCode.left(1)=="1" or tradePrice==0)
         return;
     QMenu *menu=new QMenu(this);
     menu->setAttribute(Qt::WA_DeleteOnClose);
