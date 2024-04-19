@@ -2097,7 +2097,7 @@ void MainWindow::fastTrade()
             sell->setEnabled(false);
         connect(sell,&QPushButton::clicked,this,[=](){
             PyGILState_STATE state=PyGILState_Ensure();
-            PyObject* pModule = PyImport_ImportModule("qmt");
+            // PyObject* pModule = PyImport_ImportModule("qmt");
             // if(!pModule)
             //     qDebug()<<"import failure";
             PyObject* pFunTrade = PyObject_GetAttrString(pModule,"qmtSell");
