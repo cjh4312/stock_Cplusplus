@@ -69,7 +69,13 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 1: return m_modelData.at(row).name;
         case 2: return QString::number(m_modelData.at(row).velocity,'f',2);
         case 3: return GlobalVar::format_conversion(m_modelData.at(row).pctChg)+"%";
-        case 4: return QString::number(m_modelData.at(row).close,'f',2);
+        case 4:
+        {
+            int p=2;
+            if (GlobalVar::WhichInterface==2)
+                p=3;
+            return QString::number(m_modelData.at(row).close,'f',p);
+        }
         case 5: return m_modelData.at(row).turn;
         case 6: return GlobalVar::format_conversion(m_modelData.at(row).amount);
         case 7: return GlobalVar::format_conversion(m_modelData.at(row).totalValue);
