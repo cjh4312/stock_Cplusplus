@@ -71,7 +71,9 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 3: return GlobalVar::format_conversion(m_modelData.at(row).pctChg)+"%";
         case 4:
         {
-            int p=GlobalVar::setRound();
+            int p=2;
+            if (GlobalVar::WhichInterface==6 or GlobalVar::WhichInterface==2)
+                p=3;
             return QString::number(m_modelData.at(row).close,'f',p);
         }
         case 5: return m_modelData.at(row).turn;
