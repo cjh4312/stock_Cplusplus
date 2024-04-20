@@ -48,6 +48,7 @@ public:
     static void getAllContent(QString &content,QStringList &strList,QString begin);
     static bool isInt(QString s);
     static StockInfo findStock(QString code);
+    static int setRound();
 
     static QString curCode;
     static bool isBoard;
@@ -109,5 +110,15 @@ public:
     static QList<QStringList> formula;
     static QList<QStringList> annoucementList;
 };
+
+inline int GlobalVar::setRound()
+{
+    int p=2;
+    if (GlobalVar::curCode.left(3)=="133")
+        p=4;
+    else if (GlobalVar::curCode.size()==5 or GlobalVar::curCode.left(3)=="155")
+        p=3;
+    return p;
+}
 
 #endif // GLOBALVAR_H
