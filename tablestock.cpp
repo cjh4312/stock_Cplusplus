@@ -44,8 +44,8 @@ void TableStock::setColumnWidth(QTableView *TV)
     else
         TV->setColumnWidth(1, 75);
     TV->setColumnWidth(2, 55);
-    TV->setColumnWidth(3, 70);
-    TV->setColumnWidth(4, 70);
+    TV->setColumnWidth(3, 66);
+    TV->setColumnWidth(4, 75);
     TV->setColumnWidth(5, 60);
     TV->setColumnWidth(6, 85);
     TV->setColumnWidth(7, 80);

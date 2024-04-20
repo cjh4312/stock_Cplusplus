@@ -2346,7 +2346,7 @@ void MainWindow::reFlashBuySellBaseInfo()
     int p=2;
     if (GlobalVar::curCode.left(3)=="133")
         p=4;
-    else if (GlobalVar::curCode.size()==5)
+    else if (GlobalVar::curCode.size()==5 or GlobalVar::curCode.left(3)=="155")
         p=3;
     baseInfoData[0]->setText(QString::number(GlobalVar::baseInfoData[0],'f',p));
     for (int i=1;i<3;++i)

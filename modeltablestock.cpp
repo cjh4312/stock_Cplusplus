@@ -72,7 +72,7 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 4:
         {
             int p=2;
-            if (GlobalVar::WhichInterface==2)
+            if (GlobalVar::curCode.size()==5 or GlobalVar::curCode.left(3)=="155")
                 p=3;
             return QString::number(m_modelData.at(row).close,'f',p);
         }
