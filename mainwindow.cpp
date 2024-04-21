@@ -166,7 +166,7 @@ void MainWindow::initInterface()
     middleDLayout->setSpacing(0);
     middleDLayout->setContentsMargins(0,0,0,0);
     // mTableStock.blockView->setMaximumHeight(454);
-    mTableStock.risingSpeedView->setMaximumWidth(290);
+    mTableStock.risingSpeedView->setMaximumWidth(285);
     mTableStock.risingSpeedView->setMinimumHeight(496);
     mTableStock.myStockView->setMinimumHeight(496);
     mTableStock.blockView->setMinimumWidth(785);

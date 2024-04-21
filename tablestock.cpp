@@ -40,10 +40,10 @@ void TableStock::setColumnWidth(QTableView *TV)
 {
     TV->setColumnWidth(0, 60);
     if (GlobalVar::WhichInterface==2 || GlobalVar::WhichInterface==5 || GlobalVar::WhichInterface==6)
-        TV->setColumnWidth(1, 200);
+        TV->setColumnWidth(1, 280);
     else
         TV->setColumnWidth(1, 75);
-    TV->setColumnWidth(2, 55);
+    TV->setColumnWidth(2, 50);
     TV->setColumnWidth(3, 66);
     TV->setColumnWidth(4, 75);
     TV->setColumnWidth(5, 60);
@@ -68,6 +68,13 @@ void TableStock::setTimeShareTickView()
     timeShareTickView->setColumnWidth(2,75);
     timeShareTickView->setColumnWidth(3,12);
     timeShareTickView->setColumnWidth(4,48);
+    blockView->setColumnWidth(0,135);
+    blockView->setColumnWidth(1,78);
+    blockView->setColumnWidth(3,85);
+    blockView->setColumnWidth(4,50);
+    blockView->setColumnWidth(6,50);
+    blockView->setColumnWidth(7,85);
+    blockView->setColumnWidth(8,50);
 //    timeShareTickView->resizeColumnsToContents();
 
 }

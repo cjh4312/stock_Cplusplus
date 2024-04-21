@@ -205,7 +205,7 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 3:return Qt::AlignRight;
         case 4:return Qt::AlignRight;
         case 5:return Qt::AlignRight;
-        case 6:return Qt::AlignCenter;
+        case 6:return Qt::AlignRight;
         case 7:return Qt::AlignRight;
         case 8:return Qt::AlignRight;
         case 9:return Qt::AlignRight;

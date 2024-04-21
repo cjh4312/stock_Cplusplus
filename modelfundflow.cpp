@@ -155,12 +155,14 @@ QVariant ModelFundFlow::data(const QModelIndex &index, int role) const
     {
         switch(index.column())
         {
-        case 1:return Qt::AlignRight;
+        case 1:return Qt::AlignCenter;
         case 2:return Qt::AlignCenter;
-        case 3:return Qt::AlignCenter;
-        case 4:return Qt::AlignCenter;
-        case 5:return Qt::AlignCenter;
-        case 6:return Qt::AlignCenter;
+        case 3:return Qt::AlignRight;
+        case 4:return Qt::AlignRight;
+        case 5:return Qt::AlignRight;
+        case 6:return Qt::AlignRight;
+        case 7:return Qt::AlignRight;
+        case 8:return Qt::AlignRight;
         }
     }
     return QVariant();
