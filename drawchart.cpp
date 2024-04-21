@@ -703,7 +703,7 @@ QString retain(QString s,QString b,QString e)
     return s.mid(headPos,endPos+Elabel.length()-headPos);
 }
 
-QString peer(QString s,QString b,QString e)
+QString peel(QString s,QString b,QString e)
 {
     QString Hlabel="<"+e;
     QString Elabel="</"+e+">";
@@ -759,23 +759,23 @@ void DrawChart::annClicked(const QModelIndex index)
            QTextCodec *codec = QTextCodec::codecForName("utf-8");
            html=codec->toUnicode(allData);
            html=retain(html,"<div class=\"detail-info\"","div")+retain(html,"<div class=\"detail-content\"","div");
-           html=peer(html,"<div class=\"fenlei1\"","div");
-           html=peer(html,"<div class=\"fenlei2\"","div");
+           html=peel(html,"<div class=\"fenlei1\"","div");
+           html=peel(html,"<div class=\"fenlei2\"","div");
 
-   //        html=peer(html,"<div class=\"social-bar\"","div");
+   //        html=peel(html,"<div class=\"social-bar\"","div");
    //        html=retain(html,"<div class=\"main-content text-large\"","div");
-   //        html=peer(html,"<div class=\"bullet\"","div");
-   //        html=peer(html,"<div class=\"bullet\"","div");
+   //        html=peel(html,"<div class=\"bullet\"","div");
+   //        html=peel(html,"<div class=\"bullet\"","div");
            annText->setText(html);
        }
        else if (GlobalVar::annoucementList.at(index.row())[1]=="[公告]")
        {
            QTextCodec *codec = QTextCodec::codecForName("gbk");
            html=codec->toUnicode(allData);
-           html=peer(html,"<div class=\"head\"","div");
-           html=peer(html,"<div class=\"search\"","div");
-           html=peer(html,"<div class=\"w1200 center\"","div");
-           html=peer(html,"<div class=\"footer mg0\"","div");
+           html=peel(html,"<div class=\"head\"","div");
+           html=peel(html,"<div class=\"search\"","div");
+           html=peel(html,"<div class=\"w1200 center\"","div");
+           html=peel(html,"<div class=\"footer mg0\"","div");
            annText->setText(html);
        }
        else if (GlobalVar::annoucementList.at(index.row())[1]=="[东方公告]")
