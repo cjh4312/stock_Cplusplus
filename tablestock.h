@@ -27,6 +27,7 @@ public:
     void setTableView();
     void setTimeShareTickView();
     void setColumnWidth(QTableView *TV);
+    void setBlockView();
 
 private:
     void initTableView();

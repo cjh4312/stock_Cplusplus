@@ -59,6 +59,18 @@ void TableStock::setColumnWidth(QTableView *TV)
     TV->setColumnWidth(15, 70);
     TV->setColumnWidth(16, 70);
 }
+
+void TableStock::setBlockView()
+{
+    blockView->setColumnWidth(0,135);
+    blockView->setColumnWidth(1,78);
+    blockView->setColumnWidth(3,85);
+    blockView->setColumnWidth(4,50);
+    blockView->setColumnWidth(6,50);
+    blockView->setColumnWidth(7,85);
+    blockView->setColumnWidth(8,50);
+}
+
 void TableStock::setTimeShareTickView()
 {
     m_timeShareTickModel->setModelData(GlobalVar::mTimeShareTickList);
@@ -68,13 +80,6 @@ void TableStock::setTimeShareTickView()
     timeShareTickView->setColumnWidth(2,75);
     timeShareTickView->setColumnWidth(3,12);
     timeShareTickView->setColumnWidth(4,48);
-    blockView->setColumnWidth(0,135);
-    blockView->setColumnWidth(1,78);
-    blockView->setColumnWidth(3,85);
-    blockView->setColumnWidth(4,50);
-    blockView->setColumnWidth(6,50);
-    blockView->setColumnWidth(7,85);
-    blockView->setColumnWidth(8,50);
 //    timeShareTickView->resizeColumnsToContents();
 
 }
@@ -157,5 +162,8 @@ void TableStock::initTableView()
     connect(m_myStockModel,&ModelTableStock::modelReset,myStockView,[=](){
         myStockView->setCurrentIndex(m_myStockModel->index(0,0));
         setColumnWidth(myStockView);
+    });
+    connect(m_fundFlowModel,&ModelTableStock::modelReset,blockView,[=](){
+        setBlockView();
     });
 }
