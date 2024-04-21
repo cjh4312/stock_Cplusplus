@@ -355,7 +355,7 @@ void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
     stockName = new QLabel(this);
     stockCode->setStyleSheet("QLabel{font:bold;color:blue}");
     stockName->setStyleSheet("QLabel{font:bold 26px;font-family:微软雅黑;color:red}");
-    baseInfoLayout->setVerticalSpacing(1);
+    // baseInfoLayout->setVerticalSpacing(1);
     baseInfoLayout->addWidget(stockCode, 0, 0, 2, 1);
     baseInfoLayout->addWidget(stockName, 0, 1, 2, 3);
 
