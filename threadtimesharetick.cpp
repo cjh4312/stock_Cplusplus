@@ -235,7 +235,7 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
             info.time=list[0];
             info.price=list[1].toFloat();
             info.nums=list[2].toInt();
-            info.d=list[4].toInt();
+            info.direct=list[4].toInt();
             info.tick=list[3].toInt();
             GlobalVar::mTimeShareTickList.append(info);
         }
@@ -258,7 +258,7 @@ void ThreadTimeShareTick::initSSETimeShareTickList()
             info.time=list[0];
             info.price=list[1].toFloat();
             info.nums=list[2].toInt();
-            info.d=list[4].toInt();
+            info.direct=list[4].toInt();
             info.tick=list[3].toInt();
             GlobalVar::mTimeShareTickList.append(info);
         }

@@ -114,9 +114,10 @@ public:
 inline int GlobalVar::setRound()
 {
     int p=2;
-    if (GlobalVar::curCode.left(3)=="133")
+    QString s=GlobalVar::curCode.left(3);
+    if (s=="133")
         p=4;
-    else if (GlobalVar::curCode.size()==5 or GlobalVar::curCode.left(3)=="155")
+    else if (GlobalVar::curCode.size()==5 or s=="155")
         p=3;
     return p;
 }

@@ -54,7 +54,7 @@ struct timeShareTickInfo
     QString time;
     float price;
     int nums;
-    int d;
+    int direct;
     int tick;
 };
 

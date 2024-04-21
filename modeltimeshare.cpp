@@ -45,14 +45,14 @@ QVariant ModelTimeShare::data(const QModelIndex &index, int role) const
         case 0: return m_modelData.at(row).time;
         case 1:
             {
-            int p=GlobalVar::setRound();
-            return QString::number(m_modelData.at(row).price,'f',p);
+            int d=GlobalVar::setRound();
+            return QString::number(m_modelData.at(row).price,'f',d);
             }
         case 2: return m_modelData.at(row).nums;
         case 3:
-            if (m_modelData.at(row).d==1)
+            if (m_modelData.at(row).direct==1)
                 return "S";
-            else if (m_modelData.at(row).d==2)
+            else if (m_modelData.at(row).direct==2)
                 return "B";
             return "";
         case 4: return m_modelData.at(row).tick;
@@ -72,9 +72,9 @@ QVariant ModelTimeShare::data(const QModelIndex &index, int role) const
         case 2:
             return QColor(255,165,0);
         case 3:
-            if (m_modelData.at(row).d==2)
+            if (m_modelData.at(row).direct==2)
                 return QColor(Qt::red);
-            else if(m_modelData.at(row).d==1)
+            else if(m_modelData.at(row).direct==1)
                 return QColor(0, 191, 0);
         }
     }

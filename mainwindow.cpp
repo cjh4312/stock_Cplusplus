@@ -355,6 +355,7 @@ void MainWindow::initBaseInfoLayout(QGridLayout *baseInfoLayout)
     stockName = new QLabel(this);
     stockCode->setStyleSheet("QLabel{font:bold;color:blue}");
     stockName->setStyleSheet("QLabel{font:bold 26px;font-family:微软雅黑;color:red}");
+    baseInfoLayout->setVerticalSpacing(1);
     baseInfoLayout->addWidget(stockCode, 0, 0, 2, 1);
     baseInfoLayout->addWidget(stockName, 0, 1, 2, 3);
 
@@ -2297,7 +2298,7 @@ void MainWindow::reFlashIndex()
 void MainWindow::reFlashBuySellBaseInfo()
 {
     QString str;
-    int p=GlobalVar::setRound();
+    int d=GlobalVar::setRound();
     for (int i=0;i<10;++i)
     {
         float price=GlobalVar::buySellPrice[i];
@@ -2305,7 +2306,7 @@ void MainWindow::reFlashBuySellBaseInfo()
             str="";
         else
         {
-            str=QString::number(price,'f',p);
+            str=QString::number(price,'f',d);
             if (price>GlobalVar::preClose)
                 buySellPrice[i]->setPalette(GlobalVar::pRed);
             else if (price<GlobalVar::preClose)
@@ -2342,7 +2343,7 @@ void MainWindow::reFlashBuySellBaseInfo()
         baseInfoData[1]->setPalette(GlobalVar::pBlack);
     }
 
-    baseInfoData[0]->setText(QString::number(GlobalVar::baseInfoData[0],'f',p));
+    baseInfoData[0]->setText(QString::number(GlobalVar::baseInfoData[0],'f',d));
     for (int i=1;i<3;++i)
         baseInfoData[i]->setText(QString::number(GlobalVar::baseInfoData[i],'f',2)+"%");
     for (int i=3;i<7;++i)
@@ -2350,12 +2351,12 @@ void MainWindow::reFlashBuySellBaseInfo()
     float pct=0;
     for (int i=9;i<12;++i)
     {
-        float p=GlobalVar::baseInfoData[i-2];
-        if (GlobalVar::preClose==0 or p==0)
+        float v=GlobalVar::baseInfoData[i-2];
+        if (GlobalVar::preClose==0 or v==0)
             pct=0;
         else
-            pct=(p-GlobalVar::preClose)*100/GlobalVar::preClose;
-        baseInfoData[i]->setText(QString::number(p)+"("+GlobalVar::format_conversion(pct)+"%)");
+            pct=(v-GlobalVar::preClose)*100/GlobalVar::preClose;
+        baseInfoData[i]->setText(QString::number(v,'f',d)+"("+GlobalVar::format_conversion(pct)+"%)");
         if (pct>0)
             baseInfoData[i]->setPalette(GlobalVar::pRed);
         else if(pct<0)
