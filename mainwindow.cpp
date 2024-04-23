@@ -928,8 +928,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             float p=GlobalVar::mTimeShareChartList.at(n).price;
             if (p>0)
                 drawChart.timeSharePrice->setStyleSheet("color:red;font:bold;font-size:18px");
-            else
+            else if (p<0)
                 drawChart.timeSharePrice->setStyleSheet("color:rgb(0,255,0);font:bold;font-size:18px");
+            else
+                drawChart.timeSharePrice->setStyleSheet("color:yellow;font:bold;font-size:18px");
             float price=(1+p/100)*GlobalVar::preClose;
             int x=(drawChart.timeShareChart->width()-2*WIDTHEDGE)*n/GlobalVar::trendsTotal+WIDTHEDGE;
             int y=(GlobalVar::timeShareHighLowPoint[0]-p)*(drawChart.timeShareChart->height()*12/15-2*TOPHEIGHTEDGE)/(GlobalVar::timeShareHighLowPoint[0]-GlobalVar::timeShareHighLowPoint[1])+TOPHEIGHTEDGE;
@@ -1175,8 +1177,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
             if (price>GlobalVar::hisPreClose)
                 drawChart.hisTimeSharePrice->setStyleSheet("color:red;font:bold;font-size:18px");
-            else
+            else if (price<GlobalVar::hisPreClose)
                 drawChart.hisTimeSharePrice->setStyleSheet("color:rgb(0,255,0);font:bold;font-size:18px");
+            else
+                drawChart.hisTimeSharePrice->setStyleSheet("color:yellow;font:bold;font-size:18px");
             float p=(price-GlobalVar::hisPreClose)*100/GlobalVar::hisPreClose;
             int x=(drawChart.hisTimeShareChartView->width()-2*WIDTHEDGE)*n/GlobalVar::mHisTimeShareChartList.size()+WIDTHEDGE;
             int y=(drawChart.hisTimeShareHighLowPoint[0]-price)*(drawChart.hisTimeShareChartView->height()*12/15-2*TOPHEIGHTEDGE)/(drawChart.hisTimeShareHighLowPoint[0]-drawChart.hisTimeShareHighLowPoint[1])+TOPHEIGHTEDGE;
@@ -1447,7 +1451,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (event->pos().ry()<250 and event->button()==Qt::RightButton)
-        if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
+        if (GlobalVar::WhichInterface==1 or (GlobalVar::WhichInterface==4 and GlobalVar::isKState))
             addRightMenu(3);
 }
 void MainWindow::keyPressEvent(QKeyEvent *event)
