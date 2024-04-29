@@ -74,7 +74,11 @@ void TableStock::setBlockView()
 void TableStock::setTimeShareTickView()
 {
     m_timeShareTickModel->setModelData(GlobalVar::mTimeShareTickList);
-    timeShareTickView->scrollToBottom();
+    if (preSize-timeShareTickView->verticalScrollBar()->value()==13 or
+        preCode!=GlobalVar::curCode)
+        timeShareTickView->scrollToBottom();
+    preSize=GlobalVar::mTimeShareTickList.size();
+    preCode=GlobalVar::curCode;
     timeShareTickView->setColumnWidth(0,60);
     timeShareTickView->setColumnWidth(1,85);
     timeShareTickView->setColumnWidth(2,75);

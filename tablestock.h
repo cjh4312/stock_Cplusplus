@@ -24,6 +24,8 @@ public:
     ModelTimeShare *m_timeShareTickModel;
     ModelFundFlow *m_fundFlowModel;
     bool isFlashTable=true;
+    QString preCode="";
+    int preSize=0;
     void setTableView();
     void setTimeShareTickView();
     void setColumnWidth(QTableView *TV);
