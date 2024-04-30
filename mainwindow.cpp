@@ -1801,12 +1801,9 @@ void MainWindow::addRightMenu(int num)
         mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
         mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
         mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
-        mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
+        // mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
         if (ifCanClick==1)
-        {
             mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
-            mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-        }
         else
             mFundFlow.model->item(mTableStock.stockTableView->currentIndex().row(),1)->setForeground(QColor(255,140,0));
         GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
@@ -2144,14 +2141,8 @@ void MainWindow::delMyStock()
     mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
     mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
     mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
-    // curIndex=mTableStock.risingSpeedView->currentIndex().row();
     mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
-    mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
-    // mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
-    // curIndex=mTableStock.stockTableView->currentIndex().row();
     mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
-    mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-    // mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
     GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
 }
 void MainWindow::tradingTimeRunThread()
