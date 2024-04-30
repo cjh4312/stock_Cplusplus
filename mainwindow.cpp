@@ -1798,7 +1798,6 @@ void MainWindow::addRightMenu(int num)
         GlobalVar::mMyStockCode.append(info.code);
         int curIndex=mTableStock.myStockView->currentIndex().row();
         mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
-        mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
         mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
         mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
         // mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
@@ -2139,7 +2138,6 @@ void MainWindow::delMyStock()
     if (curIndex==mTableStock.m_myStockModel->rowCount()-1)
         curIndex-=1;
     mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
-    mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
     mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
     mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
     mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
