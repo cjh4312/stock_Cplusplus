@@ -1807,6 +1807,8 @@ void MainWindow::addRightMenu(int num)
             mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
             mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         }
+        else
+            mFundFlow.model->item(mTableStock.stockTableView->currentIndex().row(),1)->setForeground(QColor(255,140,0));
         GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
     });
 
