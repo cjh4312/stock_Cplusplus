@@ -464,8 +464,8 @@ void MainWindow::initSignals()
                 mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(row,0)->text()+" 资金流图表");
                 mFundFlow.fundFlowChart->show();
                 mFundFlow.fundFlowChart->update();
-                mFundFlow.fundFlowChart->move(859,150);
-                mFundFlow.fundFlowChart->move(860,150);
+                mFundFlow.fundFlowChart->move(POSXCHART,POSYCHART);
+                mFundFlow.fundFlowChart->move(POSXCHART+1,POSYCHART);
             }
         }
         else
@@ -587,7 +587,7 @@ void MainWindow::initSignals()
 //        }
     });
     connect(mTableStock.stockTableView,&QTableView::customContextMenuRequested,this,[=](QPoint){
-        if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
+        if (GlobalVar::WhichInterface==1 or (GlobalVar::WhichInterface==4 and (ifCanClick==2 or ifCanClick==1)))
             addRightMenu(1);
     });
     connect(mTableStock.risingSpeedView,&QTableView::customContextMenuRequested,this,[=](QPoint){
@@ -769,7 +769,7 @@ void MainWindow::initSignals()
     });
     connect(ui->setVacation,&QAction::triggered,this,[=](){
         if (GlobalVar::getVacation())
-            QMessageBox::information(this,"提示", "设置成功", QMessageBox::Ok);
+            QMessageBox::information(this,"提示", "设置成功。一年只需设置一次！", QMessageBox::Ok);
         else
             QMessageBox::information(this,"提示", "设置失败,请重试", QMessageBox::Ok);
         // if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
@@ -1108,14 +1108,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 mFundFlow.vKLine->hide();
                 mFundFlow.fundFlowChart->update();
             }
-            mFundFlow.fundFlowChart->move(859,150);
-            mFundFlow.fundFlowChart->move(860,150);
+            mFundFlow.fundFlowChart->move(POSXCHART,POSYCHART);
+            mFundFlow.fundFlowChart->move(POSXCHART+1,POSYCHART);
         }
         else if (event->type()==QEvent::Leave)
         {
             mFundFlow.vKLine->hide();
-            mFundFlow.fundFlowChart->move(859,150);
-            mFundFlow.fundFlowChart->move(860,150);
+            mFundFlow.fundFlowChart->move(POSXCHART,POSYCHART);
+            mFundFlow.fundFlowChart->move(POSXCHART+1,POSYCHART);
         }
         else if (event->type()==QEvent::KeyPress)
         {
@@ -1800,18 +1800,14 @@ void MainWindow::addRightMenu(int num)
         mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
         mTableStock.myStockView->setModel(mTableStock.m_myStockModel);
         mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
-        // curIndex=mTableStock.risingSpeedView->currentIndex().row();
         mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
         mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
-        // mTableStock.risingSpeedView->setCurrentIndex(mTableStock.m_risingSpeedModel->index(curIndex,0));
-        // curIndex=mTableStock.stockTableView->currentIndex().row();
-        if (ifCanClick!=2)
+        if (ifCanClick==1)
         {
             mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
             mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
-            // mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(curIndex,0));
-            GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
         }
+        GlobalVar::settings->setValue("myStock",GlobalVar::mMyStockCode);
     });
 
 }
@@ -2635,7 +2631,7 @@ void MainWindow::toFundFlow()
     }
     else if((sender()==fundFlow[9]))
     {
-        ifCanClick=2;
+        ifCanClick=-1;
         QString ft[]={"all","gp","hh","zq","zs","qdii","lof","fof"};
         QString sc[]={"zzf", "6yzf", "6yzf", "6yzf", "6yzf", "6yzf", "6yzf", "6yzf"};
         mFundFlow.openFundRank(ft[openFundBox->currentIndex()],sc[openFundBox->currentIndex()]);

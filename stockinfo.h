@@ -20,6 +20,8 @@
 #define TIPWIDTH 15
 #define PI 3.1415926
 #define MAX_RETRIES 3
+#define POSXCHART 640
+#define POSYCHART 120
 
 struct StockInfo
 {
