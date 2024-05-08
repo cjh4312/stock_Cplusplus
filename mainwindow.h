@@ -85,6 +85,7 @@ private:
     ThreadNewsReport *threadNewsReport;
     ThreadCandleChart *threadCandleChart;
     bool isThreadRunning=false;
+    bool isFlashBaseInfo=true;
     PyObject* pModule;
 
     QThread *thread[6];

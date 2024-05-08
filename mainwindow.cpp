@@ -575,7 +575,7 @@ void MainWindow::initSignals()
             GlobalVar::sortByColumn(&GlobalVar::mTableList,logicalIndex,GlobalVar::is_asc);
             preSort=GlobalVar::is_asc;
             mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
-            mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
+            // mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
             mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
             mTableStock.stockTableView->scrollTo(mTableStock.m_tableModel->index(0,0));
         }
@@ -1242,6 +1242,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type()==QEvent::MouseMove)
         {
+            isFlashBaseInfo=false;
             QMouseEvent *mouseEvent = (QMouseEvent *)event;
             flashOldCandleInfo(mouseEvent);
         }
@@ -1313,6 +1314,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             drawChart.rowTime->hide();
             drawChart.vKLine->hide();
             drawChart.hKLine->hide();
+            isFlashBaseInfo=true;
             reFlashBuySellBaseInfo();
         }
         else if (event->type()==QEvent::ContextMenu)
@@ -1713,8 +1715,8 @@ void MainWindow::setMarket()
 //        ui->USMarket->setChecked(true);
 //        ui->ZHMarket->setChecked(false);
         ui->USzMarket->setChecked(false);
-        GlobalVar::curCode="105.MSFT";
-        GlobalVar::curName="微软";
+        GlobalVar::curCode="105.NVDA";
+        GlobalVar::curName="英伟达";
     }
     else if (obj->objectName()=="USzMarket")
     {
@@ -1800,7 +1802,6 @@ void MainWindow::addRightMenu(int num)
         mTableStock.m_myStockModel->setModelData(GlobalVar::mMyStockList,false,false);
         mTableStock.myStockView->setCurrentIndex(mTableStock.m_myStockModel->index(curIndex,0));
         mTableStock.m_risingSpeedModel->setModelData(GlobalVar::mRisingSpeedList,false,true);
-        // mTableStock.risingSpeedView->setModel(mTableStock.m_risingSpeedModel);
         if (ifCanClick==1)
             mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
         else
@@ -2175,7 +2176,6 @@ void MainWindow::tradingTimeRunThread()
             {
                 circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
                 emit startThreadTable();
-                // emit startThreadTimeShareTick(false);
             }
             else
                 circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
@@ -2197,7 +2197,6 @@ void MainWindow::tradingTimeRunThread()
             {
                 circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
                 emit startThreadTable();
-                // emit startThreadTimeShareTick(false);
             }
             else
                 circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
@@ -2209,7 +2208,7 @@ void MainWindow::tradingTimeRunThread()
     {
         emit startThreadGetNews();
         QString d=curTime.date().toString("yyyy-MM-dd");
-        if (GlobalVar::isWorkDay(curTime) and d>downloadDate and curTime.time().toString("hh:mm")>="09:00")
+        if (d>downloadDate and GlobalVar::isWorkDay(curTime) and curTime.time().toString("hh:mm")>="09:00")
         {
             QStringList vacation=GlobalVar::settings->value("Vacation_ZH").toStringList();
             QString cur_date=curTime.toString("MMdd");
@@ -2288,6 +2287,8 @@ void MainWindow::reFlashIndex()
 }
 void MainWindow::reFlashBuySellBaseInfo()
 {
+    if (!isFlashBaseInfo)
+        return;
     QString str;
     int d=GlobalVar::setRound();
     for (int i=0;i<10;++i)
