@@ -11,7 +11,7 @@ RequestsToCsv::RequestsToCsv(QDialog *parent)
 //    naManager = new QNetworkAccessManager(this);
     progressBarWindow=new QDialog(this);
     progressBarWindow->setWindowFlags(progressBarWindow->windowFlags() | Qt::WindowStaysOnTopHint);
-    progressBarWindow->setAttribute(Qt::WA_DeleteOnClose);
+    // progressBarWindow->setAttribute(Qt::WA_DeleteOnClose);
     progressBarWindow->setWindowTitle("下载所有股票k线数据");
     progressBarWindow->setGeometry(850, 400, 300, 150);
     QLabel *stockNums = new QLabel("剩余股票数量:",progressBarWindow);
@@ -318,7 +318,7 @@ void RequestsToCsv::downloadAllStockK()
     stopBtn->setText("停止下载");
     stopBtn->setEnabled(true);
     QDateTime curTime=GlobalVar::curRecentWorkDay(0);
-    QString startDate="1990-01-01";
+    QString startDate="0";
     QString curDate=curTime.toString("yyyy-MM-dd");
     QString endDate=curTime.toString("yyyyMMdd");
     int n=GlobalVar::mTableListCopy.count();
@@ -373,7 +373,7 @@ void RequestsToCsv::downloadAllStockK()
 //            qDebug()<<startDate;
         }
         else
-            startDate="1990-01-01";
+            startDate="0";
         file.close();
 
         if (file.open(QFile::Append))
