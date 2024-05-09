@@ -2287,8 +2287,6 @@ void MainWindow::reFlashIndex()
 }
 void MainWindow::reFlashBuySellBaseInfo()
 {
-    if (!isFlashBaseInfo)
-        return;
     QString str;
     int d=GlobalVar::setRound();
     for (int i=0;i<10;++i)
@@ -2319,6 +2317,8 @@ void MainWindow::reFlashBuySellBaseInfo()
         }
         buySellNum[i]->setText(str);
     }
+    if (!isFlashBaseInfo)
+        return;
     if (GlobalVar::baseInfoData[1]>0)
     {
         baseInfoData[0]->setPalette(GlobalVar::pRed);
