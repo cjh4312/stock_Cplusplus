@@ -391,7 +391,7 @@ void RequestsToCsv::downloadAllStockK()
         }
         file.close();
     }
-    if (not isStop)
+    if (not isStop and progressBarWindow->isActiveWindow())
     {
         GlobalVar::settings->setValue("isDownloadK",GlobalVar::curRecentWorkDay(0).toString("yyyy-MM-dd"));
         stopBtn->setText("下载完成");
