@@ -274,6 +274,7 @@ void MainWindow::initInterface()
 }
 void MainWindow::initSettings()
 {
+    this->setAttribute(Qt::WA_DeleteOnClose);
     if (GlobalVar::isSayNews)
     {
         QIcon icon(":/new/png/png/report.png");
