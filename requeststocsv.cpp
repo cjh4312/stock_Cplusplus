@@ -24,6 +24,9 @@ RequestsToCsv::RequestsToCsv(QDialog *parent)
     mainLayout->addWidget(numLine, 0, 3);
     mainLayout->addWidget(progressBar, 1, 0, 1, 5);
     mainLayout->addWidget(stopBtn, 2, 3);
+    connect(stopBtn,&QPushButton::clicked,this,[=](){
+        isStop=true;
+    });
 }
 
 bool RequestsToCsv::getIndexList()
@@ -303,8 +306,10 @@ void isDirExist(QString fullPath)
 
 void RequestsToCsv::downloadAllStockK()
 {
-    if (GlobalVar::settings->value("isDownloadK").toString()==
-        QDateTime::currentDateTime().toString("yyyy-MM-dd"))
+    QString s =GlobalVar::settings->value("isDownloadK").toString();
+    QString curS=GlobalVar::curRecentWorkDay(0).toString("yyyy-MM-dd");
+    if (s==QDateTime::currentDateTime().toString("yyyy-MM-dd") or
+        s==curS)
     {
         QMessageBox::information(this,"提示", "已经下载过了", QMessageBox::Ok);
         return;
@@ -326,9 +331,7 @@ void RequestsToCsv::downloadAllStockK()
     progressBar->setRange(0, n);
     progressBarWindow->show();
     isDirExist("/list/data");
-    connect(stopBtn,&QPushButton::clicked,this,[=](){
-        isStop=true;
-    });
+
     for(int i=1;i<n+1;++i)
     {
         numLine->setText(QString::number(n-i));
@@ -393,7 +396,7 @@ void RequestsToCsv::downloadAllStockK()
     }
     if (not isStop and progressBarWindow->isActiveWindow())
     {
-        GlobalVar::settings->setValue("isDownloadK",GlobalVar::curRecentWorkDay(0).toString("yyyy-MM-dd"));
+        GlobalVar::settings->setValue("isDownloadK",curS);
         stopBtn->setText("下载完成");
     }
     stopBtn->setEnabled(false);
