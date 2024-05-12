@@ -307,9 +307,10 @@ void isDirExist(QString fullPath)
 void RequestsToCsv::downloadAllStockK()
 {
     QString s =GlobalVar::settings->value("isDownloadK").toString();
-    QString curS=GlobalVar::curRecentWorkDay(0).toString("yyyy-MM-dd");
-    if (s==QDateTime::currentDateTime().toString("yyyy-MM-dd") or
-        s==curS)
+    QDateTime curTime=GlobalVar::curRecentWorkDay(0);
+    QString curDate=curTime.toString("yyyy-MM-dd");
+    QDateTime curT=QDateTime::currentDateTime();
+    if (s==curT.toString("yyyy-MM-dd") or (!GlobalVar::isWorkDay(curT) and s==curDate))
     {
         QMessageBox::information(this,"提示", "已经下载过了", QMessageBox::Ok);
         return;
@@ -322,9 +323,8 @@ void RequestsToCsv::downloadAllStockK()
     isDownload=true;
     stopBtn->setText("停止下载");
     stopBtn->setEnabled(true);
-    QDateTime curTime=GlobalVar::curRecentWorkDay(0);
+
     QString startDate="0";
-    QString curDate=curTime.toString("yyyy-MM-dd");
     QString endDate=curTime.toString("yyyyMMdd");
     int n=GlobalVar::mTableListCopy.count();
     numLine->setText(QString::number(n));
@@ -396,7 +396,7 @@ void RequestsToCsv::downloadAllStockK()
     }
     if (not isStop and progressBarWindow->isActiveWindow())
     {
-        GlobalVar::settings->setValue("isDownloadK",curS);
+        GlobalVar::settings->setValue("isDownloadK",curDate);
         stopBtn->setText("下载完成");
     }
     stopBtn->setEnabled(false);
