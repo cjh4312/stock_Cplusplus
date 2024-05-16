@@ -134,7 +134,7 @@ void RequestsToCsv::dealWithPlateList(QList<QStringList> &list,const QByteArray 
     }
 }
 
-bool RequestsToCsv::getStockList()
+QString RequestsToCsv::getStockList()
 {
     QJsonObject json;
     json.insert("api_name", "stock_basic");
@@ -146,11 +146,15 @@ bool RequestsToCsv::getStockList()
     QByteArray dataArray = doc.toJson(QJsonDocument::Compact);
     QByteArray allData;
     GlobalVar::postData(dataArray,allData,2,QUrl("http://api.waditu.com"));
-    if (allData.size()<800)
-        return false;
-//    qDebug()<<QString(allData);
     QJsonParseError jsonError;
     doc = QJsonDocument::fromJson(allData, &jsonError);
+    if (allData.size()<800)
+        if (jsonError.error == QJsonParseError::NoError)
+        {
+            QJsonObject jsonObject = doc.object();
+            QString s=jsonObject.value("msg").toString();
+            return "股票处理失败\n"+s.left(16);
+        }
     QFile file(GlobalVar::currentPath+"/list/stock_list.csv");
     if (file.open(QFile::WriteOnly))
     {
@@ -169,7 +173,7 @@ bool RequestsToCsv::getStockList()
         }
     }
     file.close();
-    return true;
+    return "股票处理成功";
 }
 
 void RequestsToCsv::dealWithAllList()
@@ -281,15 +285,8 @@ void RequestsToCsv::downStockIndexPlateInfo()
             promptText->append("板块处理成功");
         else
             promptText->append("板块处理失败");
-    if (getStockList())
-        promptText->append("股票处理成功");
-    else
-        if (getStockList())
-            promptText->append("股票处理成功");
-        else
-            promptText->append("股票处理失败");
+    promptText->append(getStockList());
     dealWithAllList();
-    promptText->append("指数、板块、个股信息处理完毕");
 }
 
 void isDirExist(QString fullPath)

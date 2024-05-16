@@ -19,7 +19,7 @@ class RequestsToCsv : public QDialog
     Q_OBJECT
 public:
     explicit RequestsToCsv(QDialog *parent = nullptr);
-//    QNetworkAccessManager *naManager;
+//    QNetworkAccessManager *naManager=new QNetworkAccessManager(this);
 //    QStringList listJP;
     QDialog *progressBarWindow;
     QLabel *numLine;
@@ -28,7 +28,7 @@ public:
     bool getIndexList();
     bool getPlateList();
     void dealWithPlateList(QList<QStringList> &list,const QByteArray &allData);
-    bool getStockList();
+    QString getStockList();
     void dealWithAllList();
     void downStockIndexPlateInfo();
     void downloadAllStockK();
