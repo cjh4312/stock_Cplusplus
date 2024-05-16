@@ -1495,7 +1495,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         drawChart.hisTimeShareChart->close();
         drawChart.annoucementWindow->close();
         if (GlobalVar::isKState)
-        {
+        {     
             resetKParameter();
             if (ifCanClick==2)
             {
@@ -1843,6 +1843,7 @@ void MainWindow::resetKParameter()
     GlobalVar::KRange=KRANGE;
     GlobalVar::offsetLocal=GlobalVar::KRange;
     preCode="";
+    isFlashBaseInfo=true;
 }
 void MainWindow::dealWithFundFlow()
 {
