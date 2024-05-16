@@ -1885,6 +1885,7 @@ void MainWindow::fastTrade()
     actS->setIcon(icon1);
     menu->addAction(actS);
     menu->popup(QCursor::pos());
+    howPosition=0;
 
     connect(actB,&QAction::triggered,this,[=](){
         PyGILState_STATE state=PyGILState_Ensure();
@@ -1931,17 +1932,21 @@ void MainWindow::fastTrade()
         QLabel *unit1=new QLabel("股",fastBuy);
         QLabel *unit2=new QLabel("股",fastBuy);
 
-        QLabel *numbers=new QLabel(GlobalVar::curCode,fastBuy);
+        QLabel *maxNumbers=new QLabel(GlobalVar::curCode,fastBuy);
         QSpinBox *buyNums=new QSpinBox(fastBuy);
         buyNums->setRange(0,1000000);
         buyNums->setSingleStep(100);
         int maxNums=floor(cash/tradePrice/100)*100;
-        numbers->setText(QString::number(maxNums));
+        maxNumbers->setText(QString::number(maxNums));
         buyNums->setValue(maxNums);
+
         connect(price,&QDoubleSpinBox::valueChanged,this,[=](){
-            int n=floor(cash/price->text().toFloat()/100)*100;
-            numbers->setText(QString::number(n));
-            buyNums->setValue(n);
+            int n=0;
+            float m=price->text().toFloat();
+            if (m)
+                n=floor(cash/m/100);
+            maxNumbers->setText(QString::number(n*100));
+            buyNums->setValue(n/(howPosition+1)*100);
         });
 
         price->setSingleStep(0.01);
@@ -1951,7 +1956,7 @@ void MainWindow::fastTrade()
         tradeInfo->addWidget(fix,1,2);
         tradeInfo->addWidget(price,2,2);
         tradeInfo->addWidget(unit,2,3);
-        tradeInfo->addWidget(numbers,3,2);
+        tradeInfo->addWidget(maxNumbers,3,2);
         tradeInfo->addWidget(unit1,3,3);
         tradeInfo->addWidget(buyNums,4,2);
         tradeInfo->addWidget(unit2,4,3);
@@ -1963,10 +1968,10 @@ void MainWindow::fastTrade()
             proportionName[i]=new QRadioButton(proportionNums[i],fastBuy);
             proportion->addButton(proportionName[i]);
             group->addWidget(proportionName[i]);
-            connect(proportionName[i],&QRadioButton::clicked,this,[=](){
+            connect(proportionName[i],&QRadioButton::clicked,this,[=]()mutable{
                 int n=floor(cash/price->text().toFloat()/100);
+                howPosition=i;
                 buyNums->setValue(n/(i+1)*100);
-                numbers->setText(QString::number(n*100));
             });
         }
         proportionName[0]->setChecked(true);
