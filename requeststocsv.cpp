@@ -285,19 +285,15 @@ void isDirExist(QString fullPath)
 
 void RequestsToCsv::downloadAllStockK()
 {
-    QDialog *progressBarWindow;
-    QLabel *numLine;
-    QProgressBar *progressBar;
-    QPushButton *stopBtn;
-    progressBarWindow=new QDialog(this);
+    QDialog *progressBarWindow = new QDialog(this);
+    QLabel *numLine = new QLabel(progressBarWindow);
+    QProgressBar *progressBar = new QProgressBar(progressBarWindow);
+    QPushButton *stopBtn = new QPushButton("终止下载",progressBarWindow);
     progressBarWindow->setWindowFlags(progressBarWindow->windowFlags() | Qt::WindowStaysOnTopHint);
     progressBarWindow->setAttribute(Qt::WA_DeleteOnClose);
     progressBarWindow->setWindowTitle("下载所有股票k线数据");
     progressBarWindow->setGeometry(850, 400, 300, 150);
     QLabel *stockNums = new QLabel("剩余股票数量:",progressBarWindow);
-    numLine = new QLabel(progressBarWindow);
-    progressBar = new QProgressBar(progressBarWindow);
-    stopBtn = new QPushButton("终止下载",progressBarWindow);
     QGridLayout *mainLayout = new QGridLayout(progressBarWindow);
     progressBarWindow->setLayout(mainLayout);
     mainLayout->addWidget(stockNums, 0, 1);
