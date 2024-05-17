@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
 //    setvbuf(stdout, NULL, _IONBF, 0);
 //    setvbuf(stderr, NULL, _IONBF, 0);
 
-    MainWindow w;
-    a.installEventFilter(&w);
-    w.showMaximized();
+    MainWindow *w = new MainWindow ;
+    a.installEventFilter(w);
+    w->showMaximized();
     return a.exec();
 }

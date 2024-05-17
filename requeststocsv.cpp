@@ -285,7 +285,7 @@ void isDirExist(QString fullPath)
 
 void RequestsToCsv::downloadAllStockK()
 {
-    QDialog *progressBarWindow = new QDialog(this);
+    QDialog *progressBarWindow = new QDialog();
     QLabel *numLine = new QLabel(progressBarWindow);
     QProgressBar *progressBar = new QProgressBar(progressBarWindow);
     QPushButton *stopBtn = new QPushButton("终止下载",progressBarWindow);
@@ -306,6 +306,7 @@ void RequestsToCsv::downloadAllStockK()
     });
     connect(progressBarWindow,&QDialog::finished,this,[=](){
         isStop=true;
+        // progressBarWindow->deleteLater();
     });
     QString s =GlobalVar::settings->value("isDownloadK").toString();
     QDateTime curTime=GlobalVar::curRecentWorkDay(0);

@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    requestsToCsv.isStop=true;
     Py_Finalize();
     saveCode();
     for (int i=0;i<6;++i)
