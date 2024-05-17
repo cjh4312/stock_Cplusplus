@@ -5,7 +5,7 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
     : QObject{parent}
 {
 //    naManager = new QNetworkAccessManager(this);
-    tts = new QTextToSpeech(this);
+
     tts->setLocale(QLocale::Chinese);
     tts->setRate(0.3);
     tts->setPitch(0.0);

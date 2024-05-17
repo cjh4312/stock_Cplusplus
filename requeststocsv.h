@@ -21,10 +21,7 @@ public:
     explicit RequestsToCsv(QDialog *parent = nullptr);
 //    QNetworkAccessManager *naManager=new QNetworkAccessManager(this);
 //    QStringList listJP;
-    QDialog *progressBarWindow;
-    QLabel *numLine;
-    QProgressBar *progressBar;
-    QPushButton *stopBtn;
+
     bool getIndexList();
     bool getPlateList();
     void dealWithPlateList(QList<QStringList> &list,const QByteArray &allData);

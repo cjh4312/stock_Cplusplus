@@ -66,17 +66,6 @@ def getPositions(account,code):
             return f"{p.stock_code};{p.can_use_volume}"
     return f'{code};{0}'
 
-#    positions = xt_trader.query_stock_positions(acc)
-#    info=[]
-#    if len(positions)!=0:
-#        info.append({'证券代码':positions.stock_code})
-#        info.append({'持仓数量':positions.volume})
-#        info.append({'可用数量':positions.can_use_volume})
-#        info.append({'平均持仓成本':positions.open_price})
-#        print(info)
-#    else:
-#        print('无持仓信息')
-
     #撤单
     # xt_trader.cancel_order_stock(acc, 1082130954)
 

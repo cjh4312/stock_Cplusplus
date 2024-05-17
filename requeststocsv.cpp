@@ -9,24 +9,7 @@ RequestsToCsv::RequestsToCsv(QDialog *parent)
     : QDialog{parent}
 {
 //    naManager = new QNetworkAccessManager(this);
-    progressBarWindow=new QDialog(this);
-    progressBarWindow->setWindowFlags(progressBarWindow->windowFlags() | Qt::WindowStaysOnTopHint);
-    // progressBarWindow->setAttribute(Qt::WA_DeleteOnClose);
-    progressBarWindow->setWindowTitle("下载所有股票k线数据");
-    progressBarWindow->setGeometry(850, 400, 300, 150);
-    QLabel *stockNums = new QLabel("剩余股票数量:",progressBarWindow);
-    numLine = new QLabel(progressBarWindow);
-    progressBar = new QProgressBar(progressBarWindow);
-    stopBtn = new QPushButton("终止下载",progressBarWindow);
-    QGridLayout *mainLayout = new QGridLayout(progressBarWindow);
-    progressBarWindow->setLayout(mainLayout);
-    mainLayout->addWidget(stockNums, 0, 1);
-    mainLayout->addWidget(numLine, 0, 3);
-    mainLayout->addWidget(progressBar, 1, 0, 1, 5);
-    mainLayout->addWidget(stopBtn, 2, 3);
-    connect(stopBtn,&QPushButton::clicked,this,[=](){
-        isStop=true;
-    });
+
 }
 
 bool RequestsToCsv::getIndexList()
@@ -302,6 +285,32 @@ void isDirExist(QString fullPath)
 
 void RequestsToCsv::downloadAllStockK()
 {
+    QDialog *progressBarWindow;
+    QLabel *numLine;
+    QProgressBar *progressBar;
+    QPushButton *stopBtn;
+    progressBarWindow=new QDialog(this);
+    progressBarWindow->setWindowFlags(progressBarWindow->windowFlags() | Qt::WindowStaysOnTopHint);
+    progressBarWindow->setAttribute(Qt::WA_DeleteOnClose);
+    progressBarWindow->setWindowTitle("下载所有股票k线数据");
+    progressBarWindow->setGeometry(850, 400, 300, 150);
+    QLabel *stockNums = new QLabel("剩余股票数量:",progressBarWindow);
+    numLine = new QLabel(progressBarWindow);
+    progressBar = new QProgressBar(progressBarWindow);
+    stopBtn = new QPushButton("终止下载",progressBarWindow);
+    QGridLayout *mainLayout = new QGridLayout(progressBarWindow);
+    progressBarWindow->setLayout(mainLayout);
+    mainLayout->addWidget(stockNums, 0, 1);
+    mainLayout->addWidget(numLine, 0, 3);
+    mainLayout->addWidget(progressBar, 1, 0, 1, 5);
+    mainLayout->addWidget(stopBtn, 2, 3);
+    isStop=false;
+    connect(stopBtn,&QPushButton::clicked,this,[=](){
+        isStop=true;
+    });
+    connect(progressBarWindow,&QDialog::finished,this,[=](){
+        isStop=true;
+    });
     QString s =GlobalVar::settings->value("isDownloadK").toString();
     QDateTime curTime=GlobalVar::curRecentWorkDay(0);
     QString curDate=curTime.toString("yyyy-MM-dd");

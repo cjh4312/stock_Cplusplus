@@ -129,6 +129,7 @@ private:
     QComboBox *openFundBox=new QComboBox(this);
     bool preSort=false;
     float tradePrice;
+    int howPosition=0;
 
     void initGlobalVar();
     void initThread();
