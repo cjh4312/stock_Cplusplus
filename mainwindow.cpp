@@ -24,9 +24,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    requestsToCsv.progressBarWindow->close();
     Py_Finalize();
     saveCode();
+    requestsToCsv.progressBarWindow->close();
+    QMTProcess->close();
     for (int i=0;i<6;++i)
     {
         thread[i]->quit();
@@ -38,10 +39,6 @@ MainWindow::~MainWindow()
     delete threadTimeShareChart;
     delete threadNewsReport;
     delete threadCandleChart;
-    if (QMTProcess) {
-        QMTProcess->close();
-        delete QMTProcess;
-    }
     delete ui;
 }
 
@@ -727,7 +724,7 @@ void MainWindow::initSignals()
         mTableStock.setTableView();
     });
     connect(ui->formula,&QAction::triggered,this,[=](){
-        QDialog *formulaDes=new QDialog();
+        QDialog *formulaDes=new QDialog(this);
         formulaDes->setWindowTitle("编写公式说明");
         formulaDes->setGeometry(450, 200, 1000, 700);
         formulaDes->setAttribute(Qt::WA_DeleteOnClose);
