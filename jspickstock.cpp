@@ -30,7 +30,7 @@ void JSPickStock::PickStockInterface()
         return;
     }
     isRunning=true;
-    QDialog *pickStockWindow=new QDialog();
+    QDialog *pickStockWindow=new QDialog(this);
     pickStockWindow->setAttribute(Qt::WA_DeleteOnClose);
 //    pickStockWindow->setWindowFlags(pickStockWindow->windowFlags() | Qt::WindowStaysOnTopHint);
     pickStockWindow->setWindowTitle("公式选股");

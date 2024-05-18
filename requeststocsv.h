@@ -3,6 +3,7 @@
 #define REQUESTSTOCSV_H
 
 #include "qdialog.h"
+#include "qpushbutton.h"
 //#include "qwidget.h"
 #include <QObject>
 //#include <QNetworkAccessManager>
@@ -30,6 +31,10 @@ public:
     void downStockIndexPlateInfo();
     void downloadAllStockK();
 //    void baoShareStockK();
+    QDialog *progressBarWindow = new QDialog();
+    QPushButton *stopBtn = new QPushButton("终止下载",progressBarWindow);
+    QLabel *numLine = new QLabel(progressBarWindow);
+    QProgressBar *progressBar = new QProgressBar(progressBarWindow);
     bool isStop=false;
     QString CNToEL(const QString &cnstr);
     bool isDownload=false;
