@@ -23,7 +23,6 @@ private:
     QList<QStringList> eastNewsList;
     int count=0;
     QString id;
-    QString allText;
     void initEastNews();
     void initNewsReport();
     void sayJsNews(QJsonObject object);

@@ -7,7 +7,7 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
 //    naManager = new QNetworkAccessManager(this);
 
     tts.setLocale(QLocale::Chinese);
-    tts.setRate(0.1);
+    tts.setRate(0.3);
     tts.setPitch(0.0);
     tts.setVolume(0.6);
     QDateTime c=QDateTime::currentDateTime();
@@ -126,8 +126,6 @@ void ThreadNewsReport::initNewsReport()
                 jsNums-=1;
             }
         }
-        if (GlobalVar::isSayNews)
-            tts.say(allText);
     }
 }
 
@@ -150,11 +148,16 @@ void ThreadNewsReport::sayJsNews(QJsonObject object)
         QString dt=object.value("time").toString();
         if (jinShiNewsReportCurTime>=dt)
             return;
-        allText=allText+newsText;
-        id=newId;
-        emit getNewsFinished("<font size=\"4\" color=red>"+dt+"</font>"+"<font size=\"4\">"+
-                             newsText+"</font>");
-        GlobalVar::settings->setValue("jinShiNewsReportCurTime",dt);
+
+        if (tts.state() == QTextToSpeech::Ready)
+        {
+            if (GlobalVar::isSayNews)
+                tts.say(newsText);
+            id=newId;
+            emit getNewsFinished("<font size=\"4\" color=red>"+dt+"</font>"+"<font size=\"4\">"+
+                                newsText+"</font>");
+            GlobalVar::settings->setValue("jinShiNewsReportCurTime",dt);
+        }
     }
 }
 
@@ -162,10 +165,16 @@ void ThreadNewsReport::sayEastNews(QStringList l, int time)
 {
     if (eastNewsReportCurTime>=time)
         return;
-    allText=allText+"东方财经:"+l[1];
-    emit getNewsFinished("<font size=\"4\" color=red>"+l[2]+"</font>"+"<span> <a href="+l[0]+">"+
-                         "<font size=\"4\">"+l[1]+"</font>"+"</a> </span>");
-    eastNewsReportCurTime=time;
-    GlobalVar::settings->setValue("eastNewsReportCurTime",time);
+    QString newsText=l[1];
+
+    if (tts.state() == QTextToSpeech::Ready)
+    {
+        if (GlobalVar::isSayNews)
+            tts.say("东方财经:"+newsText);
+        emit getNewsFinished("<font size=\"4\" color=red>"+l[2]+"</font>"+"<span> <a href="+l[0]+">"+
+                            "<font size=\"4\">"+newsText+"</font>"+"</a> </span>");
+        eastNewsReportCurTime=time;
+        GlobalVar::settings->setValue("eastNewsReportCurTime",time);
+    }
 }
 
