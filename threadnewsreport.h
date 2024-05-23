@@ -13,7 +13,7 @@ class ThreadNewsReport : public QObject
 public:
     explicit ThreadNewsReport(QObject *parent = nullptr);
     void getNewsData();
-    QTextToSpeech  *tts=new QTextToSpeech(this);;
+    QTextToSpeech  tts=QTextToSpeech(this);
 
 private:
     QByteArray allData;
@@ -23,6 +23,7 @@ private:
     QList<QStringList> eastNewsList;
     int count=0;
     QString id;
+    QString allText;
     void initEastNews();
     void initNewsReport();
     void sayJsNews(QJsonObject object);
