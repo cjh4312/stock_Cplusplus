@@ -1,10 +1,5 @@
 
 #include "drawchart.h"
-#include "globalvar.h"
-#include "qboxlayout.h"
-#include "qpushbutton.h"
-#include "qtextcodec.h"
-//#include "qtextcodec.h"
 
 DrawChart::DrawChart(QWidget *parent)
     : QWidget{parent}
@@ -412,10 +407,10 @@ void DrawChart::drawCandleChart(QPainter *painter)
     float lowPoint=candleHighLowPoint[1];
     float interval=highPoint-lowPoint;
     int lineNums=20;
-    float rate=0.2;
+    float rate=0.2f;
     if (GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or GlobalVar::curCode.left(1)=="1" or
         GlobalVar::curCode.left(1)=="9" or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.left(3)=="899")
-        rate=0.05;
+        rate=0.05f;
     while (lineNums>2 and interval/(lineNums-1)/lowPoint<rate)
         lineNums-=1;
 

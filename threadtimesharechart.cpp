@@ -1,6 +1,5 @@
 
 #include "threadtimesharechart.h"
-#include <synchapi.h>
 
 ThreadTimeShareChart::ThreadTimeShareChart(QObject *parent)
     : QObject{parent}

@@ -10,6 +10,12 @@
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QCheckBox>
+#include "globalvar.h"
+#include "qbuttongroup.h"
+#include "qlineedit.h"
+#include "qmessagebox.h"
+#include "qtextcodec.h"
+#include <QFile>
 
 class JSPickStock : public QDialog
 {

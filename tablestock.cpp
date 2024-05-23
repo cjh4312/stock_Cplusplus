@@ -1,7 +1,5 @@
 #include "tablestock.h"
-#include "commondelegate.h"
-#include "qheaderview.h"
-#include "globalvar.h"
+
 
 TableStock::TableStock()
 {

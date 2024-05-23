@@ -5,6 +5,8 @@
 #include <QTableView>
 #include <QStandardItemModel>
 #include "getf10info.h"
+#include "commondelegate.h"
+#include "qheaderview.h"
 
 class F10View : public QTableView
 {

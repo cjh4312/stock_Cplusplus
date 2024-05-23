@@ -7,7 +7,7 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
 //    naManager = new QNetworkAccessManager(this);
 
     tts->setLocale(QLocale::Chinese);
-    tts->setRate(0.3);
+    tts->setRate(0.1);
     tts->setPitch(0.0);
     tts->setVolume(0.6);
     QDateTime c=QDateTime::currentDateTime();
@@ -139,7 +139,8 @@ void ThreadNewsReport::sayJsNews(QJsonObject object)
         QString newsText=object.value("data").toObject().value("content").toString();
         if (newsText.contains("<a") or newsText.contains("点击查看") or newsText.contains("金十图示") or
             newsText.contains("＞＞") or newsText.contains("...") or newsText.contains("......") or
-            newsText.contains(">>") or newsText.contains("……") or newsText.contains("免费领取"))
+            newsText.contains(">>") or newsText.contains("……") or newsText.contains("免费领取")
+            or newsText.contains("盯盘神器"))
             return;
         if (newsText=="" or newsText=="-")
             return;

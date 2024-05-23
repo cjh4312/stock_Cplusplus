@@ -14,6 +14,10 @@
 #include <QVBoxLayout>
 #include <QProgressBar>
 #include <QLabel>
+#include "globalvar.h"
+#include "qmessagebox.h"
+#include "qpushbutton.h"
+#include "QDir"
 
 class RequestsToCsv : public QDialog
 {

@@ -16,6 +16,7 @@
 #include <QPainter>
 #include <complex>
 #include <QCheckBox>
+#include "globalvar.h"
 
 class FundFlow : public QTableView
 {

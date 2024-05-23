@@ -8,7 +8,7 @@
 #include <QTextCodec>
 #include <QKeyEvent>
 #include <QTextBlock>
-//#include <QNetworkAccessManager>
+#include "globalvar.h"
 
 class SearchStock : public QLineEdit
 {

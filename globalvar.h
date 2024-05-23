@@ -5,9 +5,6 @@
 #include <QDateTime>
 #include <QTimeZone>
 #include <QSettings>
-//#include "modeltablestock.h"
-//#include "modeltablestock.h"
-//#include "modeltimeshare.h"
 #include "stockinfo.h"
 #include <QPalette>
 #include <QNetworkAccessManager>
@@ -19,6 +16,7 @@
 #include <QJsonArray>
 #include <QEventLoop>
 #include <QTimer>
+#include <QCoreApplication>
 
 class GlobalVar
 {

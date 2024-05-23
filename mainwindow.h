@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "qheaderview.h"
+#include "qspinbox.h"
+#include "stockinfo.h"
 #include "jspickstock.h"
 #include "qgridlayout.h"
 #include "tablestock.h"
@@ -30,7 +33,7 @@
 #include <QDateEdit>
 #include <QMessageBox>
 #include <QListWidgetItem>
-#include <complex>
+// #include <complex>
 #include <QProcess>
 #undef slots
 #include <Python.h>

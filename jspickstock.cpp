@@ -1,10 +1,4 @@
 #include "jspickstock.h"
-#include "globalvar.h"
-#include "qbuttongroup.h"
-#include "qlineedit.h"
-#include "qmessagebox.h"
-#include "qtextcodec.h"
-#include <QFile>
 
 JSPickStock::JSPickStock(QDialog *parent)
     : QDialog{parent}
@@ -32,7 +26,8 @@ void JSPickStock::PickStockInterface()
     isRunning=true;
     QDialog *pickStockWindow=new QDialog(this);
     pickStockWindow->setAttribute(Qt::WA_DeleteOnClose);
-//    pickStockWindow->setWindowFlags(pickStockWindow->windowFlags() | Qt::WindowStaysOnTopHint);
+    // pickStockWindow->setWindowFlags(pickStockWindow->windowFlags() | Qt::WindowStaysOnTopHint);
+    // pickStockWindow->setWindowModality(Qt::ApplicationModal);
     pickStockWindow->setWindowTitle("公式选股");
     pickStockWindow->setGeometry(450, 200, 1000, 650);
     pickStockWindow->show();

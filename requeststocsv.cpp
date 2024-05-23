@@ -1,9 +1,6 @@
 
 #include "requeststocsv.h"
-#include "globalvar.h"
-#include "qmessagebox.h"
-#include "qpushbutton.h"
-#include "QDir"
+
 
 RequestsToCsv::RequestsToCsv(QDialog *parent)
     : QDialog{parent}

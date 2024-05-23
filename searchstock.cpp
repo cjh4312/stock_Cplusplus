@@ -1,6 +1,6 @@
 
 #include "searchstock.h"
-#include "globalvar.h"
+
 
 SearchStock::SearchStock()
 {

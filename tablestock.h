@@ -8,6 +8,9 @@
 #include "modelfundflow.h"
 #include "modeltimeshare.h"
 #include <QStandardItemModel>
+#include "commondelegate.h"
+#include "qheaderview.h"
+#include "globalvar.h"
 
 class TableStock : public QTableView
 {

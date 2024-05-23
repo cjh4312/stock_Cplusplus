@@ -1,7 +1,6 @@
 
 #include "modeltimeshare.h"
-#include "globalvar.h"
-#include "qfont.h"
+
 
 ModelTimeShare::ModelTimeShare(QObject *parent)
     : QAbstractTableModel(parent)

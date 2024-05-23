@@ -1,7 +1,5 @@
 
 #include "modeltablestock.h"
-#include "globalvar.h"
-#include "qfont.h"
 
 ModelTableStock::ModelTableStock(QObject *parent)
     : QAbstractTableModel(parent)

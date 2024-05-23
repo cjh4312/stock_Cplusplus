@@ -1,8 +1,5 @@
 
 #include "getf10info.h"
-#include "qjsondocument.h"
-#include "qjsonobject.h"
-#include "globalvar.h"
 
 GetF10Info::GetF10Info(QObject *parent)
     : QObject{parent}

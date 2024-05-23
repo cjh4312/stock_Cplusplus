@@ -1,7 +1,5 @@
 
 #include "f10view.h"
-#include "commondelegate.h"
-#include "qheaderview.h"
 
 F10View::F10View()
 {

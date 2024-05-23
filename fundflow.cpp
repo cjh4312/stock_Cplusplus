@@ -1,8 +1,5 @@
 
 #include "fundflow.h"
-#include "globalvar.h"
-//#include "commondelegate.h"
-//#include "qheaderview.h"
 
 FundFlow::FundFlow()
 {

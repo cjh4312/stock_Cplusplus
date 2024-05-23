@@ -1,6 +1,5 @@
 
 #include "globalvar.h"
-#include <QCoreApplication>
 
 GlobalVar::GlobalVar()
 {

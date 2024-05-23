@@ -4,6 +4,8 @@
 
 #include <QAbstractTableModel>
 #include "stockinfo.h"
+#include "globalvar.h"
+#include "qfont.h"
 
 class ModelTimeShare : public QAbstractTableModel
 {

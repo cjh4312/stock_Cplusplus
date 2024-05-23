@@ -1,6 +1,4 @@
 #include "modelfundflow.h"
-#include "globalvar.h"
-#include "qfont.h"
 
 ModelFundFlow::ModelFundFlow(QObject *parent)
     : QAbstractTableModel{parent}
