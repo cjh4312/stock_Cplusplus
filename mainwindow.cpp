@@ -648,10 +648,10 @@ void MainWindow::initSignals()
         });
     }
     connect(ui->newsReport,&QAction::triggered,this,[=](){
-        if (threadNewsReport->tts->state() == QTextToSpeech::Speaking)
+        if (threadNewsReport->tts.state() == QTextToSpeech::Speaking)
         {
-            threadNewsReport->tts->stop();
-            threadNewsReport->tts->resume();
+            threadNewsReport->tts.stop();
+            threadNewsReport->tts.resume();
         }
         GlobalVar::isSayNews=not GlobalVar::isSayNews;
         if (GlobalVar::isSayNews)
