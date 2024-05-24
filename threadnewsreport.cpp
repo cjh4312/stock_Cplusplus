@@ -6,10 +6,10 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
 {
 //    naManager = new QNetworkAccessManager(this);
 
-    tts.setLocale(QLocale::Chinese);
-    tts.setRate(0.3);
-    tts.setPitch(0.0);
-    tts.setVolume(0.6);
+    tts->setLocale(QLocale::Chinese);
+    tts->setRate(0.3);
+    tts->setPitch(0.0);
+    tts->setVolume(0.6);
     QDateTime c=QDateTime::currentDateTime();
     id=c.addSecs(-1800).toString("yyyyMMddhhmmss");
     jinShiNewsReportCurTime = GlobalVar::settings->value("jinShiNewsReportCurTime").toString();
@@ -21,7 +21,7 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
 
 void ThreadNewsReport::getNewsData()
 {
-    if (tts.state() == QTextToSpeech::Speaking)
+    if (tts->state() == QTextToSpeech::Speaking)
         return;
     GlobalVar::getData(allData,2,QUrl("https://finance.eastmoney.com/yaowen.html"));
     if (GlobalVar::timeOutFlag[4])
@@ -64,8 +64,8 @@ void ThreadNewsReport::initNewsReport()
     {
         if (count < 3)
         {
-            if (tts.state() == QTextToSpeech::Ready)
-                tts.say("休息时间,起来锻炼了");
+            if (tts->state() == QTextToSpeech::Ready)
+                tts->say("休息时间,起来锻炼了");
             count+=1;
         }
     }
@@ -73,8 +73,8 @@ void ThreadNewsReport::initNewsReport()
     {
         if (count < 3)
         {
-            if (tts.state() == QTextToSpeech::Ready)
-                tts.say("转转头,伸个懒腰");
+            if (tts->state() == QTextToSpeech::Ready)
+                tts->say("转转头,伸个懒腰");
             count+=1;
         }
     }
@@ -150,7 +150,7 @@ void ThreadNewsReport::sayJsNews(QJsonObject object)
             return;
 
         if (GlobalVar::isSayNews)
-            tts.say(newsText);
+            tts->say(newsText);
         id=newId;
         emit getNewsFinished("<font size=\"4\" color=red>"+dt+"</font>"+"<font size=\"4\">"+
                              newsText+"</font>");
@@ -165,7 +165,7 @@ void ThreadNewsReport::sayEastNews(QStringList l, int time)
     QString newsText=l[1];
 
     if (GlobalVar::isSayNews)
-        tts.say("东方财经:"+newsText);
+        tts->say("东方财经:"+newsText);
     emit getNewsFinished("<font size=\"4\" color=red>"+l[2]+"</font>"+"<span> <a href="+l[0]+">"+
                          "<font size=\"4\">"+newsText+"</font>"+"</a> </span>");
     eastNewsReportCurTime=time;
