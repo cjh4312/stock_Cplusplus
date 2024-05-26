@@ -12,6 +12,7 @@ CONFIG += c++17
 
 SOURCES += \
     commondelegate.cpp \
+    downloadtask.cpp \
     drawchart.cpp \
     f10view.cpp \
     fundflow.cpp \
@@ -35,6 +36,7 @@ SOURCES += \
 
 HEADERS += \
     commondelegate.h \
+    downloadtask.h \
     drawchart.h \
     f10view.h \
     fundflow.h \
@@ -67,8 +69,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     resources.qrc
 
-INCLUDEPATH += d:\workstation\Python\include
-LIBS += -Ld:\workstation\Python\libs -lpython311
+INCLUDEPATH += d:\workstation\python\include
+LIBS += -Ld:\workstation\python\libs -lpython311
 
 #QMAKE_LFLAGS_RELEASE = /INCREMENTAL:NO /DEBUG
 #LIBS += -lDbgHelp
