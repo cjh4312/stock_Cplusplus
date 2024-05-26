@@ -17,9 +17,24 @@ RequestsToCsv::RequestsToCsv(QDialog *parent)
     mainLayout->addWidget(numLine, 0, 3);
     mainLayout->addWidget(progressBar, 1, 0, 1, 5);
     mainLayout->addWidget(stopBtn, 2, 3);
+    threadPool.setMaxThreadCount(QThread::idealThreadCount());
     connect(stopBtn,&QPushButton::clicked,this,[=](){
-        threadPool.clear();
-        stopBtn->setEnabled(false);
+        if (stopBtn->text()=="停止下载")
+        {
+            threadPool.clear();
+            stopBtn->setText("继续下载");
+        }
+        else
+        {
+            stopBtn->setText("停止下载");
+            for(int i=totalNums;i<GlobalVar::mTableListCopy.count();++i)
+            {
+                DownloadTask *workTask=new DownloadTask(this);
+                workTask->nums=i;
+                threadPool.start(workTask);
+            }
+        }
+
     });
     connect(progressBarWindow,&QDialog::finished,this,[=](){
         threadPool.clear();
@@ -328,7 +343,6 @@ void RequestsToCsv::downloadAllStockK()
     {
         DownloadTask *workTask=new DownloadTask(this);
         workTask->nums=i;
-        threadPool.setMaxThreadCount(QThread::idealThreadCount());
         threadPool.start(workTask);
     }
 }
