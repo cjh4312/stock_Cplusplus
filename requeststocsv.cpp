@@ -27,7 +27,7 @@ RequestsToCsv::RequestsToCsv(QDialog *parent)
         else
         {
             stopBtn->setText("停止下载");
-            for(int i=totalNums;i<GlobalVar::mTableListCopy.count();++i)
+            for(int i=downloadedNums;i<GlobalVar::mTableListCopy.count();++i)
             {
                 DownloadTask *workTask=new DownloadTask(this);
                 workTask->nums=i;
@@ -333,12 +333,12 @@ void RequestsToCsv::downloadAllStockK()
     stopBtn->setText("停止下载");
     stopBtn->setEnabled(true);
     int n=GlobalVar::mTableListCopy.count();
-    numLine->setText(QString::number(n-totalNums));
+    numLine->setText(QString::number(n-downloadedNums));
     progressBar->setRange(0, n);
     progressBarWindow->show();
     isDirExist("/list/data");
 
-    for(int i=totalNums;i<n;++i)
+    for(int i=downloadedNums;i<n;++i)
     {
         DownloadTask *workTask=new DownloadTask(this);
         workTask->nums=i;

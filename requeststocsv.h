@@ -36,11 +36,11 @@ public:
     void downloadAllStockK();
     Q_INVOKABLE void setText()
     {
-        totalNums+=1;
+        downloadedNums+=1;
         int n=GlobalVar::mTableListCopy.count();
-        numLine->setText(QString::number(n-totalNums));
-        progressBar->setValue(totalNums);
-        if (totalNums==n)
+        numLine->setText(QString::number(n-downloadedNums));
+        progressBar->setValue(downloadedNums);
+        if (downloadedNums==n)
         {
             stopBtn->setEnabled(false);
             stopBtn->setText("下载完成");
@@ -54,7 +54,7 @@ public:
     QLabel *numLine = new QLabel(progressBarWindow);
     QProgressBar *progressBar = new QProgressBar(progressBarWindow);
     QString CNToEL(const QString &cnstr);
-    int totalNums=0;
+    int downloadedNums=0;
     QString curDate;
     bool isDownload=false;
 
