@@ -329,17 +329,16 @@ void RequestsToCsv::downloadAllStockK()
         progressBarWindow->show();
         return;
     }
-    totalNums=0;
     isDownload=true;
     stopBtn->setText("停止下载");
     stopBtn->setEnabled(true);
     int n=GlobalVar::mTableListCopy.count();
-    numLine->setText(QString::number(n));
+    numLine->setText(QString::number(n-totalNums));
     progressBar->setRange(0, n);
     progressBarWindow->show();
     isDirExist("/list/data");
 
-    for(int i=0;i<n;++i)
+    for(int i=totalNums;i<n;++i)
     {
         DownloadTask *workTask=new DownloadTask(this);
         workTask->nums=i;

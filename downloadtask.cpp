@@ -1,7 +1,8 @@
 #include "downloadtask.h"
 
 DownloadTask::DownloadTask(QObject *obj):
-    m_pObj(obj){
+    m_pObj(obj)
+{
     QDateTime curTime=GlobalVar::curRecentWorkDay(0);
     curDate=curTime.toString("yyyy-MM-dd");
     endDate=curTime.toString("yyyyMMdd");

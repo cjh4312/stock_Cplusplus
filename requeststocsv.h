@@ -26,8 +26,6 @@ class RequestsToCsv : public QDialog
     Q_OBJECT
 public:
     explicit RequestsToCsv(QDialog *parent = nullptr);
-//    QNetworkAccessManager *naManager=new QNetworkAccessManager(this);
-//    QStringList listJP;
 
     bool getIndexList();
     bool getPlateList();
@@ -36,8 +34,6 @@ public:
     void dealWithAllList();
     void downStockIndexPlateInfo();
     void downloadAllStockK();
-    int totalNums=0;
-    QString curDate;
     Q_INVOKABLE void setText()
     {
         totalNums+=1;
@@ -58,6 +54,8 @@ public:
     QLabel *numLine = new QLabel(progressBarWindow);
     QProgressBar *progressBar = new QProgressBar(progressBarWindow);
     QString CNToEL(const QString &cnstr);
+    int totalNums=0;
+    QString curDate;
     bool isDownload=false;
 
 signals:
