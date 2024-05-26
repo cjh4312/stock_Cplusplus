@@ -1,6 +1,5 @@
 #include "downloadtask.h"
 
-int DownloadTask::nums=0;
 DownloadTask::DownloadTask(QObject *obj):
     m_pObj(obj){
     QDateTime curTime=GlobalVar::curRecentWorkDay(0);
@@ -10,10 +9,7 @@ DownloadTask::DownloadTask(QObject *obj):
 
 void DownloadTask::downloadK()
 {
-    mutex.lock();
     QString code=GlobalVar::mTableListCopy.at(nums).code;
-    nums+=1;
-    mutex.unlock();
     QString path;
     QString startDate;
     if (code.left(1)=="6")
@@ -67,8 +63,4 @@ void DownloadTask::downloadK()
         }
     }
     file.close();
-    if (nums==GlobalVar::mTableListCopy.count())
-    {
-        GlobalVar::settings->setValue("isDownloadK",curDate);
-    }
 }

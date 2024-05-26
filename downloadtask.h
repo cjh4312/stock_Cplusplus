@@ -6,20 +6,18 @@
 #include <QString>
 #include "globalvar.h"
 #include "QFile"
-#include "QMutex"
 
 class DownloadTask : public QRunnable
 {
 public:
     explicit DownloadTask(QObject *obj);
-    static int nums;
+    int nums;
     QString curDate;
     QString endDate;
-    QMutex mutex;
     void run() override
     {
         downloadK();
-        QMetaObject::invokeMethod(m_pObj,"setText",Q_ARG(int,nums));
+        QMetaObject::invokeMethod(m_pObj,"setText");
     }
     void downloadK();
 private:

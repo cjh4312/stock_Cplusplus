@@ -36,15 +36,19 @@ public:
     void dealWithAllList();
     void downStockIndexPlateInfo();
     void downloadAllStockK();
-    Q_INVOKABLE void setText(int nums)
+    int totalNums=0;
+    QString curDate;
+    Q_INVOKABLE void setText()
     {
+        totalNums+=1;
         int n=GlobalVar::mTableListCopy.count();
-        numLine->setText(QString::number(n-nums));
-        progressBar->setValue(nums);
-        if (nums==n)
+        numLine->setText(QString::number(n-totalNums));
+        progressBar->setValue(totalNums);
+        if (totalNums==n)
         {
             stopBtn->setEnabled(false);
             stopBtn->setText("下载完成");
+            GlobalVar::settings->setValue("isDownloadK",curDate);
         }
     }
 //    void baoShareStockK();

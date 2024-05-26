@@ -302,7 +302,7 @@ void RequestsToCsv::downloadAllStockK()
 {
     QString s =GlobalVar::settings->value("isDownloadK").toString();
     QDateTime curTime=GlobalVar::curRecentWorkDay(0);
-    QString curDate=curTime.toString("yyyy-MM-dd");
+    curDate=curTime.toString("yyyy-MM-dd");
     QDateTime curT=QDateTime::currentDateTime();
     if (s==curT.toString("yyyy-MM-dd") or (!GlobalVar::isWorkDay(curT) and s==curDate))
     {
@@ -314,6 +314,7 @@ void RequestsToCsv::downloadAllStockK()
         progressBarWindow->show();
         return;
     }
+    totalNums=0;
     isDownload=true;
     stopBtn->setText("停止下载");
     stopBtn->setEnabled(true);
@@ -326,6 +327,7 @@ void RequestsToCsv::downloadAllStockK()
     for(int i=0;i<n;++i)
     {
         DownloadTask *workTask=new DownloadTask(this);
+        workTask->nums=i;
         threadPool.setMaxThreadCount(QThread::idealThreadCount());
         threadPool.start(workTask);
     }
