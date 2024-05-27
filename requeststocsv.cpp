@@ -318,8 +318,7 @@ void RequestsToCsv::downloadAllStockK()
     QString s =GlobalVar::settings->value("isDownloadK").toString();
     QDateTime curTime=GlobalVar::curRecentWorkDay(0);
     curDate=curTime.toString("yyyy-MM-dd");
-    QDateTime curT=QDateTime::currentDateTime();
-    if (s==curT.toString("yyyy-MM-dd") or (!GlobalVar::isWorkDay(curT) and s==curDate))
+    if (s==curDate)
     {
         QMessageBox::information(this,"提示", "已经下载过了", QMessageBox::Ok);
         return;
