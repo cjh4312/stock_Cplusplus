@@ -811,7 +811,7 @@ void MainWindow::initSignals()
         {
             QString str = "D:\\Program Files\\Finance\\国金证券QMT交易端\\bin.x64\\XtMiniQmt.exe";
             QString tagDir = "\"" + str + "\"";
-            QMTProcess->start(tagDir);
+            QMTProcess->startDetached(tagDir);
         }
         else
             QMessageBox::information(this,"提示", "交易已经启动", QMessageBox::Ok);
