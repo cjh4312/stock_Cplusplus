@@ -162,12 +162,16 @@ QString RequestsToCsv::getStockList()
     QJsonParseError jsonError;
     doc = QJsonDocument::fromJson(allData, &jsonError);
     if (allData.size()<800)
+    {
         if (jsonError.error == QJsonParseError::NoError)
         {
             QJsonObject jsonObject = doc.object();
             QString s=jsonObject.value("msg").toString();
             return "股票处理失败\n"+s.left(16);
         }
+        else
+            return "股票处理失败\n";
+    }
     QFile file(GlobalVar::currentPath+"/list/stock_list.csv");
     if (file.open(QFile::WriteOnly))
     {
