@@ -26,7 +26,8 @@ void ThreadNewsReport::getNewsData()
     GlobalVar::getData(allData,2,QUrl("https://finance.eastmoney.com/yaowen.html"));
     if (GlobalVar::timeOutFlag[4])
         GlobalVar::timeOutFlag[4]=false;
-    initEastNews();
+    else
+        initEastNews();
     GlobalVar::getData(allData,2,QUrl("https://www.jin10.com/flash_newest.js?t=1667528593473"));
     if (GlobalVar::timeOutFlag[3])
         GlobalVar::timeOutFlag[3]=false;
