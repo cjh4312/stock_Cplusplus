@@ -24,9 +24,11 @@ void ThreadTimeShareChart::getSSEData()
         naManager->deleteLater();
     });
     connect(reply, &QNetworkReply::readyRead, this, [=](){
+        qDebug()<<reply->error();
         if (reply->error() == QNetworkReply::NoError)
         {
             QByteArray tempData=reply->readAll();
+            // qDebug()<<tempData;
             if (tempData.contains("data:"))
             {
                 if (tempData.contains("\"data\":{\""))
@@ -59,24 +61,27 @@ void ThreadTimeShareChart::getSSEData()
 
 void ThreadTimeShareChart::getAllTimeShareChart(bool r)
 {
+    // if (GlobalVar::curCode.length()!=5 and GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
+    // {
+    //     GlobalVar::getData(allData,2,QUrl("https://push2his.eastmoney.com/api/qt/stock/trends2/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893"));
+    //     if (GlobalVar::timeOutFlag[6])
+    //         GlobalVar::timeOutFlag[6]=false;
+    //     else
+    //     {
+    //         initTimeShareChartList();
+    //         emit getTimeShareChartFinished();
+    //     }
+    // }
+    // else if (preGCode!=GlobalVar::curCode or r)
     if (preGCode!=GlobalVar::curCode or r)
-    {
-        if (preGCode!="")
-            reply->abort();
-        preGCode=GlobalVar::curCode;
-        GlobalVar::timeShareHighLowPoint[0]=0.0;
-        GlobalVar::timeShareHighLowPoint[1]=10000000.0;
-        getSSEData();
-
-        // GlobalVar::getData(allData,2,QUrl("https://push2his.eastmoney.com/api/qt/stock/trends2/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893"));
-        // if (GlobalVar::timeOutFlag[6])
-        //     GlobalVar::timeOutFlag[6]=false;
-        // else
-        // {
-        //     initTimeShareChartList();
-        //     emit getTimeShareChartFinished();
-        // }
-    }
+        {
+            if (preGCode!="")
+                reply->abort();
+            preGCode=GlobalVar::curCode;
+            GlobalVar::timeShareHighLowPoint[0]=0.0;
+            GlobalVar::timeShareHighLowPoint[1]=10000000.0;
+            getSSEData();
+        }
 }
 
 void ThreadTimeShareChart::initTimeShareChartList()
@@ -123,6 +128,7 @@ void ThreadTimeShareChart::initTimeShareChartList()
                     info.direct=1;
                 else
                     info.direct=3;
+                pp=info.price;
                 h=per(list[3].toFloat());
                 l=per(list[4].toFloat());
                 if (h>GlobalVar::timeShareHighLowPoint[0])
@@ -151,6 +157,7 @@ void ThreadTimeShareChart::initTimeShareChartList()
                     info.direct=1;
                 else
                     info.direct=3;
+                pp=info.price;
                 h=per(list[3].toFloat());
                 l=per(list[4].toFloat());
                 if (h>GlobalVar::timeShareHighLowPoint[0])

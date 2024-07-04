@@ -6,7 +6,7 @@ ThreadIndex::ThreadIndex(QObject *parent)
 {
     IndexInfo info;
     info.name="name";
-    for (int i=0;i<21;++i)
+    for (int i=0;i<22;++i)
         GlobalVar::mIndexList.append(info);
 }
 

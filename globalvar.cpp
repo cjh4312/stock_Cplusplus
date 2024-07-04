@@ -393,6 +393,7 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
                 qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
         }
     }
+
     delete reply;
 }
 

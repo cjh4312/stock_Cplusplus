@@ -1842,6 +1842,7 @@ void MainWindow::resetKParameter()
 }
 void MainWindow::dealWithFundFlow()
 {
+    periodBox->setCurrentIndex(3);
     int n=periodBox->currentIndex();
     if (n==1 or n==4)
     {
@@ -2162,6 +2163,8 @@ void MainWindow::tradingTimeRunThread()
             if (GlobalVar::isBoard)
                 searchStock.getBoardData();
             emit startThreadTable();
+            // if (GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
+            //     emit startThreadTimeShareChart(false);
         }
         else
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);

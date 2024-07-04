@@ -1258,7 +1258,7 @@ void FundFlow::getAnnoucement()
     QNetworkRequest request;
     QString url="http://ddx.gubit.cn/gonggao/"+GlobalVar::curCode;
     request.setUrl(QUrl(url));
-    GlobalVar::getData(allData,2,request);
+    GlobalVar::getData(allData,1,request);
     if (allData.isEmpty())
     {
         getEastAnnoucement();
