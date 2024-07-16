@@ -235,7 +235,7 @@ QString GlobalVar::getComCode()
 //    qDebug()<<GlobalVar::curCode;
     if (curCode.length()==5 && isInt(curCode))
         return "116."+curCode;
-    else if (curCode.left(1)=="1" or curCode.left(1)=="9")
+    else if (curCode.left(1)=="1")
         return curCode;
     else
     {
@@ -251,7 +251,7 @@ QString GlobalVar::getStockSymbol()
     QString symbol;
     if (GlobalVar::curCode.left(1)=="6")
         symbol="sh"+GlobalVar::curCode;
-    else if (GlobalVar::curCode.left(1)=="8" or GlobalVar::curCode.left(1)=="4")
+    else if (GlobalVar::curCode.left(1)=="8" or GlobalVar::curCode.left(1)=="4" or GlobalVar::curCode.left(1)=="9")
         symbol="bj"+GlobalVar::curCode;
     else if (GlobalVar::curCode.left(1)=="3" or GlobalVar::curCode.left(1)=="0")
         symbol="sz"+GlobalVar::curCode;
@@ -393,7 +393,6 @@ void GlobalVar::getData(QByteArray &allData,float timeOut, const QUrl &url)
                 qDebug()<<statusCode<< reply->errorString() <<QDateTime::currentDateTime()<<url<<timeOut;
         }
     }
-
     delete reply;
 }
 
