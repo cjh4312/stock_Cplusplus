@@ -18,13 +18,24 @@ void ThreadTimeShareChart::getSSEData()
     request.setUrl(QUrl(url));
     reply= naManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [=](){
-        preGCode="";
-        reply->disconnect();
-        delete qByteArray;
-        naManager->deleteLater();
+        // qDebug()<<"结束"<<preGCode<<GlobalVar::curCode;
+        if (preGCode==GlobalVar::curCode)
+            {
+            reply->disconnect();
+            delete qByteArray;
+            naManager->deleteLater();
+            getSSEData();
+        }
+        else
+            {
+            preGCode="";
+            reply->disconnect();
+            delete qByteArray;
+            naManager->deleteLater();
+        }
     });
     connect(reply, &QNetworkReply::readyRead, this, [=](){
-        qDebug()<<reply->error();
+        // qDebug()<<reply->error();
         if (reply->error() == QNetworkReply::NoError)
         {
             QByteArray tempData=reply->readAll();
