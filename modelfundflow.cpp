@@ -62,17 +62,17 @@ QVariant ModelFundFlow::data(const QModelIndex &index, int role) const
         switch(index.column())
         {
         case 0: return m_modelData.at(row)[0];
-        case 1: return m_modelData.at(row)[1]+"%";
+        case 1: return QString::number(m_modelData.at(row)[1].toFloat(),'f',2)+"%";
         case 3: return GlobalVar::format_conversion(m_modelData.at(row)[2].toFloat());
-        case 4: return m_modelData.at(row)[3];
+        case 4: return QString::number(m_modelData.at(row)[3].toFloat(),'f',2)+"%";
         case 5: return GlobalVar::format_conversion(m_modelData.at(row)[4].toFloat());
-        case 6: return m_modelData.at(row)[5];
+        case 6: return QString::number(m_modelData.at(row)[5].toFloat(),'f',2)+"%";
         case 7: return GlobalVar::format_conversion(m_modelData.at(row)[6].toFloat());
-        case 8: return m_modelData.at(row)[7];
+        case 8: return QString::number(m_modelData.at(row)[7].toFloat(),'f',2)+"%";
         case 9: return GlobalVar::format_conversion(m_modelData.at(row)[8].toFloat());
-        case 10: return m_modelData.at(row)[9];
+        case 10: return QString::number(m_modelData.at(row)[9].toFloat(),'f',2)+"%";
         case 11: return GlobalVar::format_conversion(m_modelData.at(row)[10].toFloat());
-        case 12: return m_modelData.at(row)[11];
+        case 12: return QString::number(m_modelData.at(row)[11].toFloat(),'f',2)+"%";
         case 13: return m_modelData.at(row)[13];
         case 2: return m_modelData.at(row)[12];
         }
