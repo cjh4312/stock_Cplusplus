@@ -18,7 +18,7 @@ void ThreadTimeShareChart::getSSEData()
     request.setUrl(QUrl(url));
     reply= naManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [=](){
-        // qDebug()<<"结束"<<preGCode<<GlobalVar::curCode;
+        qDebug()<<"结束"<<preGCode<<GlobalVar::curCode;
         if (preGCode==GlobalVar::curCode)
             {
             reply->disconnect();

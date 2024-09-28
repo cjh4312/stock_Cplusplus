@@ -69,9 +69,9 @@ QVariant ModelFundFlow::data(const QModelIndex &index, int role) const
         case 6: return m_modelData.at(row)[5];
         case 7: return GlobalVar::format_conversion(m_modelData.at(row)[6].toFloat());
         case 8: return m_modelData.at(row)[7];
-        case 9: return m_modelData.at(row)[8];
+        case 9: return GlobalVar::format_conversion(m_modelData.at(row)[8].toFloat());
         case 10: return m_modelData.at(row)[9];
-        case 11: return m_modelData.at(row)[10];
+        case 11: return GlobalVar::format_conversion(m_modelData.at(row)[10].toFloat());
         case 12: return m_modelData.at(row)[11];
         case 13: return m_modelData.at(row)[13];
         case 2: return m_modelData.at(row)[12];
@@ -115,7 +115,10 @@ QVariant ModelFundFlow::data(const QModelIndex &index, int role) const
                 return QColor(0, 191, 0);
             break;
         case 12:
-
+            if (m_modelData.at(row)[11].toFloat()>0)
+                return QColor(Qt::red);
+            else if (m_modelData.at(row)[11].toFloat()<0)
+                return QColor(0, 191, 0);
             break;
         case 8:
             if (m_modelData.at(row)[7].toFloat()>0)
@@ -124,13 +127,18 @@ QVariant ModelFundFlow::data(const QModelIndex &index, int role) const
                 return QColor(0, 191, 0);
             break;
         case 9:
-
+            if (m_modelData.at(row)[8].toFloat()<0)
+                return QColor(0, 191, 0);
             break;
         case 10:
-
+            if (m_modelData.at(row)[9].toFloat()>0)
+                return QColor(Qt::red);
+            else if (m_modelData.at(row)[9].toFloat()<0)
+                return QColor(0, 191, 0);
             break;
         case 11:
-
+            if (m_modelData.at(row)[10].toFloat()<0)
+                return QColor(0, 191, 0);
             break;
         case 13:
 
@@ -153,7 +161,7 @@ QVariant ModelFundFlow::data(const QModelIndex &index, int role) const
     {
         switch(index.column())
         {
-        case 1:return Qt::AlignCenter;
+        case 1:return Qt::AlignRight;
         case 2:return Qt::AlignCenter;
         case 3:return Qt::AlignRight;
         case 4:return Qt::AlignRight;
@@ -161,6 +169,10 @@ QVariant ModelFundFlow::data(const QModelIndex &index, int role) const
         case 6:return Qt::AlignRight;
         case 7:return Qt::AlignRight;
         case 8:return Qt::AlignRight;
+        case 9:return Qt::AlignRight;
+        case 10:return Qt::AlignRight;
+        case 11:return Qt::AlignRight;
+        case 12:return Qt::AlignRight;
         }
     }
     return QVariant();

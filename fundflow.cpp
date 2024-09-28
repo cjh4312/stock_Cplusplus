@@ -500,7 +500,7 @@ void FundFlow::getIntervalHighLow()
     HighLowCol<<"日期"<<"收盘价"<<"20日新高"<<"20日新低"<<"60日新高"<<"60日新低"<<"120日新高"<<"120日新低"
         <<""<<""<<"图"<<""<<""<<"表"<<""<<"";
     QByteArray allData;
-    GlobalVar::getData(allData,1,QUrl("https://legulegu.com/stockdata/member-ship/get-high-low-statistics/all"));
+    GlobalVar::getData(allData,2,QUrl("https://legulegu.com/stockdata/member-ship/get-high-low-statistics/all"));
     QJsonParseError jsonError;
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
     model->clear();

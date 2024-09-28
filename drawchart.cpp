@@ -111,6 +111,7 @@ DrawChart::DrawChart(QWidget *parent)
 
 void DrawChart::drawTimeShareChart(QPainter *painter)
 {
+    // QPainter *painter=new QPainter(timeShareChart);
     int trendsTotal=GlobalVar::trendsTotal;
 
     painter->setPen(Qt::gray);
@@ -245,6 +246,7 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
         painter->drawLine(QPointF(WIDTHEDGE+aveWidth*i, timeShareChartHeight-BOTTOMHEIGHTEDGE-vol*volAveHeight), QPointF(WIDTHEDGE+aveWidth*i, timeShareChartHeight-BOTTOMHEIGHTEDGE));
 //        qDebug()<<vol<<timeShareChartHeight-BOTTOMHEIGHTEDGE-vol*volAveHeight;
     }
+    // painter->end();
 }
 
 void DrawChart::drawHisTimeShare(QPainter *painter)

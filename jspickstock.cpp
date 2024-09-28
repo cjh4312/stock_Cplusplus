@@ -90,7 +90,14 @@ void JSPickStock::PickStockInterface()
     editFormula->setPlainText(GlobalVar::formulaContent);
     editFormula->setStyleSheet("QPlainTextEdit{font:bold 24px;font:bold}");
     editFormula->setMaximumHeight(350);
-    layout2->addWidget(editFormula,5,0,12,6);
+    layout2->addWidget(editFormula,5,0,11,6);
+
+    // QLabel *progress=new QLabel("选股进度:",pickStockWindow);
+    // QLabel *numbers=new QLabel(QString::number(GlobalVar::mTableListCopy.count()),pickStockWindow);
+    // QProgressBar *progressBar = new QProgressBar(pickStockWindow);
+    // layout2->addWidget(progress,16,0);
+    // layout2->addWidget(numbers,16,1);
+    // layout2->addWidget(progressBar,16,2);
 
     QVBoxLayout *layout3=new QVBoxLayout();
     mainLayout->addSpacing(10);

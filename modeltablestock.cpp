@@ -82,10 +82,10 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 10: return QString::number(m_modelData.at(row).pctYear,'f',2)+"%";
         case 11: return QString::number(m_modelData.at(row).pctSixty,'f',2)+"%";
         case 12: return GlobalVar::format_conversion(m_modelData.at(row).volume);
-        case 13: return m_modelData.at(row).high;
-        case 14: return m_modelData.at(row).low;
-        case 15: return m_modelData.at(row).open;
-        case 16: return m_modelData.at(row).preClose;
+        case 13: return QString::number(m_modelData.at(row).high,'f',2);
+        case 14: return QString::number(m_modelData.at(row).low,'f',2);
+        case 15: return QString::number(m_modelData.at(row).open,'f',2);
+        case 16: return QString::number(m_modelData.at(row).preClose,'f',2);
         }
     }
     else if (role == Qt::ForegroundRole)
@@ -170,9 +170,9 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
                 return QColor(0, 191, 0);
             break;
         case 14:
-            if (m_modelData.at(row).high>m_modelData.at(row).preClose)
+            if (m_modelData.at(row).low>m_modelData.at(row).preClose)
                 return QColor(Qt::red);
-            else if (m_modelData.at(row).high<m_modelData.at(row).preClose)
+            else if (m_modelData.at(row).low<m_modelData.at(row).preClose)
                 return QColor(0, 191, 0);
             break;
         case 15:
@@ -207,6 +207,13 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 7:return Qt::AlignRight;
         case 8:return Qt::AlignRight;
         case 9:return Qt::AlignRight;
+        case 10:return Qt::AlignRight;
+        case 11:return Qt::AlignRight;
+        case 12:return Qt::AlignRight;
+        case 13:return Qt::AlignRight;
+        case 14:return Qt::AlignRight;
+        case 15:return Qt::AlignRight;
+        case 16:return Qt::AlignRight;
         }
     }
     return QVariant();

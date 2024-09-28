@@ -67,6 +67,10 @@ void TableStock::setBlockView()
     blockView->setColumnWidth(6,50);
     blockView->setColumnWidth(7,85);
     blockView->setColumnWidth(8,50);
+    blockView->setColumnWidth(9,85);
+    blockView->setColumnWidth(10,50);
+    blockView->setColumnWidth(11,85);
+    blockView->setColumnWidth(12,50);
 }
 
 void TableStock::setTimeShareTickView()

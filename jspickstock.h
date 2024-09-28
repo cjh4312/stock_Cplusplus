@@ -16,6 +16,7 @@
 #include "qmessagebox.h"
 #include "qtextcodec.h"
 #include <QFile>
+#include <QProgressBar>
 
 class JSPickStock : public QDialog
 {
