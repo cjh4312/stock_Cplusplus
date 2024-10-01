@@ -19,7 +19,7 @@ private:
     void readMyStock();
     void reFlaseMyStock();
     QByteArray allData;
-    int risingSpeedSize=22;
+    int risingSpeedSize=29;
 //    QNetworkAccessManager *naManager =new QNetworkAccessManager(this);
 
 signals:

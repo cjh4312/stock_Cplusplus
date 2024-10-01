@@ -295,9 +295,12 @@ void MainWindow::initSettings()
     mTableStock.myStockView->setFocusPolicy(Qt::ClickFocus);
     mTableStock.myStockView->horizontalHeader()->setHighlightSections(false);
 
+    QScreen* screen = QGuiApplication::primaryScreen();
     searchSmallWindow=new QWidget(this);
     searchSmallWindow->setWindowFlag(Qt::Popup);
-    searchSmallWindow->setGeometry(1466, 645, 300, 350);
+    int w=screen->size().width();
+    int h=screen->size().height();
+    searchSmallWindow->setGeometry(w-450, h-435, 300, 350);
     QVBoxLayout *search =new QVBoxLayout(searchSmallWindow);
     search->setContentsMargins(2, 2, 2, 2);
     searchSmallWindow->setLayout(search);

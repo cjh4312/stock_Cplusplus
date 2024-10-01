@@ -4,7 +4,7 @@
 
 #define COLNUMS 17
 //#define OFFSETEND 0
-#define KRANGE 120
+#define KRANGE 150
 #define WIDTHEDGE 2.0
 #define BOTTOMHEIGHTEDGE 20
 #define TOPHEIGHTEDGE 4.0

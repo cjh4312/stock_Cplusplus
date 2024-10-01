@@ -279,7 +279,10 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         else
         {
             float backPP=GlobalVar::mTimeShareChartList.at(GlobalVar::mTimeShareChartList.count()-1).price;
-            pp=GlobalVar::mTimeShareChartList.at(GlobalVar::mTimeShareChartList.count()-2).price;
+            if (GlobalVar::mTimeShareChartList.count()==1)
+                pp=GlobalVar::preClose;
+            else
+                pp=GlobalVar::mTimeShareChartList.at(GlobalVar::mTimeShareChartList.count()-2).price;
             if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
                 for (int i = 0; i < data.size(); ++i)
                 {
