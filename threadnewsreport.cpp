@@ -1,6 +1,6 @@
 
 #include "threadnewsreport.h"
-
+#include <synchapi.h>
 ThreadNewsReport::ThreadNewsReport(QObject *parent)
     : QObject{parent}
 {
@@ -9,7 +9,7 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
     tts->setLocale(QLocale::Chinese);
     tts->setRate(0.3);
     tts->setPitch(0.0);
-    tts->setVolume(0.6);
+    tts->setVolume(1);
     QDateTime c=QDateTime::currentDateTime();
     id=c.addSecs(-1800).toString("yyyyMMddhhmmss");
     jinShiNewsReportCurTime = GlobalVar::settings->value("jinShiNewsReportCurTime").toString();
@@ -117,6 +117,11 @@ void ThreadNewsReport::initNewsReport()
 
             int et=eastTime.toInt();
 //            qDebug()<<jsTime.toInt()<<et;
+            while (1)
+                if (tts->state() == QTextToSpeech::Ready)
+                    break;
+                else
+                    Sleep(1000);
             if (jsTime.toInt()>et and eastNums!=-1)
             {
                 sayEastNews(eastNewsList[eastNums],et);
