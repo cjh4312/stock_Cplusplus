@@ -87,7 +87,7 @@ void ThreadTimeShareTick::getSSEData(int nums,QString url)
         naManager->deleteLater();
     });
     connect(reply, &QNetworkReply::readyRead, this, [=](){
-        qDebug()<<reply->error();
+        // qDebug()<<reply->error();
         if (GlobalVar::curCode!=preCode)
             reply->abort();
         else if (reply->error() == QNetworkReply::NoError)

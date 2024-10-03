@@ -897,11 +897,13 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     }
     else if (obj==drawChart.timeShareChart)
     {
-        if (event->type() == QEvent::Paint)
+        if (event->type() == QEvent::Paint and not timeShareRunning)
         {
+            timeShareRunning=true;
             QPainter *painter=new QPainter(drawChart.timeShareChart);
             drawChart.drawTimeShareChart(painter);
             delete painter;
+            timeShareRunning=false;
         }
         else if(event->type()==QEvent::MouseMove)
         {

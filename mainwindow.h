@@ -133,6 +133,7 @@ private:
     bool preSort=false;
     float tradePrice;
     int howPosition=0;
+    bool timeShareRunning=false;
 
     void initGlobalVar();
     void initThread();
