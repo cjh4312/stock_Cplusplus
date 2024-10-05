@@ -117,11 +117,12 @@ void ThreadNewsReport::initNewsReport()
 
             int et=eastTime.toInt();
 //            qDebug()<<jsTime.toInt()<<et;
-            while (1)
-                if (tts->state() == QTextToSpeech::Ready)
-                    break;
-                else
-                    Sleep(1000);
+            // while (1)
+            //     if (tts->state() == QTextToSpeech::Speaking)
+            //         Sleep(1000);
+            //     else
+            //         break;
+
             if (jsTime.toInt()>et and eastNums!=-1)
             {
                 sayEastNews(eastNewsList[eastNums],et);
