@@ -13,7 +13,8 @@ class ThreadNewsReport : public QObject
 public:
     explicit ThreadNewsReport(QObject *parent = nullptr);
     void getNewsData();
-    QTextToSpeech  *tts=new QTextToSpeech(this);
+    bool isQuit=false;
+    QTextToSpeech *tts=new QTextToSpeech(this);
 
 private:
     QByteArray allData;

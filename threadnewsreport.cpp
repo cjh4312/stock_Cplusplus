@@ -116,12 +116,13 @@ void ThreadNewsReport::initNewsReport()
                 jsTime="123456789";
 
             int et=eastTime.toInt();
-//            qDebug()<<jsTime.toInt()<<et;
-            // while (1)
-            //     if (tts->state() == QTextToSpeech::Speaking)
-            //         Sleep(1000);
-            //     else
-            //         break;
+            // qDebug()<<jsTime.toInt()<<et;
+            while (1)
+                // qDebug()<<isQuit;
+                if (tts->state() == QTextToSpeech::Speaking and not isQuit)
+                    Sleep(1000);
+                else
+                    break;
 
             if (jsTime.toInt()>et and eastNums!=-1)
             {
