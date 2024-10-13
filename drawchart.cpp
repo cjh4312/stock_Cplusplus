@@ -106,7 +106,7 @@ DrawChart::DrawChart(QWidget *parent)
         annLabel[i]->hide();
     }
     connect(close,&QPushButton::clicked,this,[=](){hisTimeShareChart->close();});
-    connect(annTitle, SIGNAL(clicked(const QModelIndex)),this, SLOT(annClicked(const QModelIndex)));
+    connect(annTitle, SIGNAL(clicked(QModelIndex)),this, SLOT(annClicked(QModelIndex)));
 }
 
 void DrawChart::drawTimeShareChart(QPainter *painter)

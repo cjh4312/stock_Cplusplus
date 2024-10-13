@@ -278,6 +278,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         }
         else
         {
+            qDebug()<<QDateTime::currentDateTime()<<GlobalVar::mTimeShareChartList.count();
             float backPP=GlobalVar::mTimeShareChartList.at(GlobalVar::mTimeShareChartList.count()-1).price;
             if (GlobalVar::mTimeShareChartList.count()==1)
                 pp=GlobalVar::preClose;
@@ -373,5 +374,5 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
         if (GlobalVar::timeShareHighLowPoint[1]>0)
             GlobalVar::timeShareHighLowPoint[1]=0;
     }
-    // qDebug()<<GlobalVar::mTimeShareChartList.count();
+    // qDebug()<<QDateTime::currentDateTime()<<GlobalVar::mTimeShareChartList.count();
 }

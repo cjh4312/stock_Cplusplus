@@ -123,7 +123,6 @@ void ThreadNewsReport::initNewsReport()
                     Sleep(1000);
                 else
                     break;
-
             if (jsTime.toInt()>et and eastNums!=-1)
             {
                 sayEastNews(eastNewsList[eastNums],et);
