@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    threadNewsReport->isQuit=true;
     Py_Finalize();
     saveCode();
     requestsToCsv.progressBarWindow->close();

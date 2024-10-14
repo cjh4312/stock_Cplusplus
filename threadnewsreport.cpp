@@ -1,13 +1,11 @@
 
 #include "threadnewsreport.h"
-#include <synchapi.h>
+
 ThreadNewsReport::ThreadNewsReport(QObject *parent)
     : QObject{parent}
 {
-//    naManager = new QNetworkAccessManager(this);
-
     tts->setLocale(QLocale::Chinese);
-    tts->setRate(0.3);
+    tts->setRate(0.1);
     tts->setPitch(0.0);
     tts->setVolume(1);
     QDateTime c=QDateTime::currentDateTime();
@@ -16,13 +14,13 @@ ThreadNewsReport::ThreadNewsReport(QObject *parent)
     eastNewsReportCurTime = GlobalVar::settings->value("eastNewsReportCurTime").toInt();
     if (eastNewsReportCurTime>12000000 and c.date().month()==1)
         eastNewsReportCurTime=1010000;
-
 }
 
 void ThreadNewsReport::getNewsData()
 {
     if (tts->state() == QTextToSpeech::Speaking)
         return;
+    newsContent="";
     GlobalVar::getData(allData,2,QUrl("https://finance.eastmoney.com/yaowen.html"));
     if (GlobalVar::timeOutFlag[4])
         GlobalVar::timeOutFlag[4]=false;
@@ -117,12 +115,7 @@ void ThreadNewsReport::initNewsReport()
 
             int et=eastTime.toInt();
             // qDebug()<<jsTime.toInt()<<et;
-            while (1)
-                // qDebug()<<isQuit;
-                if (tts->state() == QTextToSpeech::Speaking and not isQuit)
-                    Sleep(1000);
-                else
-                    break;
+
             if (jsTime.toInt()>et and eastNums!=-1)
             {
                 sayEastNews(eastNewsList[eastNums],et);
@@ -134,6 +127,7 @@ void ThreadNewsReport::initNewsReport()
                 jsNums-=1;
             }
         }
+        tts->say(newsContent);
     }
 }
 
@@ -156,9 +150,9 @@ void ThreadNewsReport::sayJsNews(QJsonObject object)
         QString dt=object.value("time").toString();
         if (jinShiNewsReportCurTime>=dt)
             return;
-
-        if (GlobalVar::isSayNews)
-            tts->say(newsText);
+        newsContent+=newsText;
+        // if (GlobalVar::isSayNews)
+        //     tts->say(newsText);
         id=newId;
         emit getNewsFinished("<font size=\"4\" color=red>"+dt+"</font>"+"<font size=\"4\">"+
                              newsText+"</font>");
@@ -171,9 +165,9 @@ void ThreadNewsReport::sayEastNews(QStringList l, int time)
     if (eastNewsReportCurTime>=time)
         return;
     QString newsText=l[1];
-
-    if (GlobalVar::isSayNews)
-        tts->say("东方财经:"+newsText);
+    newsContent+="东方财经:"+newsText+"。";
+    // if (GlobalVar::isSayNews)
+    //     tts->say("东方财经:"+newsText);
     emit getNewsFinished("<font size=\"4\" color=red>"+l[2]+"</font>"+"<span> <a href="+l[0]+">"+
                          "<font size=\"4\">"+newsText+"</font>"+"</a> </span>");
     eastNewsReportCurTime=time;
