@@ -898,13 +898,11 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     }
     else if (obj==drawChart.timeShareChart)
     {
-        if (event->type() == QEvent::Paint and not isTimeShareChartRunning)
+        if (event->type() == QEvent::Paint)
         {
-            isTimeShareChartRunning=true;
             QPainter *painter=new QPainter(drawChart.timeShareChart);
             drawChart.drawTimeShareChart(painter);
             delete painter;
-            isTimeShareChartRunning=false;
         }
         else if(event->type()==QEvent::MouseMove)
         {
@@ -2169,8 +2167,8 @@ void MainWindow::tradingTimeRunThread()
             if (GlobalVar::isBoard)
                 searchStock.getBoardData();
             emit startThreadTable();
-            if (GlobalVar::curCode.length()!=5 and GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
-                emit startThreadTimeShareChart(false);
+            // if (GlobalVar::curCode.length()!=5 and GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
+            //     emit startThreadTimeShareChart(false);
         }
         else
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
