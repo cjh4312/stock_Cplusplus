@@ -153,7 +153,7 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
     for (int i=1;i<lineNums+1;++i)
         painter->drawLine(QPointF(WIDTHEDGE, interval*i/(lineNums+1)*aveHeight+TOPHEIGHTEDGE),
             QPointF(timeShareChartWidth-WIDTHEDGE, interval*i/(lineNums+1)*aveHeight+TOPHEIGHTEDGE));
-
+    // qDebug()<<GlobalVar::mTimeShareChartList.size();
     if (GlobalVar::mTimeShareChartList.isEmpty())
         return;
     //绘制时间
@@ -161,7 +161,7 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
     painter->setPen(Qt::white);
     for (int i=0;i<trendsTotal;i=i+d)
     {
-        if (i>GlobalVar::mTimeShareChartList.count())
+        if (i>=GlobalVar::mTimeShareChartList.count())
             break;
 
         int offset=WIDTHEDGE;
