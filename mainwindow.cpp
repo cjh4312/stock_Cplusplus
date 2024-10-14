@@ -2167,8 +2167,8 @@ void MainWindow::tradingTimeRunThread()
             if (GlobalVar::isBoard)
                 searchStock.getBoardData();
             emit startThreadTable();
-            // if (GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
-            //     emit startThreadTimeShareChart(false);
+            if (GlobalVar::curCode.length()!=5 and GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
+                emit startThreadTimeShareChart(false);
         }
         else
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
