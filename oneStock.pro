@@ -72,8 +72,5 @@ RESOURCES += \
 INCLUDEPATH += d:\workstation\python\include
 LIBS += -Ld:\workstation\python\libs -lpython312
 
-# QMAKE_LFLAGS_RELEASE = /INCREMENTAL:NO /DEBUG
-# LIBS += -lDbgHelp
-
 DISTFILES += \
     qmt.py
