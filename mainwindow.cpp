@@ -2156,8 +2156,7 @@ void MainWindow::tradingTimeRunThread()
 //    if (not ui->DLAllStockK->isEnabled() and curTime.time().toString("hh:mm")>"15:00")
 //        ui->DLAllStockK->setEnabled(true);
     if (timeCount%2==0 and GlobalVar::WhichInterface==1 and GlobalVar::isZhMarketDay(curTime))
-        if (GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
-            emit startThreadTimeShareTick(false);
+        emit startThreadTimeShareTick(false);
     if (timeCount%6==1 and GlobalVar::WhichInterface==1)
     {
         if (GlobalVar::isZhMarketDay(curTime))
@@ -2166,8 +2165,7 @@ void MainWindow::tradingTimeRunThread()
             if (GlobalVar::isBoard)
                 searchStock.getBoardData();
             emit startThreadTable();
-            if (GlobalVar::curCode.length()!=5 and GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
-                emit startThreadTimeShareChart(false);
+            emit startThreadTimeShareChart(false);
         }
         else
             circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
@@ -2184,6 +2182,7 @@ void MainWindow::tradingTimeRunThread()
             {
                 circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
                 emit startThreadTable();
+                emit startThreadTimeShareTick(false);
                 emit startThreadTimeShareChart(false);
             }
             else
@@ -2196,6 +2195,7 @@ void MainWindow::tradingTimeRunThread()
                 circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
                 emit startThreadTable();
                 emit startThreadTimeShareTick(false);
+                emit startThreadTimeShareChart(false);
             }
             else
                 circle->setStyleSheet(GlobalVar::circle_red_SheetStyle);
@@ -2206,6 +2206,7 @@ void MainWindow::tradingTimeRunThread()
             {
                 circle->setStyleSheet(GlobalVar::circle_green_SheetStyle);
                 emit startThreadTable();
+                emit startThreadTimeShareTick(false);
                 emit startThreadTimeShareChart(false);
             }
             else

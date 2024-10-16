@@ -24,8 +24,9 @@ ThreadTimeShareTick::ThreadTimeShareTick(QObject *parent)
 void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
 {
     QString t=GlobalVar::curCode.left(3);
-    QString o=GlobalVar::curCode.left(1);
-    if (o=="1" or t=="399" or t=="899" or o=="9")
+    QList<QString> list;
+    list<<"100"<<"122"<<"133"<<"103"<<"104";
+    if (list.contains(t))
     {
         if (preCode==GlobalVar::curCode)
             return;
