@@ -72,7 +72,10 @@ void ThreadTimeShareChart::getSSEData()
 
 void ThreadTimeShareChart::getAllTimeShareChart(bool r)
 {
-    if (GlobalVar::curCode.length()!=5 and GlobalVar::curCode.left(1)!="1" and GlobalVar::curCode.left(3)!="399")
+    QString s=GlobalVar::curCode.left(3);
+    QList<QString> list;
+    list<<"100"<<"122"<<"133"<<"103"<<"104";
+    if (not list.contains(s))
     {
         GlobalVar::getData(allData,2,QUrl("https://push2his.eastmoney.com/api/qt/stock/trends2/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58&ut=fa5fd1943c7b386f172d6893dbfba10b&iscr=0&ndays=1&secid="+GlobalVar::getComCode()+"&_=1666401553893"));
         if (GlobalVar::timeOutFlag[6])
@@ -81,7 +84,7 @@ void ThreadTimeShareChart::getAllTimeShareChart(bool r)
         {
             initTimeShareChartList();
             emit getTimeShareChartFinished();
-            if (preGCode.length()==5 or preGCode.left(1)=="1" or preGCode.left(3)=="399")
+            if (list.contains(preGCode.left(3)))
                 reply->abort();
         }
     }
