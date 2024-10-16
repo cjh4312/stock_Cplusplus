@@ -51,7 +51,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
             emit getBuySellFinished();
         }
         QString pos="-0";
-        if (preCode==GlobalVar::curCode and not reset)
+        if (preCode==GlobalVar::curCode and not reset and GlobalVar::WhichInterface==1)
              pos="-10";
 
         GlobalVar::getData(timeShareTickData,0.9f,QUrl("http://push2.eastmoney.com/api/qt/stock/details/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55&mpi=2000&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&pos="+pos+"&secid="+GlobalVar::getComCode()));
@@ -210,24 +210,19 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
             GlobalVar::mTimeShareTickList.clear();
         else
         {
-            if (code!=GlobalVar::curCode)
-                return;
-            if (not GlobalVar::mTimeShareTickList.empty())
+            QString t=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time;
+            for (int i = 0; i < s; ++i)
             {
-                QString t=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time;
-                for (int i = 0; i < s; ++i)
+                list=data.at(i).toString().split(",");
+                if (list[0]<=t)
                 {
-                    list=data.at(i).toString().split(",");
-                    if (list[0]<=t)
-                    {
-                        if (i==s-1)
-                            return;
-                    }
-                    else
-                    {
-                        j=i;
-                        break;
-                    }
+                    if (i==s-1)
+                        return;
+                }
+                else
+                {
+                    j=i;
+                    break;
                 }
             }
         }
