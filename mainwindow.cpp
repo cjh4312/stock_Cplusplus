@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     initInterface();
     initSettings();
     initSignals();
+
     tim = new QTimer(this);
     tim->setInterval(500);
     connect(tim,SIGNAL(timeout()),this,SLOT(tradingTimeRunThread()));
@@ -710,6 +711,8 @@ void MainWindow::initSignals()
         GlobalVar::curBoard=f10View.model->item(index.row(),3)->text();
         GlobalVar::isBoard=true;
         searchStock.getBoardData();
+        if (GlobalVar::mTableList.isEmpty())
+            return;
         mTableStock.m_tableModel->setModelData(GlobalVar::mTableList,false,true);
         mTableStock.stockTableView->setModel(mTableStock.m_tableModel);
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
@@ -837,7 +840,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         int para=event1->angleDelta().y();
         int tempStep=mTableStock.stockTableView->verticalScrollBar()->value();
         int curIndex=mTableStock.stockTableView->currentIndex().row();
-        int row=mTableStock.stockTableView->height()/22;
+        int row=mTableStock.stockTableView->height()/22+1;
         if (para<0)
         {
             mTableStock.stockTableView->verticalScrollBar()->setSliderPosition(tempStep+row);
@@ -1886,7 +1889,8 @@ void MainWindow::fastTrade()
     menu->addAction(actS);
     menu->popup(QCursor::pos());
     howPosition=0;
-
+    QStringList proportionNums={"全仓","1/2","1/3","1/5","1/10"};
+    float rate[5]={1.0,2.0,3.0,5.0,10.0};
     connect(actB,&QAction::triggered,this,[=](){
         PyGILState_STATE state=PyGILState_Ensure();
 //        PyObject* pModule = PyImport_ImportModule("qmt");
@@ -1962,7 +1966,6 @@ void MainWindow::fastTrade()
         tradeInfo->addWidget(unit2,4,3);
         QButtonGroup *proportion=new QButtonGroup(fastBuy);
         QRadioButton *proportionName[5];
-        QStringList proportionNums={"全仓","1/2","1/3","1/4","1/5"};
         for (int i=0;i<5;++i)
         {
             proportionName[i]=new QRadioButton(proportionNums[i],fastBuy);
@@ -1971,7 +1974,7 @@ void MainWindow::fastTrade()
             connect(proportionName[i],&QRadioButton::clicked,this,[=]()mutable{
                 int n=floor(cash/price->text().toFloat()/100);
                 howPosition=i;
-                buyNums->setValue(n/(i+1)*100);
+                buyNums->setValue(int(n/rate[i]+0.5)*100);
             });
         }
         proportionName[0]->setChecked(true);
@@ -2085,14 +2088,15 @@ void MainWindow::fastTrade()
         tradeInfo->addWidget(unit2,4,3);
         QButtonGroup *proportion=new QButtonGroup(fastSell);
         QRadioButton *proportionName[5];
-        QStringList proportionNums={"全仓","1/2","1/3","1/4","1/5"};
+
         for (int i=0;i<5;++i)
         {
             proportionName[i]=new QRadioButton(proportionNums[i],fastSell);
             proportion->addButton(proportionName[i]);
             group->addWidget(proportionName[i]);
             connect(proportionName[i],&QRadioButton::clicked,this,[=](){
-                sellNums->setValue(int(maxNums/(i+1)/100)*100);
+                float t=maxNums%100*100;
+                sellNums->setValue(int(maxNums/100/rate[i]+0.5)*100+t);
             });
         }
         proportionName[0]->setChecked(true);
