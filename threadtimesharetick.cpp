@@ -26,7 +26,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
     QString t=GlobalVar::curCode.left(3);
     QList<QString> list;
     list<<"100"<<"122"<<"133"<<"103"<<"104";
-    if (list.contains(t) or GlobalVar::WhichInterface==2 or GlobalVar::WhichInterface==5 or GlobalVar::WhichInterface==6)
+    if (list.contains(t))
     {
         if (preCode==GlobalVar::curCode)
             return;
