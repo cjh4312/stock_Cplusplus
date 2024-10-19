@@ -159,11 +159,8 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
     //绘制时间
     QRect rect;
     painter->setPen(Qt::white);
-    for (int i=0;i<trendsTotal;i=i+d)
+    for (int i=0;i<GlobalVar::mTimeShareChartList.count();i=i+d)
     {
-        if (i>=GlobalVar::mTimeShareChartList.count())
-            break;
-
         int offset=WIDTHEDGE;
         if (i>0)
             offset=WIDTHEDGE-15;
