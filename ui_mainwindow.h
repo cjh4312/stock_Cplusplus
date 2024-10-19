@@ -55,7 +55,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(800, 600);
+        MainWindow->setGeometry(200,200,800,600);
         ZHMarket = new QAction(MainWindow);
         ZHMarket->setObjectName("ZHMarket");
         ZHMarket->setCheckable(true);
