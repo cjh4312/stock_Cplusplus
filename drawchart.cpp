@@ -419,7 +419,7 @@ void DrawChart::drawCandleChart(QPainter *painter)
     float aveHeight=0;
     QRect rect;
     if (highPoint!=lowPoint)
-        aveHeight=(priceH-2*KTOPHEIGHTEDGE)/(highPoint-lowPoint);
+        aveHeight=int((priceH-2*KTOPHEIGHTEDGE)/(highPoint-lowPoint)*20)/20.0;
     painter->setPen(QColor(79,79,79));
     painter->drawLine(QPointF(candleChartWidth-KRIGHTWIDTHEDGE, 0),
                       QPointF(candleChartWidth-KRIGHTWIDTHEDGE, canldeChartHeight));
