@@ -415,7 +415,7 @@ void DrawChart::drawCandleChart(QPainter *painter)
 
     float aveWidth=(candleChartWidth-2*KWIDTHEDGE-KRIGHTWIDTHEDGE)/GlobalVar::KRange;
 //        qDebug()<<aveWidth;
-    float w=aveWidth/4;
+    int w=aveWidth/4;
     float aveHeight=0;
     QRect rect;
     if (highPoint!=lowPoint)
