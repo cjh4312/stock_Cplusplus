@@ -1824,8 +1824,7 @@ void MainWindow::showSearchResult()
         mTableStock.stockTableView->setCurrentIndex(mTableStock.m_tableModel->index(0,0));
         emit startThreadTable();
         toInterFace("main");
-        mTableStock.risingSpeedView->show();
-        mTableStock.myStockView->show();
+        middleWindow->show();
     }
     else
     {
