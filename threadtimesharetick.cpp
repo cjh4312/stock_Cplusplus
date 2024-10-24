@@ -45,7 +45,6 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
         else
         {
             initBuySellList();
-            QString l=GlobalVar::curCode.left(1);
             findStockArea();
             emit getBuySellFinished();
         }

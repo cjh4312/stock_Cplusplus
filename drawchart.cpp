@@ -468,13 +468,11 @@ void DrawChart::drawCandleChart(QPainter *painter)
             painter->setPen(QColor(2,148,255));
             painter->setBrush(QColor(2,148,255));
         }
-//        qDebug()<<(highPoint-high)*aveHeight+KTOPHEIGHTEDGE<<(highPoint-low)*aveHeight+KTOPHEIGHTEDGE<<Y+KTOPHEIGHTEDGE;
-//        if (high!=low)
+
         if (high!=low)
             painter->drawLine(QPointF(curXPos,(highPoint-high)*aveHeight+KTOPHEIGHTEDGE),
                 QPointF(curXPos,(highPoint-low)*aveHeight+KTOPHEIGHTEDGE));
         painter->drawRect(curXPos-w,Y+KTOPHEIGHTEDGE,2*w,height);
-//        qDebug()<<aveHeightVol<<candleHighLowPoint[2];
         painter->drawRect(curXPos-w,canldeChartHeight-vol*aveHeightVol-KBOTTOMHEIGHTEDGE,
                          2*w,vol*aveHeightVol);
         if (n>0)

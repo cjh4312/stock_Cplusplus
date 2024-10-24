@@ -105,7 +105,7 @@ void MainWindow::initThread()
     threadNewsReport->moveToThread(thread[3]);
     connect(threadNewsReport,&ThreadNewsReport::getNewsFinished,this,[=](QString s){
         newsData->append(s);
-});
+    });
     connect(this,&MainWindow::startThreadGetNews,threadNewsReport,&ThreadNewsReport::getNewsData);
     thread[3]->start();
     emit startThreadGetNews();

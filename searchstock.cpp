@@ -63,8 +63,8 @@ void SearchStock::searchFinished()
     {
         if (code.left(1)=="0")
             GlobalVar::curCode="1."+code;
-        else if (code.left(1)=="B")
-            GlobalVar::curCode="90."+code;
+        // else if (code.left(1)=="B")
+        //     GlobalVar::curCode="90."+code;
         else
             GlobalVar::curCode=code;
     }
@@ -113,8 +113,8 @@ void SearchStock::compare(QStringList Data,QString strUpper,int col)
             else if(s.left(1)=="3")
                 class_="创业板";
             matchCodeText->append(s.mid(0,6)+blank+strLine.at(1)+"("+strLine.at(2)+")"+blank+class_);
-            if (class_=="板块")
-                matchCodeText->append(s.mid(0,6)+blank+strLine.at(1)+"("+strLine.at(2)+")"+blank+"指数");
+            // if (class_=="板块")
+            //     matchCodeText->append(s.mid(0,6)+blank+strLine.at(1)+"("+strLine.at(2)+")"+blank+"指数");
             break;
         }
         else if (strUpper<strLine.at(col).left(searchCodeLine->text().length()))
@@ -142,8 +142,8 @@ void SearchStock::compare(QStringList Data,QString strUpper,int col)
         if (strUpper==strLine.at(col).left(searchCodeLine->text().length()))
         {
             matchCodeText->append(s.mid(0,6)+blank+strLine.at(1)+"("+strLine.at(2)+")"+blank+class_);
-            if (class_=="板块")
-                matchCodeText->append(s.mid(0,6)+blank+strLine.at(1)+"("+strLine.at(2)+")"+blank+"指数");
+            // if (class_=="板块")
+            //     matchCodeText->append(s.mid(0,6)+blank+strLine.at(1)+"("+strLine.at(2)+")"+blank+"指数");
             m+=1;
             if (m>100)
                 break;
@@ -171,8 +171,8 @@ void SearchStock::compare(QStringList Data,QString strUpper,int col)
         if (strUpper==strLine.at(col).left(searchCodeLine->text().length()))
         {
             matchCodeText->append(s.mid(0,6)+blank+strLine.at(1)+"("+strLine.at(2)+")"+blank+class_);
-            if (class_=="板块")
-                matchCodeText->append(s.mid(0,6)+blank+strLine.at(1)+"("+strLine.at(2)+")"+blank+"指数");
+            // if (class_=="板块")
+            //     matchCodeText->append(s.mid(0,6)+blank+strLine.at(1)+"("+strLine.at(2)+")"+blank+"指数");
             m+=1;
             if (m>100)
                 break;
