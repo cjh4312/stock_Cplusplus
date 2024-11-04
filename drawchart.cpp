@@ -188,18 +188,21 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
     {
         painter->setPen(QColor(255,0,255));
         painter->drawLine(QPointF(WIDTHEDGE, (high-stopH)*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth-WIDTHEDGE, (high-stopH)*aveHeight+TOPHEIGHTEDGE));
-        if (GlobalVar::curCode.left(1)=="3" or GlobalVar::curCode.left(1)=="8" or GlobalVar::curCode.left(3)=="688" or GlobalVar::curCode.left(1)=="4")
-        {
-            painter->setPen(QColor(255,182,193));
-            painter->drawLine(QPointF(WIDTHEDGE, (high-10)*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth-WIDTHEDGE, (high-10)*aveHeight+TOPHEIGHTEDGE));
-        }
+    }
+    if (high>13)
+    {
+        painter->setPen(QColor(255,182,193));
+        painter->drawLine(QPointF(WIDTHEDGE, (high-10)*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth-WIDTHEDGE, (high-10)*aveHeight+TOPHEIGHTEDGE));
+    }
+    if (low<-13)
+    {
+        painter->setPen(QColor(60,179,113));
+        painter->drawLine(QPointF(WIDTHEDGE, (high+10)*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth-WIDTHEDGE, (high+10)*aveHeight+TOPHEIGHTEDGE));
     }
     if (low==stopL)
     {
-        painter->setPen(QColor(60,179,113));
-        painter->drawLine(QPointF(WIDTHEDGE, (high-stopL)*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth-WIDTHEDGE, (high-stopL)*aveHeight+TOPHEIGHTEDGE));
-        painter->setPen(QColor(0, 255, 0));
-        painter->drawLine(QPointF(WIDTHEDGE, (high-10)*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth-WIDTHEDGE, (high-10)*aveHeight+TOPHEIGHTEDGE));
+        painter->setPen(QColor(0, 139, 0));
+        painter->drawLine(QPointF(WIDTHEDGE, (high-stopL)*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth-WIDTHEDGE, (high-stopL)*aveHeight+TOPHEIGHTEDGE));  
     }
     if (low<=-5)
     {

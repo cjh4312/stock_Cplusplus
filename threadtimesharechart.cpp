@@ -139,7 +139,7 @@ void ThreadTimeShareChart::initTimeShareChartList()
         QStringList list;
         float h;
         float l;
-        if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
+        if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.left(3)=="899")
             for (int i = 0; i < data.size(); ++i)
             {
                 list=data.at(i).toString().split(",");
@@ -244,7 +244,7 @@ void ThreadTimeShareChart::initSSETimeShareChartList()
             int t=jsonObject.value("data").toObject().value("trendsTotal").toInt();
             if (t!=0)
                 GlobalVar::trendsTotal=jsonObject.value("data").toObject().value("trendsTotal").toInt();
-            if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399")
+            if (GlobalVar::curCode.left(2)=="1." or GlobalVar::curCode.left(3)=="399" or GlobalVar::curCode.left(3)=="899")
             {
                 for (int i = 0; i < data.size(); ++i)
                 {
