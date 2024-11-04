@@ -181,7 +181,7 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
     painter->drawLine(QPointF(0, high*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth, high*aveHeight+TOPHEIGHTEDGE));
     if (high>=5)
     {
-        painter->setPen(Qt::red);
+        painter->setPen(QColor(255,182,193));
         painter->drawLine(QPointF(WIDTHEDGE, (high-5)*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth-WIDTHEDGE, (high-5)*aveHeight+TOPHEIGHTEDGE));
     }
     if (high==stopH)
@@ -191,7 +191,7 @@ void DrawChart::drawTimeShareChart(QPainter *painter)
     }
     if (high>13)
     {
-        painter->setPen(QColor(255,182,193));
+        painter->setPen(Qt::red);
         painter->drawLine(QPointF(WIDTHEDGE, (high-10)*aveHeight+TOPHEIGHTEDGE), QPointF(timeShareChartWidth-WIDTHEDGE, (high-10)*aveHeight+TOPHEIGHTEDGE));
     }
     if (low<-13)
