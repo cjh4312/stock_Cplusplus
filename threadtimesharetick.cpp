@@ -197,6 +197,9 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
     if (jsonError.error == QJsonParseError::NoError)
     {
         QJsonObject jsonObject = doc.object();
+        QString code=jsonObject.value("data").toObject().value("code").toString();
+        if (code!=GlobalVar::curCode)
+            return;
         GlobalVar::preClose=jsonObject.value("data").toObject().value("prePrice").toDouble();
         QJsonArray data=jsonObject.value("data").toObject().value("details").toArray();
         int s=data.size();
