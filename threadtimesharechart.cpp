@@ -108,9 +108,11 @@ void ThreadTimeShareChart::initTimeShareChartList()
     {
         QJsonObject jsonObject = doc.object();
         QString code=jsonObject.value("data").toObject().value("code").toString();
-        if (GlobalVar::WhichInterface==1)
-            if (code!=GlobalVar::curCode)
-                return;
+        QString str=GlobalVar::curCode;
+        if (GlobalVar::curCode.contains("."))
+            str=GlobalVar::curCode.split(".")[1];
+        if (code!=str)
+            return;
         GlobalVar::preClose=jsonObject.value("data").toObject().value("preClose").toDouble();
         int ph=110;
         int pl=90;

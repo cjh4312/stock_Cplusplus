@@ -158,10 +158,13 @@ void ThreadTimeShareTick::initBuySellList()
         QJsonObject jsonObject = doc.object();
         if (buySellData.contains("f57"))
         {
+
             QString code=jsonObject.value("data").toObject().value("f57").toString();
-            if (GlobalVar::WhichInterface==1)
-                if (code!=GlobalVar::curCode)
-                    return;
+            QString str=GlobalVar::curCode;
+            if (GlobalVar::curCode.contains("."))
+                str=GlobalVar::curCode.split(".")[1];
+            if (code!=str)
+                return;
         }
         if (buySellData.contains("f60"))
             GlobalVar::preClose=jsonObject.value("data").toObject().value("f60").toDouble();
@@ -207,9 +210,11 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
     {
         QJsonObject jsonObject = doc.object();
         QString code=jsonObject.value("data").toObject().value("code").toString();
-        if (GlobalVar::WhichInterface==1)
-            if (code!=GlobalVar::curCode)
-                return;
+        QString str=GlobalVar::curCode;
+        if (GlobalVar::curCode.contains("."))
+            str=GlobalVar::curCode.split(".")[1];
+        if (code!=str)
+            return;
         GlobalVar::preClose=jsonObject.value("data").toObject().value("prePrice").toDouble();
         QJsonArray data=jsonObject.value("data").toObject().value("details").toArray();
         int s=data.size();
