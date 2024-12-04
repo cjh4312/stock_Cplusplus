@@ -224,6 +224,7 @@ void MainWindow::initInterface()
     initBuySellLayout(buySellLayout);
     //2
     periodBox->addItems({"即时", "3日排行", "5日排行", "10日排行", "20日排行"});
+    periodBox->setCurrentIndex(3);
     northBox->addItems({"今日", "3日", "5日", "10日", "月", "季", "年"});
     singleStockBoard->addItems({"近一月", "近三月", "近半年", "近一年"});
     tradedetailBox->addItems({GlobalVar::curRecentWorkDay(1).toString("yyyy-MM-dd"),"近3日", "近5日", "近10日", "近30日"});
@@ -1847,7 +1848,7 @@ void MainWindow::resetKParameter()
 }
 void MainWindow::dealWithFundFlow()
 {
-    periodBox->setCurrentIndex(3);
+    // periodBox->setCurrentIndex(3);
     int n=periodBox->currentIndex();
     if (n==1 or n==4)
     {
