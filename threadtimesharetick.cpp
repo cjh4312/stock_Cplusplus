@@ -220,27 +220,26 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
         int s=data.size();
         timeShareTickInfo info;
         QStringList list;
+        QList<timeShareTickInfo> mTimeShareTickList;
         int j=0;
-        if (pos=="-0")
-            GlobalVar::mTimeShareTickList.clear();
-        else
-        {
-            QString t=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time;
-            for (int i = 0; i < s; ++i)
+        if (pos=="-10")
             {
-                list=data.at(i).toString().split(",");
-                if (list[0]<=t)
+                QString t=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time;
+                for (int i = 0; i < s; ++i)
                 {
-                    if (i==s-1)
-                        return;
-                }
-                else
-                {
-                    j=i;
-                    break;
+                    list=data.at(i).toString().split(",");
+                    if (list[0]<=t)
+                    {
+                        if (i==s-1)
+                            return;
+                    }
+                    else
+                    {
+                        j=i;
+                        break;
+                    }
                 }
             }
-        }
         for (int i = j; i < s; ++i)
         {
             list=data.at(i).toString().split(",");
@@ -249,8 +248,9 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
             info.nums=list[2].toInt();
             info.direct=list[4].toInt();
             info.tick=list[3].toInt();
-            GlobalVar::mTimeShareTickList.append(info);
+            mTimeShareTickList.append(info);
         }
+        GlobalVar::mTimeShareTickList=mTimeShareTickList;
     }
 }
 
