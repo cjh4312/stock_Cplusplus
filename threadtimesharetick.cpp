@@ -49,7 +49,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
             emit getBuySellFinished();
         }
         QString pos="-0";
-        if (preCode==GlobalVar::curCode and not reset and GlobalVar::WhichInterface==1)
+        if (preCode==GlobalVar::curCode and not reset and GlobalVar::WhichInterface==1 and not GlobalVar::mTimeShareTickList.isEmpty())
              pos="-10";
         float timeout=0.5;
         if (GlobalVar::WhichInterface==5)
@@ -225,8 +225,6 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
             GlobalVar::mTimeShareTickList.clear();
         else
         {
-            if (GlobalVar::mTimeShareTickList.isEmpty())
-                return;
             QString t=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time;
             for (int i = 0; i < s; ++i)
             {
