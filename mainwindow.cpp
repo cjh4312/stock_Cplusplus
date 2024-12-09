@@ -174,7 +174,7 @@ void MainWindow::initInterface()
     middleDLayout->addWidget(mTableStock.myStockView);
 
     rightBaseWindow=new QWidget(this);
-    rightBaseWindow->setMaximumWidth(450);
+    rightBaseWindow->setMaximumWidth(460);
     QVBoxLayout *rightLayout =new QVBoxLayout(rightBaseWindow);
     rightBaseWindow->setLayout(rightLayout);
     rightLayout->setSpacing(0);
@@ -431,7 +431,7 @@ void MainWindow::initBuySellLayout(QGridLayout *BuySellLayout)
     }
     buySellName[0]->setMinimumWidth(40);
     buySellPrice[0]->setMinimumWidth(45);
-    buySellNum[0]->setMinimumWidth(40);
+    buySellNum[0]->setMinimumWidth(50);
     QFrame *line=new QFrame(this);
     line->setStyleSheet("QFrame{/*background:yellow;*/min-height:2px;border-top:2px dotted gray}");
 //    line->setFrameShape(QFrame::HLine);
