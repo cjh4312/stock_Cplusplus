@@ -61,7 +61,7 @@ void ThreadTable::initTableList()
     QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
     if (jsonError.error == QJsonParseError::NoError)
     {
-        for (int i=0;i<3;++i)
+        for (int i=0;i<4;++i)
         {
             GlobalVar::upNums[i]=0;
             GlobalVar::downNums[i]=0;
@@ -85,32 +85,9 @@ void ThreadTable::initTableList()
                 info.code = ceilMap.value("f12").toString();
                 info.close = ceilMap.value("f2").toFloat();
                 info.pctChg=ceilMap.value("f3").toFloat();
-                if (info.pctChg>=8)
-                {
-                    GlobalVar::upNums[2]+=1;
-                    GlobalVar::upNums[1]+=1;
-                    GlobalVar::upNums[0]+=1;
-                }
-                else if (info.pctChg>=5)
-                {
-                    GlobalVar::upNums[1]+=1;
-                    GlobalVar::upNums[0]+=1;
-                }
-                else if (info.pctChg>0)
-                    GlobalVar::upNums[0]+=1;
-                else if (info.pctChg<=-8)
-                {
-                    GlobalVar::downNums[2]+=1;
-                    GlobalVar::downNums[1]+=1;
-                    GlobalVar::downNums[0]+=1;
-                }
-                else if (info.pctChg<=-5)
-                {
-                    GlobalVar::downNums[1]+=1;
-                    GlobalVar::downNums[0]+=1;
-                }
-                else if (info.pctChg<0)
-                    GlobalVar::downNums[0]+=1;
+                info.high = ceilMap.value("f15").toFloat();
+                info.low = ceilMap.value("f16").toFloat();
+                info.preClose=ceilMap.value("f18").toFloat();
                 info.turn=ceilMap.value("f8").toFloat();
                 info.amount=ceilMap.value("f6").toFloat();
                 info.velocity = ceilMap.value("f22").toFloat();
@@ -120,10 +97,64 @@ void ThreadTable::initTableList()
                 info.pctYear=ceilMap.value("f25").toFloat();
                 info.pctSixty=ceilMap.value("f24").toFloat();
                 info.volume = ceilMap.value("f5").toFloat();
-                info.high = ceilMap.value("f15").toFloat();
-                info.low = ceilMap.value("f16").toFloat();
                 info.open=ceilMap.value("f17").toFloat();
-                info.preClose=ceilMap.value("f18").toFloat();
+                if (info.pctChg>=8)
+                {
+                    GlobalVar::upNums[3]+=1;
+                    GlobalVar::upNums[2]+=1;
+                    GlobalVar::upNums[0]+=1;
+                    int ph=110;
+                    float a=int(info.preClose*ph+0.5)/100.0;
+                    if (info.code.left(1)=="3" or info.code.left(3)=="688")
+                    {
+                        ph=120;
+                        a=int(info.preClose*ph+0.5)/100.0;
+                    }
+                    else if(info.code.left(1)=="4" or info.code.left(1)=="8")
+                    {
+                        ph=130;
+                        a=int(info.preClose*ph)/100.0;
+                    }
+                    if (info.close==a)
+                        GlobalVar::upNums[1]+=1;
+                }
+                else if (info.pctChg>=5)
+                {
+                    GlobalVar::upNums[2]+=1;
+                    GlobalVar::upNums[0]+=1;
+
+                }
+                else if (info.pctChg>0)
+                    GlobalVar::upNums[0]+=1;
+                else if (info.pctChg<=-8)
+                {
+                    GlobalVar::downNums[3]+=1;
+                    GlobalVar::downNums[2]+=1;
+                    GlobalVar::downNums[0]+=1;
+                    int pl=90;
+                    float b=int(info.preClose*pl+0.5)/100.0;
+                    if (info.code.left(1)=="3" or info.code.left(3)=="688")
+                    {
+                        pl=80;
+                        b=int(info.preClose*pl+0.5)/100.0;
+                    }
+                    else if(info.code.left(1)=="4" or info.code.left(1)=="8")
+                    {
+                        pl=70;
+                        b=int(info.preClose*pl)/100.0;
+                    }
+                    if (info.close==b)
+                    {
+                        GlobalVar::downNums[1]+=1;
+                    }
+                }
+                else if (info.pctChg<=-5)
+                {
+                    GlobalVar::downNums[2]+=1;
+                    GlobalVar::downNums[0]+=1;
+                }
+                else if (info.pctChg<0)
+                    GlobalVar::downNums[0]+=1;
                 tempTableListCopy.append(info);
             }
             GlobalVar::mTableListCopy=tempTableListCopy;

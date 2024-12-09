@@ -10,6 +10,7 @@ class ThreadIndex : public QObject
 public:
     explicit ThreadIndex(QObject *parent = nullptr);
     void getAllIndex();
+    double totalAmount;
 private:
     void initIndexList();
     void getEastFundFlow();

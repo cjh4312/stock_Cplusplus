@@ -152,7 +152,7 @@ void GetF10Info::mainBusinessComposition()
             GlobalVar::getAllContent(s,rowList,"<td");
             content=pair.second;
             f10QList.append(rowList);
-//            qDebug()<<rowList;
+            // qDebug()<<rowList;
         }
         if (remainder.indexOf("swlab_c")==-1)
             break;

@@ -9,6 +9,12 @@ TableStock::TableStock()
     myStockView=new QTableView(this);
     timeShareTickView=new QTableView(this);
 
+    timeShareTickView->setMinimumWidth(300);
+    risingSpeedView->setMaximumWidth(285);
+    risingSpeedView->setMinimumHeight(496);
+    myStockView->setMinimumHeight(496);
+    blockView->setMinimumWidth(785);
+
     m_tableModel= new ModelTableStock(stockTableView);
     m_fundFlowModel=new ModelFundFlow(blockView);
     m_risingSpeedModel= new ModelTableStock(risingSpeedView);
