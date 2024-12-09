@@ -71,9 +71,9 @@ void ThreadTable::initTableList()
         QJsonValue value;
         QVariantMap ceilMap;
         StockInfo info;
-        QList<StockInfo> tempTableListCopy;
         if (GlobalVar::WhichInterface==1)
         {
+            QList<StockInfo> tempTableListCopy;
             for (int i = 0; i < data.size(); ++i)
             {
                 value = data.at(i);
@@ -182,26 +182,26 @@ void ThreadTable::initTableList()
                 info.pctChg=ceilMap.value("f3").toFloat();
                 if (info.pctChg>=8)
                 {
+                    GlobalVar::upNums[3]+=1;
                     GlobalVar::upNums[2]+=1;
-                    GlobalVar::upNums[1]+=1;
                     GlobalVar::upNums[0]+=1;
                 }
                 else if (info.pctChg>=5)
                 {
-                    GlobalVar::upNums[1]+=1;
+                    GlobalVar::upNums[2]+=1;
                     GlobalVar::upNums[0]+=1;
                 }
                 else if (info.pctChg>0)
                     GlobalVar::upNums[0]+=1;
                 else if (info.pctChg<=-8)
                 {
+                    GlobalVar::downNums[3]+=1;
                     GlobalVar::downNums[2]+=1;
-                    GlobalVar::downNums[1]+=1;
                     GlobalVar::downNums[0]+=1;
                 }
                 else if (info.pctChg<=-5)
                 {
-                    GlobalVar::downNums[1]+=1;
+                    GlobalVar::downNums[2]+=1;
                     GlobalVar::downNums[0]+=1;
                 }
                 else if (info.pctChg<0)
