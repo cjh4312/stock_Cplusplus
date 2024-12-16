@@ -35,7 +35,7 @@ int ModelFundFlow::columnCount(const QModelIndex &parent) const
     if (parent.isValid())
         return 0;
 
-    return 14;
+    return tableHeader.size();
 }
 
 QVariant ModelFundFlow::headerData(int section, Qt::Orientation orientation, int role) const
