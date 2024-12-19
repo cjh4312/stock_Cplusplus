@@ -23,6 +23,7 @@ public:
     void getStockHotRank();
     void getMainIndex();
     void mainBusinessComposition();
+    void eastMainBusinessComposition();
     void assetLiability();
     void getIncome();
     void getCashFlow();

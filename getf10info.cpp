@@ -151,12 +151,68 @@ void GetF10Info::mainBusinessComposition()
             s=pair.first;
             GlobalVar::getAllContent(s,rowList,"<td");
             content=pair.second;
+
             f10QList.append(rowList);
             // qDebug()<<rowList;
         }
         if (remainder.indexOf("swlab_c")==-1)
             break;
         m+=1;
+    }
+}
+
+void GetF10Info::eastMainBusinessComposition()
+{
+    f10QList.clear();
+    QString code;
+    if (GlobalVar::curCode.left(1)=="6" or GlobalVar::curCode.left(3)=="688")
+        code=GlobalVar::curCode+".SH";
+    else if (GlobalVar::curCode.left(1)=="3" or GlobalVar::curCode.left(1)=="0")
+        code=GlobalVar::curCode+".SZ";
+    else
+        code=GlobalVar::curCode+".BJ";
+
+    QString url="https://datacenter.eastmoney.com/securities/api/data/v1/get?reportName=RPT_F10_FN_MAINOP&columns=SECUCODE%2CREPORT_DATE&quoteColumns=&distinct=REPORT_DATE&filter=(SECUCODE%3D%22"+code+"%22)&pageNumber=1&pageSize=&sortTypes=-1&sortColumns=REPORT_DATE&source=HSF10&client=PC&v=026536694635958624";
+    QByteArray allData;
+    GlobalVar::getData(allData,1,QUrl(url));
+    QJsonParseError jsonError;
+    QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
+    QString className[4]={"","按行业分类","按产品分类","按地区分类"};
+    if (jsonError.error == QJsonParseError::NoError)
+    {
+        QJsonObject jsonObject = doc.object();
+        QJsonArray data=jsonObject.value("result").toObject().value("data").toArray();
+        QJsonValue value;
+        QVariantMap ceilMap;
+        for (int i = 0; i < data.size(); ++i)
+        {
+            if (i>5)
+                break;
+            value = data.at(i);
+            ceilMap = value.toVariant().toMap();
+            QString date=ceilMap.value("REPORT_DATE").toString().left(10);
+            url="https://datacenter.eastmoney.com/securities/api/data/v1/get?reportName=RPT_F10_FN_MAINOP&columns=SECUCODE%2CSECURITY_CODE%2CREPORT_DATE%2CMAINOP_TYPE%2CITEM_NAME%2CMAIN_BUSINESS_INCOME%2CMBI_RATIO%2CMAIN_BUSINESS_COST%2CMBC_RATIO%2CMAIN_BUSINESS_RPOFIT%2CMBR_RATIO%2CGROSS_RPOFIT_RATIO%2CRANK&quoteColumns=&filter=(SECUCODE%3D%22"+code+"%22)(REPORT_DATE%3D%27"+date+"%27)&pageNumber=1&pageSize=200&sortTypes=1%2C1&sortColumns=MAINOP_TYPE%2CRANK&source=HSF10&client=PC&v=06359431030769309";
+            GlobalVar::getData(allData,1,QUrl(url));
+            doc = QJsonDocument::fromJson(allData, &jsonError);
+            if (jsonError.error == QJsonParseError::NoError)
+            {
+                jsonObject = doc.object();
+                QJsonArray data1=jsonObject.value("result").toObject().value("data").toArray();
+                for (int i = 0; i < data1.size(); ++i)
+                {
+                    QStringList strl;
+                    value = data1.at(i);
+                    ceilMap = value.toVariant().toMap();
+                    strl<<ceilMap.value("REPORT_DATE").toString().left(10)<<className[ceilMap.value("MAINOP_TYPE").toInt()]<<ceilMap.value("ITEM_NAME").toString()
+                         <<GlobalVar::format_conversion(ceilMap.value("MAIN_BUSINESS_INCOME").toFloat())<<GlobalVar::format_conversion(ceilMap.value("MBI_RATIO").toFloat())
+                         <<GlobalVar::format_conversion(ceilMap.value("MAIN_BUSINESS_COST").toFloat())<<GlobalVar::format_conversion(ceilMap.value("MBC_RATIO").toFloat())
+                         <<GlobalVar::format_conversion(ceilMap.value("MAIN_BUSINESS_RPOFIT").toFloat())<<GlobalVar::format_conversion(ceilMap.value("MBR_RATIO").toFloat())
+                         <<GlobalVar::format_conversion(ceilMap.value("GROSS_RPOFIT_RATIO").toFloat());
+                    f10QList.append(strl);
+                }
+            }
+
+        }
     }
 }
 

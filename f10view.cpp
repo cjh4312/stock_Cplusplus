@@ -50,31 +50,51 @@ void F10View::dealWithMainIndex()
 void F10View::dealWithBusinessAnalysis()
 {
 //    F10SmallWindow->setFixedSize(1500,700);
-    getF10Info.mainBusinessComposition();
+    // getF10Info.mainBusinessComposition();
+    getF10Info.eastMainBusinessComposition();
     model->clear();
-    model->setHorizontalHeaderLabels(getF10Info.colList);
+    QStringList colList;
+    colList<<"报告期"<<"分类方向"<<"主营构成"<<"主营收入"<<"收入比例"<<"主营成本"<<"成本比例"<<"主营利润"<<"利润比例"<<"毛利率";
+    model->setHorizontalHeaderLabels(colList);
+    QString preS0="";
+    QString preS1="";
     for (int i=0;i<getF10Info.f10QList.size();++i)
         for (int j=0;j<getF10Info.f10QList.at(i).count();++j)
         {
-            model->setItem(i, j, new QStandardItem(getF10Info.f10QList.at(i)[j]));
-            if (getF10Info.f10QList.at(i)[j].left(1)=="-")
+            QString s=getF10Info.f10QList.at(i)[j];
+            if (j==0)
+            {
+                if (s==preS0)
+                    continue;
+                preS0=s;
+            }
+            else if (j==1)
+            {
+                if (s==preS1)
+                    continue;
+                preS1=s;
+            }
+            model->setItem(i, j, new QStandardItem(s));
+            if (j==0)
+                model->item(i,j)->setForeground(QColor(255, 0, 0));
+            else if (getF10Info.f10QList.at(i)[j].left(1)=="-")
                 model->item(i,j)->setForeground(QColor(0, 191, 0));
-            else if (getF10Info.f10QList.at(i)[2]=="合计")
+            else if (getF10Info.f10QList.at(i)[2].contains("合计"))
             {
                 model->item(i,j)->setForeground(QColor(255, 0, 0));
                 model->item(i,j)->setFont(QFont("微软雅黑",14,QFont::Black));
             }
-            else if (getF10Info.f10QList.at(i)[1]=="按行业分")
+            else if (getF10Info.f10QList.at(i)[1].contains("按行业分"))
             {
                 model->item(i,j)->setForeground(QColor(255, 185, 15));
                 model->item(i,j)->setFont(QFont("微软雅黑",12));
             }
-            else if (getF10Info.f10QList.at(i)[1]=="按地区分")
+            else if (getF10Info.f10QList.at(i)[1].contains("按地区分"))
             {
                 model->item(i,j)->setForeground(QColor(Qt::blue));
                 model->item(i,j)->setFont(QFont("微软雅黑",12));
             }
-            else if (getF10Info.f10QList.at(i)[1]=="按产品分")
+            else if (getF10Info.f10QList.at(i)[1].contains("按产品分"))
             {
                 model->item(i,j)->setForeground(QColor(255, 0, 255));
                 model->item(i,j)->setFont(QFont("微软雅黑",12));
