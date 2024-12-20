@@ -48,7 +48,7 @@ public:
     Q_INVOKABLE float D(float f);
 
     void initPickStockWindow();
-    void PickStockInterface();
+    void PickStockInterface(QDialog *w);
     void initWindow();
     float getData(int day,int column);
     QString replaceFormula(QString s);

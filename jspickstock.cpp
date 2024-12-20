@@ -11,26 +11,9 @@ JSPickStock::~JSPickStock()
 
 }
 
-void JSPickStock::PickStockInterface()
+void JSPickStock::PickStockInterface(QDialog *pickStockWindow)
 {
-    if (GlobalVar::WhichInterface!=1)
-    {
-        QMessageBox::information(this,"提示", "只能选A股或者在主界面", QMessageBox::Ok);
-        return;
-    }
-    else if (isRunning)
-    {
-        QMessageBox::information(this,"提示", "不要重复打开", QMessageBox::Ok);
-        return;
-    }
     isRunning=true;
-    QDialog *pickStockWindow=new QDialog(this);
-    pickStockWindow->setAttribute(Qt::WA_DeleteOnClose);
-    // pickStockWindow->setWindowFlags(pickStockWindow->windowFlags() | Qt::WindowStaysOnTopHint);
-    // pickStockWindow->setWindowModality(Qt::ApplicationModal);
-    pickStockWindow->setWindowTitle("公式选股");
-    pickStockWindow->setGeometry(450, 200, 1000, 650);
-    pickStockWindow->show();
     QHBoxLayout *mainLayout =new QHBoxLayout(pickStockWindow);
     pickStockWindow->setLayout(mainLayout);
 
@@ -103,7 +86,7 @@ void JSPickStock::PickStockInterface()
     mainLayout->addSpacing(10);
     mainLayout->addLayout(layout3);
     QPushButton *button[5];
-    QString buttonName[]={"开始选股","添加分类","添加","删除","保存"};
+    QString buttonName[]={"开始选股","添加分类","添加公式","删除","保存"};
     for (int i=0;i<5;++i)
     {
         button[i]=new QPushButton(buttonName[i],pickStockWindow);
@@ -135,7 +118,7 @@ void JSPickStock::PickStockInterface()
     });
     connect(button[3],&QPushButton::clicked,this,[=](){
         int row=formulaTree->currentIndex().row();
-        int r=QMessageBox::information(this,"提示", "确定删除:"+GlobalVar::formula[row][0], QMessageBox::Yes | QMessageBox::No);
+        int r=QMessageBox::information(pickStockWindow,"提示", "确定删除:"+GlobalVar::formula[row][0], QMessageBox::Yes | QMessageBox::No);
         if (r==QMessageBox::Yes)
         {
             delete formulaTree->currentItem();
@@ -250,7 +233,7 @@ void JSPickStock::PickStockInterface()
     connect(button[0],&QPushButton::clicked,this,[=](){
         if (GlobalVar::settings->value("isDownloadK").toString()!=
                     GlobalVar::curRecentWorkDay(0).toString("yyyy-MM-dd"))
-            QMessageBox::information(this,"提示", "确保数据是最新的", QMessageBox::Ok);
+            QMessageBox::information(pickStockWindow,"提示", "确保数据是最新的", QMessageBox::Ok);
         JSPickStock* object = new JSPickStock(this);
         QJSEngine myEngine;
         QJSValue jsObject = myEngine.newQObject(object);
@@ -277,7 +260,7 @@ void JSPickStock::PickStockInterface()
             QJSValue value = myEngine.evaluate(replaceFormula(editFormula->toPlainText()));
             if (value.isError())
             {
-                QMessageBox::information(this,"提示", value.property("name").toString()+"\n"+
+                QMessageBox::information(pickStockWindow,"提示", value.property("name").toString()+"\n"+
                         value.property("message").toString()+"\n"+
                         QString::number(value.property("lineNumber").toInt()), QMessageBox::Ok);
                 return;

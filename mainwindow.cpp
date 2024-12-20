@@ -752,7 +752,24 @@ void MainWindow::initSignals()
         mTableStock.myStockView->show();
     });
     connect(ui->pickStock,&QAction::triggered,this,[=](){
-        mPickStock->PickStockInterface();
+        if (GlobalVar::WhichInterface!=1)
+        {
+            QMessageBox::information(this,"提示", "只能选A股或者在主界面", QMessageBox::Ok);
+            return;
+        }
+        if (mPickStock->isRunning)
+        {
+            QMessageBox::information(this,"提示", "不要重复打开", QMessageBox::Ok);
+            return;
+        }
+        QDialog *pickStockWindow=new QDialog(this);
+        pickStockWindow->setAttribute(Qt::WA_DeleteOnClose);
+        // pickStockWindow->setWindowFlags(pickStockWindow->windowFlags() | Qt::WindowStaysOnTopHint);
+        // pickStockWindow->setWindowModality(Qt::ApplicationModal);
+        pickStockWindow->setWindowTitle("公式选股");
+        pickStockWindow->setGeometry(450, 200, 1000, 650);
+        pickStockWindow->show();
+        mPickStock->PickStockInterface(pickStockWindow);
     });
     connect(mPickStock,&JSPickStock::updateTableList,this,[=](){
         mTableStock.setTableView();
