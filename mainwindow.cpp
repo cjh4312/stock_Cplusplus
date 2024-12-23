@@ -69,6 +69,24 @@ void MainWindow::initThread()
     threadTable->moveToThread(thread[0]);
     connect(threadTable,&ThreadTable::getTableDataFinished,this,[=](){
         mTableStock.setTableView();
+        if (GlobalVar::WhichInterface==1)
+        {
+            if (isFirstSCrollBar)
+            {
+                HorizontalSCrollBarMax=mTableStock.stockTableView->horizontalScrollBar()->maximum();
+                isFirstSCrollBar=false;
+            }
+        }
+        else
+        {
+            HorizontalSCrollBarMax=mTableStock.stockTableView->horizontalScrollBar()->maximum();
+            isFirstSCrollBar=true;
+        }
+        leftHorizontalSCrollBar->setMaximum(HorizontalSCrollBarMax);
+        if (HorizontalSCrollBarMax==0)
+            leftHorizontalSCrollBar->hide();
+        else
+            leftHorizontalSCrollBar->show();
         feelingData[0]->setText(QString::number(GlobalVar::upNums[0]));
         feelingData[1]->setText(QString::number(GlobalVar::upNums[1]));
         feelingData[2]->setText(QString::number(GlobalVar::upNums[2])+"/"+QString::number(GlobalVar::upNums[3]));
@@ -153,9 +171,26 @@ void MainWindow::initInterface()
     ui->ZHMarket->setChecked(true);
 
     ui->horizontalLayout->setSpacing(0);
-    ui->horizontalLayout->addWidget(mTableStock.stockTableView);
+    leftWindow=new QWidget(this);
+    ui->horizontalLayout->addWidget(leftWindow);
     ui->horizontalLayout->addWidget(drawChart.candleChart);
     drawChart.candleChart->hide();
+
+    QVBoxLayout *leftLayout =new QVBoxLayout;
+    leftLayout->setSpacing(0);
+    leftLayout->setContentsMargins(0,0,0,0);
+    leftWindow->setLayout(leftLayout);
+    leftLayout->addWidget(mTableStock.stockTableView);
+    leftHorizontalSCrollBar=new QScrollBar(Qt::Horizontal);
+    leftHorizontalSCrollBar->setStyleSheet("QScrollBar:horizontal{"
+                                 "background:#EEE9E9;"
+                                 "padding-top:3px;"
+                                 "padding-bottom:3px;"
+                                           "height:14px;"
+                                 "padding-left:20px;"
+                                 "padding-right:20px;}");
+    leftLayout->addWidget(leftHorizontalSCrollBar);
+    // leftHorizontalSCrollBar->setMaximum(4);
 
     middleWindow=new QWidget(this);
     QVBoxLayout *middleLayout =new QVBoxLayout;
@@ -702,7 +737,16 @@ void MainWindow::initSignals()
             ui->newsReport->setText("打开语音播报");
         }
     });
-    connect(ui->fundFlow,&QAction::triggered,this,&MainWindow::dealWithFundFlow);
+    connect(ui->fundFlow,&QAction::triggered,this,[=](){
+        dealWithFundFlow();
+        HorizontalSCrollBarMax=mTableStock.stockTableView->horizontalScrollBar()->maximum();
+        isFirstSCrollBar=true;
+        leftHorizontalSCrollBar->setMaximum(HorizontalSCrollBarMax);
+        if (HorizontalSCrollBarMax==0)
+            leftHorizontalSCrollBar->hide();
+        else
+            leftHorizontalSCrollBar->show();
+    });
     connect(&searchStock,SIGNAL(showSearch()),this,SLOT(showSearchResult()));
     connect(ui->DLAllStockK,&QAction::triggered,this,[=](){
         requestsToCsv.downloadAllStockK();
@@ -871,6 +915,25 @@ void MainWindow::initSignals()
             QMessageBox::information(this,"提示", "交易已经启动", QMessageBox::Ok);
     });
     connect(dateEdit1,SIGNAL(dateChanged(QDate)),this,SLOT(updateFeeling(QDate)));
+    connect(leftHorizontalSCrollBar,&QScrollBar::valueChanged,this,[=](){
+        if (leftHorizontalSCrollBarPos<leftHorizontalSCrollBar->value())
+            {
+                for (int i=0;i<leftHorizontalSCrollBar->value()-leftHorizontalSCrollBarPos;++i)
+                {
+                    mTableStock.stockTableView->hideColumn(hideCurCol);
+                    hideCurCol+=1;
+                }
+            }
+        else if (leftHorizontalSCrollBarPos>leftHorizontalSCrollBar->value())
+            {
+                for (int i=0;i<leftHorizontalSCrollBarPos-leftHorizontalSCrollBar->value();++i)
+                {
+                    hideCurCol-=1;
+                    mTableStock.stockTableView->showColumn(hideCurCol);
+                }
+            }
+        leftHorizontalSCrollBarPos=leftHorizontalSCrollBar->value();
+    });
 }
 void MainWindow::saveCode()
 {
@@ -1530,7 +1593,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
                     rightBaseWindow->hide();
                 }
                 drawChart.candleChart->hide();
-                mTableStock.stockTableView->show();
+                leftWindow->show();
                 resetKParameter();
             }
         }
@@ -2586,7 +2649,7 @@ void MainWindow::toInterFace(QString which)
         rightFundWindow->hide();
         drawChart.candleChart->hide();
         rightBaseWindow->show();
-        mTableStock.stockTableView->show();
+        leftWindow->show();
         int row=mTableStock.stockTableView->currentIndex().row();
         if (row==-1)
             row=0;
@@ -2597,7 +2660,7 @@ void MainWindow::toInterFace(QString which)
     else if (which=="k")
     {
         GlobalVar::isKState=true;
-        mTableStock.stockTableView->hide();
+        leftWindow->hide();
         middleWindow->hide();
         rightFundWindow->hide();
         drawChart.candleChart->show();
@@ -2615,7 +2678,7 @@ void MainWindow::toInterFace(QString which)
         drawChart.candleChart->hide();
         middleWindow->hide();
         rightFundWindow->show();
-        mTableStock.stockTableView->show();
+        leftWindow->show();
 //        mTableStock.stockTableView->setFocus();
     }
     else if(which=="f3")
@@ -2757,6 +2820,14 @@ void MainWindow::toFundFlow()
         for (int i=3;i<16;++i)
             mTableStock.stockTableView->setColumnWidth(i,90);
     }
+
+    HorizontalSCrollBarMax=mTableStock.stockTableView->horizontalScrollBar()->maximum();
+    isFirstSCrollBar=true;
+    leftHorizontalSCrollBar->setMaximum(HorizontalSCrollBarMax);
+    if (HorizontalSCrollBarMax==0)
+        leftHorizontalSCrollBar->hide();
+    else
+        leftHorizontalSCrollBar->show();
 }
 void MainWindow::downUpLookStock(QWheelEvent *event)
 {

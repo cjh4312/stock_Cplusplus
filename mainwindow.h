@@ -102,6 +102,12 @@ private:
     QLabel *stockCode;
     QLabel *stockName;
     QTextBrowser *newsData;
+    QWidget *leftWindow;
+    QScrollBar *leftHorizontalSCrollBar;
+    int HorizontalSCrollBarMax=0;
+    bool isFirstSCrollBar=true;
+    int leftHorizontalSCrollBarPos=0;
+    int hideCurCol=2;
     QWidget *middleWindow;
     QWidget *rightBaseWindow;
     QWidget *rightFundWindow;
