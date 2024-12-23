@@ -27,5 +27,7 @@
         <file>png/no_report.png</file>
         <file>png/report.png</file>
         <file>png/UK.png</file>
+        <file>png/left.png</file>
+        <file>png/right.png</file>
     </qresource>
 </RCC>

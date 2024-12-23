@@ -87,6 +87,7 @@ void MainWindow::initThread()
             leftHorizontalSCrollBar->hide();
         else
             leftHorizontalSCrollBar->show();
+
         feelingData[0]->setText(QString::number(GlobalVar::upNums[0]));
         feelingData[1]->setText(QString::number(GlobalVar::upNums[1]));
         feelingData[2]->setText(QString::number(GlobalVar::upNums[2])+"/"+QString::number(GlobalVar::upNums[3]));
@@ -190,7 +191,6 @@ void MainWindow::initInterface()
                                  "padding-left:20px;"
                                  "padding-right:20px;}");
     leftLayout->addWidget(leftHorizontalSCrollBar);
-    // leftHorizontalSCrollBar->setMaximum(4);
 
     middleWindow=new QWidget(this);
     QVBoxLayout *middleLayout =new QVBoxLayout;
@@ -486,7 +486,47 @@ void MainWindow::initFeelingLayout(QGridLayout *feelingLayout)
     dateEdit1->setFocusPolicy(Qt::NoFocus);
     feelingLayout->addWidget(label1,0,0,2,2);
     feelingLayout->addWidget(dateEdit1,0,3,2,2);
+    QPushButton *left=new QPushButton(this);
+    QIcon myicon;
+    myicon.addFile(tr(":/new/png/png/left.png"));
+    left->setIcon(myicon);
+    left->setIconSize(QSize(20,20));
+    left->setMaximumSize(QSize(30,30));
 
+    QPushButton *right=new QPushButton(this);
+    QIcon myicon1;
+    myicon1.addFile(tr(":/new/png/png/right.png"));
+    right->setIcon(myicon1);
+    right->setIconSize(QSize(20,20));
+    right->setMaximumSize(QSize(30,30));
+
+    feelingLayout->addWidget(label1,0,0,2,2);
+    QHBoxLayout *temp=new QHBoxLayout();
+    feelingLayout->addLayout(temp,0,3,2,3);
+    temp->addWidget(left);
+    temp->addWidget(dateEdit1);
+    temp->addWidget(right);
+    connect(left,&QPushButton::clicked,this,[=](){
+        QDateTime c=dateEdit1->dateTime().addDays(-1);
+        QStringList vacation=GlobalVar::settings->value("Vacation_ZH").toStringList();
+        while (true)
+            if (not vacation.contains(c.toString("MMdd")) && GlobalVar::isWorkDay(c))
+                break;
+            else
+                c=c.addDays(-1);
+        dateEdit1->setDate(c.date());
+    });
+    connect(right,&QPushButton::clicked,this,[=](){
+        QDateTime c=QDateTime::currentDateTime();
+        QDateTime d=dateEdit1->dateTime().addDays(1);
+        QStringList vacation=GlobalVar::settings->value("Vacation_ZH").toStringList();
+        while (1)
+            if (d>=c or (not vacation.contains(d.toString("MMdd")) && GlobalVar::isWorkDay(d)))
+                break;
+            else
+                d=d.addDays(1);
+        dateEdit1->setDate(d.date());
+    });
     for (int i=0;i<8;++i)
     {
         QLabel *name=new QLabel(lName[i],this);
