@@ -184,13 +184,7 @@ void MainWindow::initInterface()
     leftLayout->addWidget(mTableStock.stockTableView);
     leftHorizontalSCrollBar=new QScrollBar(Qt::Horizontal);
 
-    leftHorizontalSCrollBar->setStyleSheet("QScrollBar:horizontal{"
-                                 "background:#EEE9E9;"
-                                 "padding-top:2px;"
-                                 "padding-bottom:2px;"
-                                 "height:14px;"
-                                 "padding-left:20px;"
-                                 "padding-right:20px;}");
+    leftHorizontalSCrollBar->setStyleSheet("QScrollBar:horizontal{height:14px;}");
     leftLayout->addWidget(leftHorizontalSCrollBar);
 
     middleWindow=new QWidget(this);
@@ -1060,9 +1054,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::Paint)
         {
-            QPainter *painter=new QPainter(drawChart.timeShareChart);
-            drawChart.drawTimeShareChart(painter);
-            delete painter;
+            // QPainter *painter=new QPainter(drawChart.timeShareChart);
+            drawChart.drawTimeShareChart();
+            // delete painter;
         }
         else if(event->type()==QEvent::MouseMove)
         {
@@ -1126,9 +1120,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::Paint)
         {
-            QPainter *painter=new QPainter(mFundFlow.tableChart);
-            mFundFlow.drawIntervalHighLowChart(painter);
-            delete painter;
+            // QPainter *painter=new QPainter(mFundFlow.tableChart);
+            mFundFlow.drawIntervalHighLowChart();
+            // delete painter;
         }
         return true;
     }
@@ -1136,10 +1130,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::Paint)
         {
-            QPainter *painter=new QPainter(mFundFlow.fundFlowChart);
-            painter->setRenderHint(QPainter::Antialiasing);
-            mFundFlow.drawFundFlowChart(painter);
-            delete painter;
+            // QPainter *painter=new QPainter(mFundFlow.fundFlowChart);
+
+            mFundFlow.drawFundFlowChart();
+            // delete painter;
         }
         else if(event->type()==QEvent::MouseMove)
         {
@@ -1309,9 +1303,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::Paint)
         {
-            QPainter *painter=new QPainter(drawChart.hisTimeShareChartView);
-            drawChart.drawHisTimeShare(painter);
-            delete painter;
+            // QPainter *painter=new QPainter(drawChart.hisTimeShareChartView);
+            drawChart.drawHisTimeShare();
+            // delete painter;
         }
         else if (event->type()==QEvent::MouseMove)
         {
@@ -1433,9 +1427,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
         else if (event->type()==QEvent::Paint)
         {
-            QPainter *painter=new QPainter(drawChart.candleChart);
-            drawChart.drawCandleChart(painter);
-            delete painter;
+            // QPainter *painter=new QPainter(drawChart.candleChart);
+            drawChart.drawCandleChart();
+            // delete painter;
         }
         else if (event->type() == QEvent::Wheel)
         {
