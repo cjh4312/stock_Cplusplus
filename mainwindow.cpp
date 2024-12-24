@@ -179,15 +179,16 @@ void MainWindow::initInterface()
 
     QVBoxLayout *leftLayout =new QVBoxLayout;
     leftLayout->setSpacing(0);
-    leftLayout->setContentsMargins(0,0,0,0);
+    leftLayout->setContentsMargins(1,1,1,1);
     leftWindow->setLayout(leftLayout);
     leftLayout->addWidget(mTableStock.stockTableView);
     leftHorizontalSCrollBar=new QScrollBar(Qt::Horizontal);
+
     leftHorizontalSCrollBar->setStyleSheet("QScrollBar:horizontal{"
                                  "background:#EEE9E9;"
-                                 "padding-top:3px;"
-                                 "padding-bottom:3px;"
-                                           "height:14px;"
+                                 "padding-top:2px;"
+                                 "padding-bottom:2px;"
+                                 "height:14px;"
                                  "padding-left:20px;"
                                  "padding-right:20px;}");
     leftLayout->addWidget(leftHorizontalSCrollBar);
@@ -1012,6 +1013,11 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
 //        qDebug()<<mTableStock.stockTableView->height();
         return true;
+    }
+    else if (obj==leftWindow and event->type()==QEvent::Paint)
+    {
+        QPainter p(leftWindow);
+        p.drawRect(0,0,leftWindow->width()-1,leftWindow->height()-1);
     }
     else if (obj==mTableStock.blockView->verticalScrollBar() and event->type() == QEvent::Wheel)
     {

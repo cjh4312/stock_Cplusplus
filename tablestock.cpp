@@ -104,6 +104,7 @@ void TableStock::setTimeShareTickView()
 void TableStock::initTableView()
 {
     stockTableView->setSortingEnabled(false);
+
     // 隐藏排序图标
     stockTableView->horizontalHeader()->setSortIndicatorShown(false);
     QFont boldFont;
@@ -141,11 +142,17 @@ void TableStock::initTableView()
         tl[i]->setSelectionBehavior(QAbstractItemView::SelectRows);
         tl[i]->setSelectionMode(QAbstractItemView::SingleSelection);
         tl[i]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        tl[i]->setStyleSheet("QTableView{selection-background-color:lightgray}");
+
         if (i==0)
+        {
             tl[0]->verticalScrollBar()->setStyleSheet("QScrollBar{width:10px;}");
+            tl[0]->setStyleSheet("QTableView{border:none;selection-background-color:lightgray;}");
+        }
         else
+        {
             tl[i]->verticalScrollBar()->setStyleSheet("QScrollBar{width:0px;}");
+            tl[i]->setStyleSheet("QTableView{selection-background-color:lightgray}");
+        }
         tl[i]->horizontalScrollBar()->setStyleSheet("QScrollBar{width:0px;}");
         tl[i]->setItemDelegate(new CommonDelegate());
     }
