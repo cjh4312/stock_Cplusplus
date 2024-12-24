@@ -35,6 +35,9 @@ struct StockInfo
     float pe;
     float totalValue;
     float circulatedValue;
+    float amplitude;
+    float qrr;
+    float pbr;
     float pctYear;
     float pctSixty;
     float volume;
