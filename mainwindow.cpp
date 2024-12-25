@@ -2623,14 +2623,14 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
     baseInfoData[1]->setText(QString::number(GlobalVar::mCandleChartList.at(n).pctChg)+"%");
     baseInfoData[2]->setPalette(GlobalVar::pBlue);
     baseInfoData[3]->setPalette(GlobalVar::pBlue);
-    baseInfoData[12]->setPalette(GlobalVar::pBlue);
+    baseInfoData[10]->setPalette(GlobalVar::pBlue);
     baseInfoData[2]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).turn)+"%");
     baseInfoData[3]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).amount));
-    baseInfoData[12]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).vol));
+    baseInfoData[10]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).vol));
     if (GlobalVar::WhichInterface==1)
-        baseInfoData[13]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).vol*10000/GlobalVar::mCandleChartList.at(n).turn));
+        baseInfoData[11]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).vol*10000/GlobalVar::mCandleChartList.at(n).turn));
     else
-        baseInfoData[13]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).vol*100/GlobalVar::mCandleChartList.at(n).turn));
+        baseInfoData[11]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).vol*100/GlobalVar::mCandleChartList.at(n).turn));
     if (n==0)
         temp=GlobalVar::mCandleChartList.at(n).close/(1+GlobalVar::mCandleChartList.at(n).pctChg/100);
     else
@@ -2640,12 +2640,12 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
     for (int i=0;i<3;++i)
     {
         if (t[i]>t[3])
-            baseInfoData[i+9]->setPalette(GlobalVar::pRed);
+            baseInfoData[i+7]->setPalette(GlobalVar::pRed);
         else if (t[i]<t[3])
-            baseInfoData[i+9]->setPalette(GlobalVar::pGreen);
+            baseInfoData[i+7]->setPalette(GlobalVar::pGreen);
         else
-            baseInfoData[i+9]->setPalette(GlobalVar::pBlack);
-        baseInfoData[i+9]->setText(QString::number(t[i])+"("+QString::number((t[i]-temp)*100/temp,'f',2)+"%)");
+            baseInfoData[i+7]->setPalette(GlobalVar::pBlack);
+        baseInfoData[i+7]->setText(QString::number(t[i])+"("+QString::number((t[i]-temp)*100/temp,'f',2)+"%)");
     }
     drawChart.rowTime->show();
 
