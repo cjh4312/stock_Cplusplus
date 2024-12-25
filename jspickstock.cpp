@@ -516,6 +516,16 @@ float JSPickStock::M(int startDay, int endDay)
     return -100;
 }
 
+float JSPickStock::U()
+{
+    return GlobalVar::mTableListCopy.at(GlobalVar::mTableListNum).amount;
+}
+
+float JSPickStock::U(int day)
+{
+    return getData(day,6);
+}
+
 float JSPickStock::V()
 {
     return GlobalVar::mTableListCopy.at(GlobalVar::mTableListNum).totalValue;
