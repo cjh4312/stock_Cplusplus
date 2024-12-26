@@ -272,9 +272,13 @@ void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bo
                       return is_asc?(infoA.code<infoB.code):(infoA.code>infoB.code);
                   case 1:
                       return is_asc?(infoA.name<infoB.name):(infoA.name>infoB.name);
-                  case 4:
-                      return is_asc?(infoA.close<infoB.close):(infoA.close>infoB.close);
                   case 3:
+                      return is_asc?(infoA.close<infoB.close):(infoA.close>infoB.close);
+                  case 4:
+                      return is_asc?(infoA.buy1<infoB.buy1):(infoA.buy1>infoB.buy1);
+                  case 5:
+                      return is_asc?(infoA.sell1<infoB.sell1):(infoA.sell1>infoB.sell1);
+                  case 2:
                       if (is_asc)
                       {
                           if (infoA.pctChg==infoB.pctChg)
@@ -288,31 +292,37 @@ void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bo
                           return infoA.pctChg>infoB.pctChg;
                       }
                       // return is_asc?(infoA.pctChg<infoB.pctChg):(infoA.pctChg>infoB.pctChg);
-                  case 5:
-                      return is_asc?(infoA.turn<infoB.turn):(infoA.turn>infoB.turn);
                   case 6:
-                      return is_asc?(infoA.amount<infoB.amount):(infoA.amount>infoB.amount);
-                  case 2:
-                      return is_asc?(infoA.velocity<infoB.velocity):(infoA.velocity>infoB.velocity);
-                  case 8:
-                      return is_asc?(infoA.pe<infoB.pe):(infoA.pe>infoB.pe);
+                      return is_asc?(infoA.turn<infoB.turn):(infoA.turn>infoB.turn);
                   case 7:
-                      return is_asc?(infoA.totalValue<infoB.totalValue):(infoA.totalValue>infoB.totalValue);
+                      return is_asc?(infoA.amount<infoB.amount):(infoA.amount>infoB.amount);
+                  case 20:
+                      return is_asc?(infoA.velocity<infoB.velocity):(infoA.velocity>infoB.velocity);
                   case 9:
-                      return is_asc?(infoA.circulatedValue<infoB.circulatedValue):(infoA.circulatedValue>infoB.circulatedValue);
+                      return is_asc?(infoA.pe<infoB.pe):(infoA.pe>infoB.pe);
+                  case 8:
+                      return is_asc?(infoA.totalValue<infoB.totalValue):(infoA.totalValue>infoB.totalValue);
                   case 10:
-                      return is_asc?(infoA.pctYear<infoB.pctYear):(infoA.pctYear>infoB.pctYear);
+                      return is_asc?(infoA.circulatedValue<infoB.circulatedValue):(infoA.circulatedValue>infoB.circulatedValue);
                   case 11:
-                      return is_asc?(infoA.pctSixty<infoB.pctSixty):(infoA.pctSixty>infoB.pctSixty);
+                      return is_asc?(infoA.amplitude<infoB.amplitude):(infoA.amplitude>infoB.amplitude);
                   case 12:
-                      return is_asc?(infoA.volume<infoB.volume):(infoA.volume>infoB.volume);
+                      return is_asc?(infoA.qrr<infoB.qrr):(infoA.qrr>infoB.qrr);
+                  case 21:
+                      return is_asc?(infoA.pbr<infoB.pbr):(infoA.pbr>infoB.pbr);
                   case 13:
-                      return is_asc?(infoA.high<infoB.high):(infoA.high>infoB.high);
+                      return is_asc?(infoA.pctYear<infoB.pctYear):(infoA.pctYear>infoB.pctYear);
                   case 14:
-                      return is_asc?(infoA.low<infoB.low):(infoA.low>infoB.low);
+                      return is_asc?(infoA.pctSixty<infoB.pctSixty):(infoA.pctSixty>infoB.pctSixty);
                   case 15:
-                      return is_asc?(infoA.open<infoB.open):(infoA.open>infoB.open);
+                      return is_asc?(infoA.volume<infoB.volume):(infoA.volume>infoB.volume);
                   case 16:
+                      return is_asc?(infoA.high<infoB.high):(infoA.high>infoB.high);
+                  case 17:
+                      return is_asc?(infoA.low<infoB.low):(infoA.low>infoB.low);
+                  case 18:
+                      return is_asc?(infoA.open<infoB.open):(infoA.open>infoB.open);
+                  case 19:
                       return is_asc?(infoA.preClose<infoB.preClose):(infoA.preClose>infoB.preClose);
                   default:
                       return is_asc?(infoA.pctChg<infoB.pctChg):(infoA.pctChg>infoB.pctChg);
@@ -580,7 +590,7 @@ float GlobalVar::timeShareHighLowPoint[5]={0.0};
 float GlobalVar::buySellPrice[10]={0.0};
 float GlobalVar::buySellNum[10]={0.0};
 float GlobalVar::baseInfoData[14]={0.0};
-int GlobalVar::curSortNum=3;
+int GlobalVar::curSortNum=2;
 bool GlobalVar::is_asc=false;
 QPalette GlobalVar::pRed;
 QPalette GlobalVar::pGreen;
@@ -593,7 +603,7 @@ bool GlobalVar::isSayNews=true;
 int GlobalVar::trendsTotal=0;
 int GlobalVar::curBlock=0;
 QString GlobalVar::currentPath;
-bool GlobalVar::areaFlag[5]={true};
+bool GlobalVar::areaFlag[5]={true,true,true,true,true};
 QString GlobalVar::formulaContent;
 int GlobalVar::mTableListNum;
 QString GlobalVar::mCandleListCode;
