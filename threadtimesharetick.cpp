@@ -49,8 +49,8 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
             emit getBuySellFinished();
         }
         QString pos="-0";
-        if (preCode==GlobalVar::curCode and not reset and GlobalVar::WhichInterface==1 and not GlobalVar::mTimeShareTickList.isEmpty())
-             pos="-10";
+        // if (preCode==GlobalVar::curCode and not reset and GlobalVar::WhichInterface==1 and not GlobalVar::mTimeShareTickList.isEmpty())
+        //      pos="-10";
         float timeout=0.5;
         if (GlobalVar::WhichInterface==5)
             timeout=1.5;
@@ -158,7 +158,6 @@ void ThreadTimeShareTick::initBuySellList()
         QJsonObject jsonObject = doc.object();
         if (buySellData.contains("f57"))
         {
-
             QString code=jsonObject.value("data").toObject().value("f57").toString();
             QString str=GlobalVar::curCode;
             if (GlobalVar::curCode.contains("."))
@@ -220,29 +219,29 @@ void ThreadTimeShareTick::initTimeShareTickList(QString pos)
         int s=data.size();
         timeShareTickInfo info;
         QStringList list;
-        if (pos=="-10")
-            {
-                QString t=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time;
-                for (int i = 0; i < s; ++i)
-                {
-                    list=data.at(i).toString().split(",");
-                    if (list[0]<=t)
-                    {
-                        if (i==s-1)
-                            return;
-                    }
-                    else
-                    {
-                        info.time=list[0];
-                        info.price=list[1].toFloat();
-                        info.nums=list[2].toInt();
-                        info.direct=list[4].toInt();
-                        info.tick=list[3].toInt();
-                        GlobalVar::mTimeShareTickList.append(info);
-                    }
-                }
-            }
-        else
+        // if (pos=="-10")
+        //     {
+        //         QString t=GlobalVar::mTimeShareTickList.at(GlobalVar::mTimeShareTickList.size()-1).time;
+        //         for (int i = 0; i < s; ++i)
+        //         {
+        //             list=data.at(i).toString().split(",");
+        //             if (list[0]<=t)
+        //             {
+        //                 if (i==s-1)
+        //                     return;
+        //             }
+        //             else
+        //             {
+        //                 info.time=list[0];
+        //                 info.price=list[1].toFloat();
+        //                 info.nums=list[2].toInt();
+        //                 info.direct=list[4].toInt();
+        //                 info.tick=list[3].toInt();
+        //                 GlobalVar::mTimeShareTickList.append(info);
+        //             }
+        //         }
+        //     }
+        // else
         {
             QList<timeShareTickInfo> mTimeShareTickList;
             for (int i = 0; i < s; ++i)
