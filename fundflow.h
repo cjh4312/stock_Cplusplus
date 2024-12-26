@@ -47,11 +47,11 @@ public:
     QLabel *textFund[5];
     void getEastPlateFundFlow(int days);
     void getFundFlowChartData(QString code);
-    void drawFundFlowChart(QPainter *painter);
+    void drawFundFlowChart(/*QPainter *painter*/);
     void getData(int days,const QByteArray &allData);
     void getBoardStock(QString name);
     void getIntervalHighLow();
-    void drawIntervalHighLowChart(QPainter *painter);
+    void drawIntervalHighLowChart(/*QPainter *painter*/);
     void getStockPoolStrong(QString date);
     void getNorthFundFlow(QString days);
     void getDragonTigerList(int nums,int pages);
