@@ -1846,7 +1846,7 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=2;
-        GlobalVar::curSortNum=6;
+        GlobalVar::curSortNum=7;
         isAsia=true;
         middleWindow->hide();
 //        ui->HKMarket->setChecked(true);
@@ -1861,7 +1861,7 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=5;
-        GlobalVar::curSortNum=6;
+        GlobalVar::curSortNum=7;
         isAsia=false;
         GlobalVar::isUsZhStock=false;
         middleWindow->hide();
@@ -1877,7 +1877,7 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=5;
-        GlobalVar::curSortNum=6;
+        GlobalVar::curSortNum=7;
         isAsia=false;
         GlobalVar::isUsZhStock=true;
         middleWindow->hide();
@@ -1893,7 +1893,7 @@ void MainWindow::setMarket()
         saveCode();
         ifCanClick=-1;
         GlobalVar::WhichInterface=6;
-        GlobalVar::curSortNum=6;
+        GlobalVar::curSortNum=7;
         isAsia=false;
         middleWindow->hide();
         //        ui->HKMarket->setChecked(true);

@@ -28,6 +28,8 @@ struct StockInfo
     QString code;
     QString name;
     float close;
+    float buy1;
+    float sell1;
     float pctChg;
     float turn;
     float amount;

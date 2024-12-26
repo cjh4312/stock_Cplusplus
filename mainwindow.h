@@ -160,9 +160,9 @@ private:
 
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);//事件过滤器
-    void mousePressEvent(QMouseEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-    void wheelEvent(QWheelEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 };
 #endif // MAINWINDOW_H

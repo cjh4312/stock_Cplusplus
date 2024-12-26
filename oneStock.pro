@@ -72,5 +72,6 @@ RESOURCES += \
 INCLUDEPATH += d:\workstation\python\include
 LIBS += -Ld:\workstation\python\libs -lpython312
 
+
 DISTFILES += \
     qmt.py

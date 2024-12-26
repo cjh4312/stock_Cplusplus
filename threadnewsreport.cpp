@@ -127,7 +127,8 @@ void ThreadNewsReport::initNewsReport()
                 jsNums-=1;
             }
         }
-        tts->say(newsContent);
+        if (GlobalVar::isSayNews)
+            tts->say(newsContent);
     }
 }
 
