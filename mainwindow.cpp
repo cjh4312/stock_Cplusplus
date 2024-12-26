@@ -2627,7 +2627,7 @@ void MainWindow::flashOldCandleInfo(QMouseEvent *mouseEvent)
     baseInfoData[2]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).turn)+"%");
     baseInfoData[3]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).amount));
     baseInfoData[10]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).vol));
-    if (GlobalVar::WhichInterface==1)
+    if (GlobalVar::WhichInterface==1 or GlobalVar::WhichInterface==4)
         baseInfoData[11]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).vol*10000/GlobalVar::mCandleChartList.at(n).turn));
     else
         baseInfoData[11]->setText(GlobalVar::format_conversion(GlobalVar::mCandleChartList.at(n).vol*100/GlobalVar::mCandleChartList.at(n).turn));
