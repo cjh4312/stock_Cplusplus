@@ -52,21 +52,26 @@ void TableStock::setColumnWidth(QTableView *TV)
         TV->setColumnWidth(0, 60);
         TV->setColumnWidth(1, 75);
     }
-    TV->setColumnWidth(2, 50);
+    TV->setColumnWidth(2, 66);
     TV->setColumnWidth(3, 66);
-    TV->setColumnWidth(4, 75);
+    TV->setColumnWidth(4, 60);
     TV->setColumnWidth(5, 60);
-    TV->setColumnWidth(6, 85);
-    TV->setColumnWidth(7, 80);
-    TV->setColumnWidth(8, 70);
-    TV->setColumnWidth(9, 90);
-    TV->setColumnWidth(10, 65);
-    TV->setColumnWidth(11, 65);
-    TV->setColumnWidth(12, 75);
-    TV->setColumnWidth(13, 70);
-    TV->setColumnWidth(14, 70);
-    TV->setColumnWidth(15, 70);
+    TV->setColumnWidth(6, 60);
+    TV->setColumnWidth(7, 85);
+    TV->setColumnWidth(8, 80);
+    TV->setColumnWidth(9, 70);
+    TV->setColumnWidth(10, 90);
+    TV->setColumnWidth(11, 60);
+    TV->setColumnWidth(12, 60);
+    TV->setColumnWidth(13, 65);
+    TV->setColumnWidth(14, 65);
+    TV->setColumnWidth(15, 75);
     TV->setColumnWidth(16, 70);
+    TV->setColumnWidth(17, 70);
+    TV->setColumnWidth(18, 70);
+    TV->setColumnWidth(19, 70);
+    TV->setColumnWidth(20, 60);
+    TV->setColumnWidth(21, 70);
 }
 
 void TableStock::setBlockView()
@@ -142,7 +147,6 @@ void TableStock::initTableView()
         tl[i]->setSelectionBehavior(QAbstractItemView::SelectRows);
         tl[i]->setSelectionMode(QAbstractItemView::SingleSelection);
         tl[i]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
         if (i==0)
         {
             tl[0]->verticalScrollBar()->setStyleSheet("QScrollBar{width:10px;}");
@@ -168,6 +172,7 @@ void TableStock::initTableView()
 
     stockTableView->setModel(m_tableModel);
     risingSpeedView->setModel(m_risingSpeedModel);
+    risingSpeedView->horizontalHeader()->swapSections(3,20);
     myStockView->setModel(m_myStockModel);
     blockView->setModel(m_fundFlowModel);
     timeShareTickView->setModel(m_timeShareTickModel);
