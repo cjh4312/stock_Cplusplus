@@ -52,9 +52,9 @@ public:
     QStringListModel *model=new QStringListModel(annoucementWindow);
     QTextBrowser *annText=new QTextBrowser(annoucementWindow);
 
-    void drawTimeShareChart(QPainter *painter);
-    void drawHisTimeShare(QPainter *painter);
-    void drawCandleChart(QPainter *painter);
+    void drawTimeShareChart(/*QPainter *painter*/);
+    void drawHisTimeShare(/*QPainter *painter*/);
+    void drawCandleChart(/*QPainter *painter*/);
     void calcHighLowPoint(int begin,int end);
     void calcTSHighLowPoint(int begin,int end);
     void appendAnnNews(int end);
