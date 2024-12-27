@@ -19,6 +19,7 @@ void ThreadTable::getTableData()
     if (GlobalVar::WhichInterface==1)
     {
         fs="m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048";
+        //"f37,f38,f39,f40,f41,f45,f46,f48,f49,f57,f100,f102,f112,f113,f129,f135";
         QString s="https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=6000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&fid=f22&fs="+fs+"&fields=f2,f3,f5,f6,f7,f8,f9,f10,f11,f12,f14,f15,f16,f17,f18,f20,f21,f22,f23,f24,f25,f31,f32&_=1667954879297";
         GlobalVar::getData(allData,3,QUrl(s));
 
@@ -109,19 +110,19 @@ void ThreadTable::initTableList()
                     GlobalVar::upNums[3]+=1;
                     GlobalVar::upNums[2]+=1;
                     GlobalVar::upNums[0]+=1;
-                    int ph=110;
-                    float a=int(info.preClose*ph+0.5)/100.0;
-                    if (info.code.left(1)=="3" or info.code.left(3)=="688")
-                    {
-                        ph=120;
-                        a=int(info.preClose*ph+0.5)/100.0;
-                    }
-                    else if(info.code.left(1)=="4" or info.code.left(1)=="8")
-                    {
-                        ph=130;
-                        a=int(info.preClose*ph)/100.0;
-                    }
-                    if (info.close==a)
+                    // int ph=110;
+                    // float a=int(info.preClose*ph+0.5)/100.0;
+                    // if (info.code.left(1)=="3" or info.code.left(3)=="688")
+                    // {
+                    //     ph=120;
+                    //     a=int(info.preClose*ph+0.5)/100.0;
+                    // }
+                    // else if(info.code.left(1)=="4" or info.code.left(1)=="8")
+                    // {
+                    //     ph=130;
+                    //     a=int(info.preClose*ph)/100.0;
+                    // }
+                    if (/*info.close==a and */info.sell1==0)
                         GlobalVar::upNums[1]+=1;
                 }
                 else if (info.pctChg>=5)
@@ -134,25 +135,23 @@ void ThreadTable::initTableList()
                     GlobalVar::upNums[0]+=1;
                 else if (info.pctChg<=-8)
                 {
-                    GlobalVar::downNums[3]+=1;
-                    GlobalVar::downNums[2]+=1;
-                    GlobalVar::downNums[0]+=1;
-                    int pl=90;
-                    float b=int(info.preClose*pl+0.5)/100.0;
-                    if (info.code.left(1)=="3" or info.code.left(3)=="688")
-                    {
-                        pl=80;
-                        b=int(info.preClose*pl+0.5)/100.0;
-                    }
-                    else if(info.code.left(1)=="4" or info.code.left(1)=="8")
-                    {
-                        pl=70;
-                        b=int(info.preClose*pl)/100.0;
-                    }
-                    if (info.close==b)
-                    {
+                    // GlobalVar::downNums[3]+=1;
+                    // GlobalVar::downNums[2]+=1;
+                    // GlobalVar::downNums[0]+=1;
+                    // int pl=90;
+                    // float b=int(info.preClose*pl+0.5)/100.0;
+                    // if (info.code.left(1)=="3" or info.code.left(3)=="688")
+                    // {
+                    //     pl=80;
+                    //     b=int(info.preClose*pl+0.5)/100.0;
+                    // }
+                    // else if(info.code.left(1)=="4" or info.code.left(1)=="8")
+                    // {
+                    //     pl=70;
+                    //     b=int(info.preClose*pl)/100.0;
+                    // }
+                    if (/*info.close==b and */info.buy1==0)
                         GlobalVar::downNums[1]+=1;
-                    }
                 }
                 else if (info.pctChg<=-5)
                 {
