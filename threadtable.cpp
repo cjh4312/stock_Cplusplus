@@ -135,9 +135,9 @@ void ThreadTable::initTableList()
                     GlobalVar::upNums[0]+=1;
                 else if (info.pctChg<=-8)
                 {
-                    // GlobalVar::downNums[3]+=1;
-                    // GlobalVar::downNums[2]+=1;
-                    // GlobalVar::downNums[0]+=1;
+                    GlobalVar::downNums[3]+=1;
+                    GlobalVar::downNums[2]+=1;
+                    GlobalVar::downNums[0]+=1;
                     // int pl=90;
                     // float b=int(info.preClose*pl+0.5)/100.0;
                     // if (info.code.left(1)=="3" or info.code.left(3)=="688")
