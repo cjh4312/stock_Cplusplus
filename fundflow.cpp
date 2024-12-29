@@ -834,10 +834,10 @@ void FundFlow::countSingleStockBoard(QString nums,int pages)
                 }
 
                 model->setItem(i+n,5,new QStandardItem(ceilMap.value("BILLBOARD_TIMES").toString()));
-                model->item(i,1)->setFont(boldFont);
-                model->item(i,1)->setForeground(whichColor(code));
-                model->item(i,4)->setFont(boldFont);
-                model->item(i,5)->setFont(boldFont);
+                model->item(i+n,1)->setFont(boldFont);
+                model->item(i+n,1)->setForeground(whichColor(code));
+                model->item(i+n,4)->setFont(boldFont);
+                model->item(i+n,5)->setFont(boldFont);
                 float b=ceilMap.value("BILLBOARD_NET_BUY").toFloat();
                 model->setItem(i+n,6,new QStandardItem(GlobalVar::format_conversion(b)));
                 if (b>0)
