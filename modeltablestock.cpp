@@ -5,7 +5,8 @@ ModelTableStock::ModelTableStock(QObject *parent)
     : QAbstractTableModel(parent)
 {
     tableHeader<<"代码"<<"名称"<<"涨跌幅"<<"最新价"<<"买一"<<"卖一"<<"换手率"<<"成交额"<<"总市值"<<"市盈率"<<"流通市值"<<"振幅"<<"量比"<<"今年"<<"60日"
-                <<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收"<<"涨速"<<"市净率";
+                <<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收"<<"涨速"<<"市净率"<<"总营收"<< "总营收同比"<< "净利润"<< "净利润同比"<<"毛利率"<<"净利率"
+                <<"净资产"<<"ROE";
 }
 
 void ModelTableStock::setModelData(const QList<StockInfo> &data,bool forced,bool marking)
@@ -100,6 +101,14 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 19: return QString::number(m_modelData.at(row).preClose,'f',2);
         case 20: return QString::number(m_modelData.at(row).velocity,'f',2);
         case 21: return QString::number(m_modelData.at(row).pbr,'f',2);
+        case 22: return GlobalVar::format_conversion(m_modelData.at(row).totalRevenue);
+        case 23: return QString::number(m_modelData.at(row).totalRevenueOn,'f',2)+"%";
+        case 24: return GlobalVar::format_conversion(m_modelData.at(row).netProfit);
+        case 25: return QString::number(m_modelData.at(row).netProfitOn,'f',2)+"%";
+        case 26: return QString::number(m_modelData.at(row).grossProfitMargin,'f',2)+"%";
+        case 27: return QString::number(m_modelData.at(row).netProfitMargin,'f',2)+"%";
+        case 28: return GlobalVar::format_conversion(m_modelData.at(row).netAssets);
+        case 29: return QString::number(m_modelData.at(row).roe,'f',2)+"%";
         }
     }
     else if (role == Qt::ForegroundRole)
@@ -141,13 +150,13 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
             break;
         case 4:
             if (m_modelData.at(row).buy1>m_modelData.at(row).open)
-                return QColor(255, 0, 255);
+                return QColor(255, 130, 255);
             else if (m_modelData.at(row).buy1<m_modelData.at(row).open)
                 return QColor(0, 191, 0);
             break;
         case 5:
             if (m_modelData.at(row).sell1>m_modelData.at(row).open)
-                return QColor(255, 0, 255);
+                return QColor(255, 130, 255);
             else if (m_modelData.at(row).sell1<m_modelData.at(row).open)
                 return QColor(0, 191, 0);
             break;
@@ -215,6 +224,38 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
             else if (m_modelData.at(row).close<m_modelData.at(row).open)
                     return QColor(0, 191, 0);
             break;
+        case 21:
+            if (m_modelData.at(row).pbr<0)
+                return QColor(0, 191, 0);
+            break;
+        case 23:
+            if (m_modelData.at(row).totalRevenueOn<0)
+                return QColor(0, 191, 0);
+            break;
+        case 24:
+            if (m_modelData.at(row).netProfit<0)
+                return QColor(0, 191, 0);
+            break;
+        case 25:
+            if (m_modelData.at(row).netProfitOn<0)
+                return QColor(0, 191, 0);
+            break;
+        case 26:
+            if (m_modelData.at(row).grossProfitMargin<0)
+                return QColor(0, 191, 0);
+            break;
+        case 27:
+            if (m_modelData.at(row).netProfitMargin<0)
+                return QColor(0, 191, 0);
+            break;
+        case 28:
+            if (m_modelData.at(row).netAssets<0)
+                return QColor(0, 191, 0);
+            break;
+        case 29:
+            if (m_modelData.at(row).roe<0)
+                return QColor(0, 191, 0);
+            break;
         }
     }
     else if (role == Qt::FontRole)
@@ -253,6 +294,14 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 19:return Qt::AlignRight;
         case 20:return Qt::AlignCenter;
         case 21:return Qt::AlignRight;
+        case 22:return Qt::AlignRight;
+        case 23:return Qt::AlignRight;
+        case 24:return Qt::AlignRight;
+        case 25:return Qt::AlignRight;
+        case 26:return Qt::AlignRight;
+        case 27:return Qt::AlignRight;
+        case 28:return Qt::AlignRight;
+        case 29:return Qt::AlignRight;
         }
     }
     return QVariant();
