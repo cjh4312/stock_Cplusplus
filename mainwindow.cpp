@@ -74,6 +74,7 @@ void MainWindow::initThread()
             if (isFirstSCrollBar)
             {
                 HorizontalSCrollBarMax=mTableStock.stockTableView->horizontalScrollBar()->maximum();
+                myHorizontalSCrollBarMax=mTableStock.myStockView->horizontalScrollBar()->maximum()-1;
                 isFirstSCrollBar=false;
             }
         }
@@ -85,6 +86,7 @@ void MainWindow::initThread()
             isFirstSCrollBar=true;
         }
         leftHorizontalSCrollBar->setMaximum(HorizontalSCrollBarMax);
+        myStockHorizontalSCrollBar->setMaximum(myHorizontalSCrollBarMax);
         if (HorizontalSCrollBarMax==0)
             leftHorizontalSCrollBar->hide();
         else
@@ -190,7 +192,6 @@ void MainWindow::initInterface()
     drawChart.candleChart->hide();
 
     QVBoxLayout *leftLayout =new QVBoxLayout;
-    leftLayout->setSpacing(0);
     leftLayout->setContentsMargins(1,1,1,1);
     leftWindow->setLayout(leftLayout);
     leftLayout->addWidget(mTableStock.stockTableView);
@@ -200,6 +201,7 @@ void MainWindow::initInterface()
     leftLayout->addWidget(leftHorizontalSCrollBar);
 
     middleWindow=new QWidget(this);
+    myStockWindow=new QWidget(this);
     QVBoxLayout *middleLayout =new QVBoxLayout;
     QHBoxLayout *middleDLayout=new QHBoxLayout;
     middleWindow->setLayout(middleLayout);
@@ -213,7 +215,16 @@ void MainWindow::initInterface()
     middleLayout->addLayout(middleDLayout);
     middleDLayout->addWidget(mTableStock.risingSpeedView);
     // middleDLayout->addWidget(mTableStock.blockView);
-    middleDLayout->addWidget(mTableStock.myStockView);
+    middleDLayout->addWidget(myStockWindow);
+
+    QVBoxLayout *myStockLayout =new QVBoxLayout;
+    myStockLayout->setContentsMargins(0,0,0,0);
+    myStockHorizontalSCrollBar=new QScrollBar(Qt::Horizontal);
+    myStockHorizontalSCrollBar->setStyleSheet("QScrollBar:horizontal{height:14px;}");
+    myStockWindow->setLayout(myStockLayout);
+    myStockLayout->addWidget(mTableStock.myStockView);
+    myStockLayout->addWidget(myStockHorizontalSCrollBar);
+
 
     rightBaseWindow=new QWidget(this);
     rightBaseWindow->setMaximumWidth(460);
@@ -980,6 +991,25 @@ void MainWindow::initSignals()
                 }
             }
         leftHorizontalSCrollBarPos=leftHorizontalSCrollBar->value();
+    });
+    connect(myStockHorizontalSCrollBar,&QScrollBar::valueChanged,this,[=](){
+        if (myHorizontalSCrollBarPos<myStockHorizontalSCrollBar->value())
+        {
+            for (int i=0;i<myStockHorizontalSCrollBar->value()-myHorizontalSCrollBarPos;++i)
+            {
+                mTableStock.myStockView->hideColumn(myHideCurCol);
+                myHideCurCol+=1;
+            }
+        }
+        else if (myHorizontalSCrollBarPos>myStockHorizontalSCrollBar->value())
+        {
+            for (int i=0;i<myHorizontalSCrollBarPos-myStockHorizontalSCrollBar->value();++i)
+            {
+                myHideCurCol-=1;
+                mTableStock.myStockView->showColumn(myHideCurCol);
+            }
+        }
+        myHorizontalSCrollBarPos=myStockHorizontalSCrollBar->value();
     });
 }
 void MainWindow::saveCode()
@@ -1839,6 +1869,7 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 void MainWindow::setMarket()
 {
     leftHorizontalSCrollBar->setValue(0);
+    myStockHorizontalSCrollBar->setValue(0);
     timeCount=-3;
     QObject* obj = sender();
     if (obj->objectName()=="ZHMarket")

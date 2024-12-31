@@ -153,10 +153,10 @@ void TableStock::initTableView()
         tl[i]->setSelectionBehavior(QAbstractItemView::SelectRows);
         tl[i]->setSelectionMode(QAbstractItemView::SingleSelection);
         tl[i]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        if (i==0)
+        if (i==0 or i==2)
         {
-            tl[0]->verticalScrollBar()->setStyleSheet("QScrollBar{width:10px;}");
-            tl[0]->setStyleSheet("QTableView{border:none;selection-background-color:lightgray;}");
+            tl[i]->verticalScrollBar()->setStyleSheet("QScrollBar{width:10px;}");
+            tl[i]->setStyleSheet("QTableView{border:none;selection-background-color:lightgray;}");
         }
         else
         {

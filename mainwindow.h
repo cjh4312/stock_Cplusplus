@@ -108,7 +108,13 @@ private:
     bool isFirstSCrollBar=true;
     int leftHorizontalSCrollBarPos=0;
     int hideCurCol=2;
+    QScrollBar *myStockHorizontalSCrollBar;
+    int myHorizontalSCrollBarMax=0;
+    bool isFirstMySCrollBar=true;
+    int myHorizontalSCrollBarPos=0;
+    int myHideCurCol=2;
     QWidget *middleWindow;
+    QWidget *myStockWindow;
     QWidget *rightBaseWindow;
     QWidget *rightFundWindow;
     QWidget *searchSmallWindow;
