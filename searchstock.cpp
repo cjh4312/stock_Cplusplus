@@ -185,7 +185,7 @@ void SearchStock::compare(QStringList Data,QString strUpper,int col)
 void SearchStock::getBoardData()
 {
     QByteArray allData;
-    GlobalVar::getData(allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=6000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&fid="+GlobalVar::columns[GlobalVar::curSortNum]+"&fs=b:"+GlobalVar::curBoard+"+f:!50&fields=f2,f3,f5,f6,f8,f9,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22,f31,f32&_=1667954879297"));
+    GlobalVar::getData(allData,2,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=6000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&fid="+GlobalVar::columns[GlobalVar::curSortNum]+"&fs=b:"+GlobalVar::curBoard+"+f:!50&fields=f2,f3,f5,f6,f7,f8,f9,f10,f11,f12,f14,f15,f16,f17,f18,f20,f21,f22,f23,f24,f25,f31,f32,f37,f40,f41,f45,f46,f49,f129,f135&_=1667954879297"));
     if (allData.isEmpty())
         return;
     QJsonParseError jsonError;
@@ -221,6 +221,17 @@ void SearchStock::getBoardData()
             info.preClose=ceilMap.value("f18").toFloat();
             info.buy1=ceilMap.value("f31").toFloat();
             info.sell1=ceilMap.value("f32").toFloat();
+            info.amplitude=ceilMap.value("f7").toFloat();
+            info.qrr=ceilMap.value("f10").toFloat();
+            info.pbr=ceilMap.value("f23").toFloat();
+            info.totalRevenue=ceilMap.value("f40").toFloat();
+            info.totalRevenueOn=ceilMap.value("f41").toFloat();
+            info.netProfit=ceilMap.value("f45").toFloat();
+            info.netProfitOn=ceilMap.value("f46").toFloat();
+            info.grossProfitMargin=ceilMap.value("f49").toFloat();
+            info.netProfitMargin=ceilMap.value("f129").toFloat();
+            info.netAssets=ceilMap.value("f135").toFloat();
+            info.roe=ceilMap.value("f37").toFloat();
             mTableList.append(info);
         }
         GlobalVar::mTableList=mTableList;
