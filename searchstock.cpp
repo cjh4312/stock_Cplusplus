@@ -235,6 +235,7 @@ void SearchStock::getBoardData()
             mTableList.append(info);
         }
         GlobalVar::mTableList=mTableList;
+        GlobalVar::sortByColumn(&GlobalVar::mTableList,2,GlobalVar::is_asc);
     }
 }
 
