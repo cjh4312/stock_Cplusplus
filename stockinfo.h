@@ -47,6 +47,14 @@ struct StockInfo
     float low;
     float open;
     float preClose;
+    float totalRevenue;
+    float totalRevenueOn;
+    float netProfit;
+    float netProfitOn;
+    float grossProfitMargin;
+    float netProfitMargin;
+    float netAssets;
+    float roe;
 };
 
 struct IndexInfo

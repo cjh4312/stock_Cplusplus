@@ -324,6 +324,22 @@ void GlobalVar::sortByColumn(QList<StockInfo> *mList, const int column, const bo
                       return is_asc?(infoA.open<infoB.open):(infoA.open>infoB.open);
                   case 19:
                       return is_asc?(infoA.preClose<infoB.preClose):(infoA.preClose>infoB.preClose);
+                  case 22:
+                      return is_asc?(infoA.totalRevenue<infoB.totalRevenue):(infoA.totalRevenue>infoB.totalRevenue);
+                  case 23:
+                      return is_asc?(infoA.totalRevenueOn<infoB.totalRevenueOn):(infoA.totalRevenueOn>infoB.totalRevenueOn);
+                  case 24:
+                      return is_asc?(infoA.netProfit<infoB.netProfit):(infoA.netProfit>infoB.netProfit);
+                  case 25:
+                      return is_asc?(infoA.netProfitOn<infoB.netProfitOn):(infoA.netProfitOn>infoB.netProfitOn);
+                  case 26:
+                      return is_asc?(infoA.grossProfitMargin<infoB.grossProfitMargin):(infoA.grossProfitMargin>infoB.grossProfitMargin);
+                  case 27:
+                      return is_asc?(infoA.netProfitMargin<infoB.netProfitMargin):(infoA.netProfitMargin>infoB.netProfitMargin);
+                  case 28:
+                      return is_asc?(infoA.netAssets<infoB.netAssets):(infoA.netAssets>infoB.netAssets);
+                  case 29:
+                      return is_asc?(infoA.roe<infoB.roe):(infoA.roe>infoB.roe);
                   default:
                       return is_asc?(infoA.pctChg<infoB.pctChg):(infoA.pctChg>infoB.pctChg);
                   }

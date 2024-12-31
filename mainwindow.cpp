@@ -80,6 +80,8 @@ void MainWindow::initThread()
         else
         {
             HorizontalSCrollBarMax=mTableStock.stockTableView->horizontalScrollBar()->maximum();
+            if (GlobalVar::WhichInterface!=4)
+                HorizontalSCrollBarMax+=4;
             isFirstSCrollBar=true;
         }
         leftHorizontalSCrollBar->setMaximum(HorizontalSCrollBarMax);
@@ -161,6 +163,16 @@ void MainWindow::initInterface()
     setWindowTitle("Stock");
     setWindowIcon(QIcon(":/new/png/png/logo.ico"));
     // setWindowState(Qt::WindowMaximized);
+
+    // this->setStyleSheet("QMenu::item:selected{background-color:rgb(0,100,200);}\
+    //                      QMenuBar{background-color:black;}"
+    //                     "QMainWindow {background-color:black}");
+    // QPalette pal(ui->centralwidget->palette());
+    // pal.setColor(QPalette::Window, Qt::black);
+    // ui->centralwidget->setAutoFillBackground(true);
+    // ui->centralwidget->setPalette(pal);
+    // ui->centralwidget->setStyleSheet("background-color:black;");
+
     if (not GlobalVar::isSayNews)
         ui->newsReport->setChecked(true);
     // if (GlobalVar::settings->value("isSetVacation").toString()==QDateTime::currentDateTime().toString("yyyy"))
@@ -1826,6 +1838,7 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 }
 void MainWindow::setMarket()
 {
+    leftHorizontalSCrollBar->setValue(0);
     timeCount=-3;
     QObject* obj = sender();
     if (obj->objectName()=="ZHMarket")

@@ -72,6 +72,12 @@ void TableStock::setColumnWidth(QTableView *TV)
     TV->setColumnWidth(19, 70);
     TV->setColumnWidth(20, 60);
     TV->setColumnWidth(21, 70);
+    TV->setColumnWidth(22, 80);
+    TV->setColumnWidth(24, 80);
+    TV->setColumnWidth(26, 80);
+    TV->setColumnWidth(27, 80);
+    TV->setColumnWidth(28, 80);
+    TV->setColumnWidth(29, 70);
 }
 
 void TableStock::setBlockView()
