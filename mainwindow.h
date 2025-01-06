@@ -114,7 +114,7 @@ private:
     int myHorizontalSCrollBarPos=0;
     int myHideCurCol=2;
     QWidget *middleWindow;
-    QWidget *myStockWindow;
+    // QWidget *myStockWindow;
     QWidget *rightBaseWindow;
     QWidget *rightFundWindow;
     QWidget *searchSmallWindow;

@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    Py_Finalize();
+    // Py_Finalize();
     saveCode();
     requestsToCsv.progressBarWindow->close();
     QMTProcess->close();
@@ -74,13 +74,14 @@ void MainWindow::initThread()
             if (isFirstSCrollBar)
             {
                 HorizontalSCrollBarMax=mTableStock.stockTableView->horizontalScrollBar()->maximum();
-                myHorizontalSCrollBarMax=mTableStock.myStockView->horizontalScrollBar()->maximum()-1;
+                myHorizontalSCrollBarMax=mTableStock.myStockView->horizontalScrollBar()->maximum();
                 isFirstSCrollBar=false;
             }
         }
         else
         {
             HorizontalSCrollBarMax=mTableStock.stockTableView->horizontalScrollBar()->maximum();
+            myStockHorizontalSCrollBar->setValue(0);
             if (GlobalVar::WhichInterface!=4)
                 HorizontalSCrollBarMax+=4;
             isFirstSCrollBar=true;
@@ -201,27 +202,24 @@ void MainWindow::initInterface()
     leftLayout->addWidget(leftHorizontalSCrollBar);
 
     middleWindow=new QWidget(this);
-    myStockWindow=new QWidget(this);
+    // myStockWindow=new QWidget(this);
     QVBoxLayout *middleLayout =new QVBoxLayout;
     QHBoxLayout *middleDLayout=new QHBoxLayout;
     middleWindow->setLayout(middleLayout);
     middleLayout->setSpacing(0);
     middleLayout->setContentsMargins(0,0,0,0);
-    middleDLayout->setSpacing(0);
-    middleDLayout->setContentsMargins(0,0,0,0);
     // mTableStock.blockView->setMaximumHeight(454);
 
     middleLayout->addWidget(mTableStock.blockView);
     middleLayout->addLayout(middleDLayout);
     middleDLayout->addWidget(mTableStock.risingSpeedView);
-    // middleDLayout->addWidget(mTableStock.blockView);
-    middleDLayout->addWidget(myStockWindow);
-
     QVBoxLayout *myStockLayout =new QVBoxLayout;
+    middleDLayout->addLayout(myStockLayout);
+
     myStockLayout->setContentsMargins(0,0,0,0);
     myStockHorizontalSCrollBar=new QScrollBar(Qt::Horizontal);
     myStockHorizontalSCrollBar->setStyleSheet("QScrollBar:horizontal{height:14px;}");
-    myStockWindow->setLayout(myStockLayout);
+    // myStockWindow->setLayout(myStockLayout);
     myStockLayout->addWidget(mTableStock.myStockView);
     myStockLayout->addWidget(myStockHorizontalSCrollBar);
 
@@ -253,6 +251,7 @@ void MainWindow::initInterface()
     buySellLayout->setContentsMargins(10, 5, 0, 0);
     newsData=new QTextBrowser(this);
     newsData->setMaximumHeight(300);
+
     QHBoxLayout *freqAdjustLayout =new QHBoxLayout();
     freqAdjustLayout->setSpacing(0);
     QGridLayout *feelingLayout=new QGridLayout();
@@ -588,8 +587,8 @@ void MainWindow::initSignals()
                 mFundFlow.fundFlowChart->setWindowTitle(mFundFlow.model->item(row,0)->text()+" 资金流图表");
                 mFundFlow.fundFlowChart->show();
                 mFundFlow.fundFlowChart->update();
-                mFundFlow.fundFlowChart->move(POSXCHART,POSYCHART);
-                mFundFlow.fundFlowChart->move(POSXCHART+1,POSYCHART);
+                mFundFlow.fundFlowChart->move(mTableStock.stockTableView->width()-1000,POSYCHART);
+                mFundFlow.fundFlowChart->move(mTableStock.stockTableView->width()-1000+1,POSYCHART);
             }
         }
         else
@@ -1304,14 +1303,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 mFundFlow.vKLine->hide();
                 mFundFlow.fundFlowChart->update();
             }
-            mFundFlow.fundFlowChart->move(POSXCHART,POSYCHART);
-            mFundFlow.fundFlowChart->move(POSXCHART+1,POSYCHART);
+            mFundFlow.fundFlowChart->move(mTableStock.stockTableView->width()-1000,POSYCHART);
+            mFundFlow.fundFlowChart->move(mTableStock.stockTableView->width()-1000+1,POSYCHART);
         }
         else if (event->type()==QEvent::Leave)
         {
             mFundFlow.vKLine->hide();
-            mFundFlow.fundFlowChart->move(POSXCHART,POSYCHART);
-            mFundFlow.fundFlowChart->move(POSXCHART+1,POSYCHART);
+            mFundFlow.fundFlowChart->move(mTableStock.stockTableView->width()-1000,POSYCHART);
+            mFundFlow.fundFlowChart->move(mTableStock.stockTableView->width()-1000+1,POSYCHART);
         }
         else if (event->type()==QEvent::KeyPress)
         {
@@ -1869,7 +1868,7 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 void MainWindow::setMarket()
 {
     leftHorizontalSCrollBar->setValue(0);
-    myStockHorizontalSCrollBar->setValue(0);
+    // myStockHorizontalSCrollBar->setValue(0);
     timeCount=-3;
     QObject* obj = sender();
     if (obj->objectName()=="ZHMarket")

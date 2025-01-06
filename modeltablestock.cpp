@@ -6,7 +6,7 @@ ModelTableStock::ModelTableStock(QObject *parent)
 {
     tableHeader<<"代码"<<"名称"<<"涨跌幅"<<"最新价"<<"买一"<<"卖一"<<"换手率"<<"成交额"<<"总市值"<<"市盈率"<<"流通市值"<<"振幅"<<"量比"<<"今年"<<"60日"
                 <<"成交量"<< "最高"<< "最低"<< "今开"<<"昨收"<<"涨速"<<"市净率"<<"总营收"<< "总营收同比"<< "净利润"<< "净利润同比"<<"毛利率"<<"净利率"
-                <<"净资产"<<"ROE";
+                <<"净资产"<<"ROE"<<"行业"<<"地域"<<"概念板块"<<"上市时间";
 }
 
 void ModelTableStock::setModelData(const QList<StockInfo> &data,bool forced,bool marking)
@@ -109,6 +109,10 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
         case 27: return QString::number(m_modelData.at(row).netProfitMargin,'f',2)+"%";
         case 28: return GlobalVar::format_conversion(m_modelData.at(row).netAssets);
         case 29: return QString::number(m_modelData.at(row).roe,'f',2)+"%";
+        case 30: return m_modelData.at(row).industry;
+        case 31: return m_modelData.at(row).region;
+        case 32: return m_modelData.at(row).concept;
+        case 33: return m_modelData.at(row).listingDate;
         }
     }
     else if (role == Qt::ForegroundRole)
@@ -128,14 +132,6 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
                 }
             }
             return QColor(72,61,139);
-        case 20:
-            if (m_modelData.at(row).velocity>= 2)
-                return QColor(153, 0, 153);
-            else if (m_modelData.at(row).velocity >0)
-                return QColor(Qt::red);
-            else if (m_modelData.at(row).velocity < 0)
-                return QColor(0, 191, 0);
-            break;
         case 2:
             if (m_modelData.at(row).pctChg>0)
                 return QColor(Qt::red);
@@ -223,6 +219,14 @@ QVariant ModelTableStock::data(const QModelIndex &index, int role) const
                     return QColor(255, 0, 255);
             else if (m_modelData.at(row).close<m_modelData.at(row).open)
                     return QColor(0, 191, 0);
+            break;
+        case 20:
+            if (m_modelData.at(row).velocity>= 2)
+                return QColor(153, 0, 153);
+            else if (m_modelData.at(row).velocity >0)
+                return QColor(Qt::red);
+            else if (m_modelData.at(row).velocity < 0)
+                return QColor(0, 191, 0);
             break;
         case 21:
             if (m_modelData.at(row).pbr<0)

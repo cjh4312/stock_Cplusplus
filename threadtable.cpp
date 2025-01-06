@@ -20,7 +20,7 @@ void ThreadTable::getTableData()
     {
         fs="m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048";
         //"f37,f38,f39,f40,f41,f45,f46,f48,f49,f57,f100,f102,f112,f113,f129,f135";
-        QString s="https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=6000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&fid=f22&fs="+fs+"&fields=f2,f3,f5,f6,f7,f8,f9,f10,f11,f12,f14,f15,f16,f17,f18,f20,f21,f22,f23,f24,f25,f31,f32,f37,f40,f41,f45,f46,f49,f129,f135&_=1667954879297";
+        QString s="https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=6000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=1&fid=f22&fs="+fs+"&fields=f2,f3,f5,f6,f7,f8,f9,f10,f11,f12,f14,f15,f16,f17,f18,f20,f21,f22,f23,f24,f25,f26,f31,f32,f37,f38,f39,f40,f41,f45,f46,f49,f100,f102,f103,f129,f135&_=1667954879297";
         GlobalVar::getData(allData,3,QUrl(s));
 
         if (GlobalVar::timeOutFlag[5])
@@ -45,7 +45,7 @@ void ThreadTable::getTableData()
         }
         else if (GlobalVar::WhichInterface==6)
             fs="m:155+t:1,m:155+t:2,m:155+t:3,m:156+t:1,m:156+t:2,m:156+t:5,m:156+t:6,m:156+t:7,m:156+t:8";
-        GlobalVar::getData(allData,3.5,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f6&fs="+fs+"&fields=f2,f3,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f31,f32,f37,f40,f41,f45,f46,f49,f129,f135&_=1667966922156"));
+        GlobalVar::getData(allData,3.5,QUrl("http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f6&fs="+fs+"&fields=f2,f3,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f31,f32,f37,f40,f41,f45,f46,f49,f100,f102,f103,f129,f135&_=1667966922156"));
         if (GlobalVar::timeOutFlag[5])
             GlobalVar::timeOutFlag[5]=false;
         else
@@ -113,6 +113,10 @@ void ThreadTable::initTableList()
                 info.netProfitMargin=ceilMap.value("f129").toFloat();
                 info.netAssets=ceilMap.value("f135").toFloat();
                 info.roe=ceilMap.value("f37").toFloat();
+                info.listingDate=ceilMap.value("f26").toString();
+                info.industry=ceilMap.value("f100").toString();
+                info.region=ceilMap.value("f102").toString();
+                info.concept=ceilMap.value("f103").toString();
                 if (info.pctChg>=8)
                 {
                     GlobalVar::upNums[3]+=1;
@@ -245,6 +249,11 @@ void ThreadTable::initTableList()
                 info.netProfitMargin=ceilMap.value("f129").toFloat();
                 info.netAssets=ceilMap.value("f135").toFloat();
                 info.roe=ceilMap.value("f37").toFloat();
+                info.concept=ceilMap.value("f103").toString();
+                info.listingDate=ceilMap.value("f26").toString();
+                info.industry=ceilMap.value("f100").toString();
+                info.region=ceilMap.value("f102").toString();
+                info.concept=ceilMap.value("f103").toString();
                 GlobalVar::mTableList.append(info);
             }
         }

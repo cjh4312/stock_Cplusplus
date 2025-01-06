@@ -20,7 +20,7 @@
 #define TIPWIDTH 15
 #define PI 3.1415926
 #define MAX_RETRIES 3
-#define POSXCHART 640
+// #define POSXCHART 500
 #define POSYCHART 120
 
 struct StockInfo
@@ -55,6 +55,11 @@ struct StockInfo
     float netProfitMargin;
     float netAssets;
     float roe;
+    QString region;
+    QString industry;
+    QString concept;
+    QString listingDate;
+    float totalCapital;
 };
 
 struct IndexInfo
