@@ -152,7 +152,7 @@ QString RequestsToCsv::getStockList()
     QJsonObject json;
     json.insert("api_name", "stock_basic");
     json.insert("token", GlobalVar::settings->value("token").toString());
-    json.insert("fields", "ts_code,symbol,name,area,industry,list_date,cnspell");
+    json.insert("fields", "ts_code,symbol,name,area,industry,cnspell");
 
     QJsonDocument doc;
     doc.setObject(json);
@@ -184,7 +184,7 @@ QString RequestsToCsv::getStockList()
             {
                 QStringList dataList;
                 dataList<<data.at(i)[0].toString()<<data.at(i)[1].toString()<<data.at(i)[2].toString()<<
-                    data.at(i)[3].toString()<<data.at(i)[4].toString()<<data.at(i)[5].toString().toUpper()<<data.at(i)[6].toString();
+                    data.at(i)[3].toString()<<data.at(i)[4].toString()<<data.at(i)[5].toString().toUpper();
                 file.write(dataList.join(",").toLocal8Bit()+"\n");
 //                file.write(data.at(i).toString().toLocal8Bit()+"\n");
             }
