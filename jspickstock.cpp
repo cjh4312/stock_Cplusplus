@@ -473,17 +473,17 @@ float JSPickStock::A(int startDay, int endDay)
     return -100;
 }
 
-float JSPickStock::M()
+float JSPickStock::V()
 {
     return GlobalVar::mTableListCopy.at(GlobalVar::mTableListNum).volume;
 }
 
-float JSPickStock::M(int day)
+float JSPickStock::V(int day)
 {
     return getData(day,5);
 }
 
-float JSPickStock::M(int startDay, int endDay)
+float JSPickStock::V(int startDay, int endDay)
 {
     QString path;
     if (GlobalVar::mCandleListCode.left(1)=="6")
@@ -526,7 +526,7 @@ float JSPickStock::U(int day)
     return getData(day,6);
 }
 
-float JSPickStock::V()
+float JSPickStock::M()
 {
     return GlobalVar::mTableListCopy.at(GlobalVar::mTableListNum).totalValue;
 }

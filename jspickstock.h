@@ -41,12 +41,12 @@ public:
     Q_INVOKABLE float T(int day);
     Q_INVOKABLE float T(int startDay,int endDay);
     Q_INVOKABLE float A(int startDay,int endDay);
-    Q_INVOKABLE float M();
-    Q_INVOKABLE float M(int day);
-    Q_INVOKABLE float M(int startDay,int endDay);
+    Q_INVOKABLE float V();
+    Q_INVOKABLE float V(int day);
+    Q_INVOKABLE float V(int startDay,int endDay);
     Q_INVOKABLE float U();
     Q_INVOKABLE float U(int day);
-    Q_INVOKABLE float V();
+    Q_INVOKABLE float M();
     Q_INVOKABLE float D(float f);
 
     void initPickStockWindow();
