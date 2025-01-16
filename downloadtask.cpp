@@ -50,18 +50,21 @@ void DownloadTask::downloadK()
         startDate="0";
     file.close();
 
-    if (file.open(QFile::Append))
+    GlobalVar::getData(allData,2,QUrl("http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg="+startDate+"&end="+endDate+"&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid="+code+"&klt=101&fqt=0"));
+    QJsonParseError jsonError;
+    QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
+    if (jsonError.error == QJsonParseError::NoError)
     {
-        GlobalVar::getData(allData,2,QUrl("http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg="+startDate+"&end="+endDate+"&ut=fa5fd1943c7b386f172d6893dbfba10b&rtntype=6&secid="+code+"&klt=101&fqt=0"));
-        QJsonParseError jsonError;
-        QJsonDocument doc = QJsonDocument::fromJson(allData, &jsonError);
-        if (jsonError.error == QJsonParseError::NoError)
+        QJsonObject jsonObject = doc.object();
+        QJsonArray data=jsonObject.value("data").toObject().value("klines").toArray();
+        if (data.size()>0)
         {
-            QJsonObject jsonObject = doc.object();
-            QJsonArray data=jsonObject.value("data").toObject().value("klines").toArray();
-            for (int j = 0; j < data.size(); ++j)
-                file.write(data.at(j).toString().toLocal8Bit()+"\n");
+            if (file.open(QFile::Append))
+            {
+                for (int j = 0; j < data.size(); ++j)
+                    file.write(data.at(j).toString().toLocal8Bit()+"\n");
+            }
+            file.close();
         }
     }
-    file.close();
 }
