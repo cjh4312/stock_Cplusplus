@@ -39,7 +39,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
     }
     else
     {
-        GlobalVar::getData(buySellData,0.5f,QUrl("http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=1&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f57,f58,f60,f62,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963"));
+        GlobalVar::getData(buySellData,0.9f,QUrl("http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&fltt=2&invt=1&volt=2&fields=f43,f44,f45,f46,f47,f48,f55,f57,f58,f60,f62,f164,f167,f168,f170,f116,f84,f85,f162,f31,f32,f33,f34,f35,f36,f37,f38,f39,f40,f20,f19,f18,f17,f16,f15,f14,f13,f12,f11,f531&secid="+GlobalVar::getComCode()+"&_=1666089246963"));
         if (GlobalVar::timeOutFlag[8])
             GlobalVar::timeOutFlag[8]=false;
         else
@@ -51,7 +51,7 @@ void ThreadTimeShareTick::getBuySellTimeShareTick(bool reset)
         QString pos="-0";
         // if (preCode==GlobalVar::curCode and not reset and GlobalVar::WhichInterface==1 and not GlobalVar::mTimeShareTickList.isEmpty())
         //      pos="-10";
-        float timeout=0.5;
+        float timeout=0.9;
         if (GlobalVar::WhichInterface==5)
             timeout=1.5;
         GlobalVar::getData(timeShareTickData,timeout,QUrl("http://push2.eastmoney.com/api/qt/stock/details/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55&mpi=2000&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&pos="+pos+"&secid="+GlobalVar::getComCode()));
